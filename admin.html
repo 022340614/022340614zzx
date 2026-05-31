@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 校园失物招领</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div id="admin-app">
+        <!-- 管理员导航 -->
+        <nav class="admin-nav">
+            <div class="nav-container">
+                <h1>管理员后台</h1>
+                <div class="nav-links">
+                    <a href="#dashboard" class="nav-link active">仪表板</a>
+                    <a href="#posts" class="nav-link">帖子管理</a>
+                    <a href="#categories" class="nav-link">分类管理</a>
+                    <a href="#users" class="nav-link">用户管理</a>
+                    <a href="../index.html" class="nav-link">返回前台</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="admin-main">
+            <!-- 仪表板 -->
+            <section id="dashboard" class="admin-page active">
+                <h2>数据概览</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>总帖子数</h3>
+                        <span id="totalPosts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>待审核</h3>
+                        <span id="pendingPosts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已解决</h3>
+                        <span id="resolvedPosts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>今日新增</h3>
+                        <span id="todayPosts">0</span>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>最近活动</h3>
+                    <div id="recentActivity" class="activity-list">
+                        <!-- 动态加载活动记录 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 帖子管理 -->
+            <section id="posts" class="admin-page">
+                <h2>帖子管理</h2>
+                <div class="filters">
+                    <select id="postStatusFilter">
+                        <option value="">全部状态</option>
+                        <option value="pending">待审核</option>
+                        <option value="approved">已审核</option>
+                        <option value="rejected">已拒绝</option>
+                    </select>
+                    <input type="text" id="postSearch" placeholder="搜索帖子...">
+                    <button onclick="adminApp.filterPosts()" class="btn-primary">筛选</button>
+                </div>
+
+                <div id="postsList" class="posts-list">
+                    <!-- 帖子列表 -->
+                </div>
+            </section>
+
+            <!-- 分类管理 -->
+            <section id="categories" class="admin-page">
+                <h2>分类管理</h2>
+                <div class="category-management">
+                    <div class="add-category">
+                        <input type="text" id="newCategory" placeholder="新分类名称">
+                        <button onclick="adminApp.addCategory()" class="btn-primary">添加分类</button>
+                    </div>
+                    
+                    <div id="categoriesList" class="categories-grid">
+                        <!-- 分类列表 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 用户管理 -->
+            <section id="users" class="admin-page">
+                <h2>用户管理</h2>
+                <div id="usersList" class="users-list">
+                    <!-- 用户列表 -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 审核模态框 -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="adminApp.closeReviewModal()">&times;</span>
+            <div id="reviewContent"></div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

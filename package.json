@@ -1,0 +1,32 @@
+{
+  "name": "campus-lost-and-found-pwa",
+  "version": "1.0.0",
+  "description": "校园失物招领渐进式网页应用",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "dev": "live-server .",
+    "deploy": "node deploy.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "pwa",
+    "campus",
+    "lost-and-found",
+    "web-app"
+  ],
+  "author": "022340614",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/022340614/022340614zzx"
+  },
+  "bugs": {
+    "url": "https://github.com/022340614/022340614zzx/issues"
+  },
+  "homepage": "https://github.com/022340614/022340614zzx#readme",
+  "devDependencies": {
+    "serve": "^14.0.0",
+    "live-server": "^1.2.2"
+  }
+}
