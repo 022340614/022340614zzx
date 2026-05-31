@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>移动设备测试 - 管理员后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-card h2 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .test-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            touch-action: manipulation;
+            min-height: 50px;
+        }
+        
+        .test-button:hover, .test-button:active {
+            background: #45a049;
+            transform: scale(0.98);
+        }
+        
+        .test-button.secondary {
+            background: #6c757d;
+        }
+        
+        .test-button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .test-button.danger {
+            background: #f44336;
+        }
+        
+        .test-button.danger:hover {
+            background: #d32f2f;
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .device-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list .icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .success-icon {
+            color: #4CAF50;
+        }
+        
+        .warning-icon {
+            color: #ff9800;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .test-card {
+                padding: 15px;
+            }
+            
+            .test-button {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 移动设备兼容性测试</h1>
+        
+        <div class="device-info">
+            <h2>设备信息</h2>
+            <p id="deviceInfo">正在检测设备信息...</p>
+        </div>
+        
+        <div class="test-card">
+            <h2>测试1: 触摸交互</h2>
+            <p>测试按钮在触摸设备上的响应能力：</p>
+            
+            <button class="test-button" onclick="testTouch('test1')">
+                点击我测试触摸响应
+            </button>
+            
+            <button class="test-button secondary" onclick="testTouch('test2')">
+                长按测试（按住2秒）
+            </button>
+            
+            <div id="touchTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-card">
+            <h2>测试2: 按钮尺寸和间距</h2>
+            <p>检查按钮是否符合移动设备最小点击区域（44×44像素）：</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">
+                <button class="test-button" style="min-height: 44px;">小按钮</button>
+                <button class="test-button" style="min-height: 44px;">小按钮</button>
+                <button class="test-button" style="min-height: 50px;">标准按钮</button>
+                <button class="test-button" style="min-height: 50px;">标准按钮</button>
+            </div>
+            
+            <div id="sizeTestResult" class="test-result info">
+                按钮网格测试：检查按钮是否容易点击且不重叠
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h2>测试3: 输入框和表单</h2>
+            <p>测试移动设备上的输入体验：</p>
+            
+            <input type="text" placeholder="测试输入框..." 
+                   style="width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 16px;">
+            
+            <select style="width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 16px;">
+                <option value="">选择测试选项</option>
+                <option value="1">选项一</option>
+                <option value="2">选项二</option>
+                <option value="3">选项三</option>
+            </select>
+            
+            <div id="inputTestResult" class="test-result info">
+                输入测试：确保输入框在iOS/Android上正常显示
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h2>测试4: 导航到管理员后台</h2>
+            <p>测试完整的管理员后台页面：</p>
+            
+            <button class="test-button" onclick="window.location.href='admin.html'">
+                打开完整管理员后台
+            </button>
+            
+            <button class="test-button secondary" onclick="window.open('admin.html', '_blank')">
+                在新标签页中打开
+            </button>
+            
+            <div class="test-result info">
+                <strong>预期功能：</strong>
+                <ul class="feature-list">
+                    <li><span class="icon success-icon">✓</span> 导航栏响应式折叠</li>
+                    <li><span class="icon success-icon">✓</span> 按钮可点击且不重叠</li>
+                    <li><span class="icon success-icon">✓</span> 输入框正常显示</li>
+                    <li><span class="icon success-icon">✓</span> 模态框适配移动端</li>
+                    <li><span class="icon success-icon">✓</span> 滚动流畅无卡顿</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h2>测试5: 性能测试</h2>
+            <p>测试页面加载和响应性能：</p>
+            
+            <button class="test-button" onclick="testPerformance()">
+                运行性能测试
+            </button>
+            
+            <button class="test-button secondary" onclick="testLocalStorage()">
+                测试本地存储
+            </button>
+            
+            <div id="performanceResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-card">
+            <h2>问题反馈</h2>
+            <p>如果发现任何问题：</p>
+            
+            <button class="test-button danger" onclick="reportIssue()">
+                报告问题
+            </button>
+            
+            <div class="test-result info">
+                <strong>常见问题检查：</strong>
+                <ul class="feature-list">
+                    <li><span class="icon warning-icon">⚠</span> 按钮点击无响应</li>
+                    <li><span class="icon warning-icon">⚠</span> 文字显示过小</li>
+                    <li><span class="icon warning-icon">⚠</span> 布局错乱</li>
+                    <li><span class="icon warning-icon">⚠</span> 输入困难</li>
+                    <li><span class="icon warning-icon">⚠</span> 滚动卡顿</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 设备信息检测
+        function detectDevice() {
+            const info = document.getElementById('deviceInfo');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const dpr = window.devicePixelRatio || 1;
+            const userAgent = navigator.userAgent;
+            
+            let deviceType = '桌面设备';
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+                deviceType = '移动设备';
+            }
+            
+            info.innerHTML = `
+                <strong>设备类型：</strong>${deviceType}<br>
+                <strong>屏幕尺寸：</strong>${width} × ${height} 像素<br>
+                <strong>设备像素比：</strong>${dpr}<br>
+                <strong>用户代理：</strong>${userAgent.substring(0, 100)}...
+            `;
+        }
+        
+        // 触摸测试
+        let touchStartTime;
+        function testTouch(testId) {
+            const result = document.getElementById('touchTestResult');
+            
+            if (testId === 'test1') {
+                result.innerHTML = '<div class="success">✓ 触摸点击测试成功！按钮响应正常。</div>';
+            } else if (testId === 'test2') {
+                touchStartTime = Date.now();
+                result.innerHTML = '<div class="info">请按住上面的按钮2秒钟...</div>';
+            }
+        }
+        
+        // 长按检测
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.className.includes('test-button')) {
+                touchStartTime = Date.now();
+            }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            if (e.target.className.includes('test-button') && touchStartTime) {
+                const duration = Date.now() - touchStartTime;
+                if (duration > 2000) {
+                    const result = document.getElementById('touchTestResult');
+                    result.innerHTML = `<div class="success">✓ 长按测试成功！按住时长：${duration}ms</div>`;
+                }
+                touchStartTime = null;
+            }
+        });
+        
+        // 性能测试
+        function testPerformance() {
+            const result = document.getElementById('performanceResult');
+            result.innerHTML = '<div class="info">正在运行性能测试...</div>';
+            
+            const startTime = performance.now();
+            
+            // 模拟一些计算
+            let sum = 0;
+            for (let i = 0; i < 1000000; i++) {
+                sum += Math.random();
+            }
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            // 内存使用估计
+            const memory = performance.memory ? 
+                `内存使用：${Math.round(performance.memory.usedJSHeapSize / 1024 / 1024)}MB` : 
+                '内存信息不可用';
+            
+            result.innerHTML = `
+                <div class="success">
+                    ✓ 性能测试完成！<br>
+                    <strong>计算时间：</strong>${duration.toFixed(2)}ms<br>
+                    <strong>${memory}</strong><br>
+                    <strong>帧率：</strong>${Math.round(1000/16)}fps（估计值）
+                </div>
+            `;
+        }
+        
+        // 本地存储测试
+        function testLocalStorage() {
+            const result = document.getElementById('performanceResult');
+            
+            try {
+                localStorage.setItem('mobile_test', 'test_value_' + Date.now());
+                const value = localStorage.getItem('mobile_test');
+                
+                if (value) {
+                    result.innerHTML = '<div class="success">✓ 本地存储测试成功！数据读写正常。</div>';
+                    localStorage.removeItem('mobile_test');
+                } else {
+                    result.innerHTML = '<div class="error">✗ 本地存储测试失败：无法读取数据</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 本地存储错误：${error.message}</div>`;
+            }
+        }
+        
+        // 问题报告
+        function reportIssue() {
+            const issues = [];
+            
+            // 检查常见问题
+            if (window.innerWidth < 768) {
+                const buttons = document.querySelectorAll('.test-button');
+                buttons.forEach(btn => {
+                    const rect = btn.getBoundingClientRect();
+                    if (rect.width < 44 || rect.height < 44) {
+                        issues.push('按钮尺寸过小');
+                    }
+                });
+            }
+            
+            // 检查触摸支持
+            if (!('ontouchstart' in window)) {
+                issues.push('设备可能不支持触摸');
+            }
+            
+            // 显示报告
+            const result = document.getElementById('performanceResult');
+            if (issues.length > 0) {
+                result.innerHTML = `
+                    <div class="error">
+                        <strong>发现问题：</strong><br>
+                        ${issues.map(issue => `• ${issue}`).join('<br>')}<br><br>
+                        请截图并联系开发人员。
+                    </div>
+                `;
+            } else {
+                result.innerHTML = '<div class="success">✓ 未发现明显问题！所有测试通过。</div>';
+            }
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            detectDevice();
+            
+            // 添加触摸反馈
+            const buttons = document.querySelectorAll('.test-button');
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            console.log('移动设备测试页面已加载');
+        });
+        
+        // 响应窗口大小变化
+        window.addEventListener('resize', detectDevice);
+    </script>
+</body>
+</html>

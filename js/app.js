@@ -308,8 +308,8 @@ class LostFoundApp {
             });
         }
 
-        // 图片预览功能
-        const imageInput = document.getElementById('image');
+        // 图片预览功能 - 修复ID不匹配问题
+        const imageInput = document.getElementById('itemImage');
         if (imageInput) {
             imageInput.addEventListener('change', (e) => {
                 this.previewImage(e.target.files[0]);
@@ -318,15 +318,22 @@ class LostFoundApp {
     }
 
     publishItem() {
-        const formData = new FormData(document.getElementById('publishForm'));
+        // 直接获取表单元素的值，因为FormData需要name属性
+        const itemType = document.getElementById('itemType').value;
+        const itemTitle = document.getElementById('itemTitle').value;
+        const category = document.getElementById('category').value;
+        const location = document.getElementById('location').value;
+        const description = document.getElementById('description').value;
+        const contact = document.getElementById('contact').value;
+        
         const item = {
             id: Date.now().toString(),
-            type: formData.get('type'),
-            title: formData.get('title'),
-            category: formData.get('category'),
-            description: formData.get('description'),
-            location: formData.get('location'),
-            contact: formData.get('contact'),
+            type: itemType,
+            title: itemTitle,
+            category: category,
+            description: description,
+            location: location,
+            contact: contact,
             timestamp: new Date().toISOString(),
             status: 'pending',
             createdBy: this.currentUser ? this.currentUser.name : '匿名用户'

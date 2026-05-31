@@ -7,317 +7,429 @@
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
     
     <!-- 图标 -->
-    <link rel="icon" href="assets/favicon.ico">
-    <link rel="apple-touch-icon" href="assets/icon-192x192.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
     
     <!-- 样式文件 -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/responsive.css">
     <link rel="stylesheet" href="styles/advanced.css">
+    <link rel="stylesheet" href="styles/hbmzu-map.css">
     
-    <!-- PWA特性 -->
-    <meta name="theme-color" content="#4CAF50">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <h1>🎓 校园失物招领</h1>
-                <span class="nav-subtitle">智能PWA平台</span>
-            </div>
-            <div class="nav-menu">
-                <a href="#home" class="nav-link active">首页</a>
-                <a href="#publish" class="nav-link">发布</a>
-                <a href="#search" class="nav-link">搜索</a>
-                <a href="#profile" class="nav-link">我的</a>
-                <a href="admin.html" class="nav-link admin-link">管理</a>
-            </div>
-            <div class="nav-actions">
-                <button class="btn-notification" id="notificationBtn">🔔</button>
-                <button class="btn-advanced" onclick="advancedFeatures.showAdvancedFeatures()">🚀 高级功能</button>
-            </div>
+    <nav class="nav-container">
+        <div class="nav-brand">
+            <h1>🏫 校园失物招领</h1>
+            <span class="nav-subtitle">湖北民族大学智能平台</span>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-campus-map" onclick="hbmzuMap.showMap()">🗺️ 校园地图</button>
+            <button onclick="showSection('home')">🏠 首页</button>
+            <button onclick="showSection('publish')">📝 发布</button>
+            <button onclick="showSection('search')">🔍 搜索</button>
+            <button onclick="showSection('profile')">👤 我的</button>
+            <button onclick="showSection('admin')">⚙️ 管理</button>
         </div>
     </nav>
 
-    <!-- 主内容区域 -->
-    <main class="main-content">
+    <!-- 主要内容区域 -->
+    <main class="main-container">
         <!-- 首页 -->
-        <section id="home" class="page active">
+        <section id="home" class="section active">
             <div class="hero-section">
-                <div class="hero-content">
-                    <h2>让失物更快回家</h2>
-                    <p>基于PWA技术的智能校园失物招领平台</p>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <span class="stat-number" id="totalItems">0</span>
-                            <span class="stat-label">总物品数</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="resolvedItems">0</span>
-                            <span class="stat-label">已找回</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="activeUsers">0</span>
-                            <span class="stat-label">活跃用户</span>
-                        </div>
+                <h2>欢迎使用湖北民族大学失物招领平台</h2>
+                <p>智能PWA应用，让失物更快回家！</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalItems">0</span>
+                        <span class="stat-label">总物品数</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="foundItems">0</span>
+                        <span class="stat-label">已找回</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="activeUsers">0</span>
+                        <span class="stat-label">活跃用户</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 高级功能快速入口 -->
-            <div class="features-grid">
-                <div class="feature-card" onclick="advancedFeatures.showMap()">
-                    <div class="feature-icon">🗺️</div>
-                    <h3>智能地图</h3>
-                    <p>查看物品位置，校园导航</p>
-                </div>
-                <div class="feature-card" onclick="advancedFeatures.initAIImageRecognition()">
-                    <div class="feature-icon">🤖</div>
-                    <h3>AI识别</h3>
-                    <p>智能分类，自动建议</p>
-                </div>
-                <div class="feature-card" onclick="document.querySelector('.chat-widget').style.display='block'">
-                    <div class="feature-icon">💬</div>
-                    <h3>实时聊天</h3>
-                    <p>即时沟通，快速联系</p>
-                </div>
-                <div class="feature-card" onclick="window.location.href='admin.html'">
-                    <div class="feature-icon">📊</div>
-                    <h3>数据洞察</h3>
-                    <p>平台数据，智能分析</p>
+            <div class="recent-items">
+                <h3>📢 最新发布</h3>
+                <div id="recentItemsList" class="items-grid">
+                    <!-- 动态加载最新物品 -->
                 </div>
             </div>
 
-            <!-- 最新物品列表 -->
-            <div class="items-section">
-                <h3>最新发布</h3>
-                <div class="items-grid" id="recentItems">
-                    <!-- 动态加载 -->
+            <div class="campus-highlights">
+                <h3>🏫 校园热点区域</h3>
+                <div class="hotspots-grid">
+                    <div class="hotspot-card" onclick="hbmzuMap.showMap('图书馆')">
+                        <div class="hotspot-icon">📚</div>
+                        <div class="hotspot-info">
+                            <h4>图书馆</h4>
+                            <p>学习用品丢失高发区</p>
+                            <span class="hotspot-count">12件待认领</span>
+                        </div>
+                    </div>
+                    <div class="hotspot-card" onclick="hbmzuMap.showMap('学生食堂')">
+                        <div class="hotspot-icon">🍽️</div>
+                        <div class="hotspot-info">
+                            <h4>学生食堂</h4>
+                            <p>个人物品遗忘区</p>
+                            <span class="hotspot-count">8件待认领</span>
+                        </div>
+                    </div>
+                    <div class="hotspot-card" onclick="hbmzuMap.showMap('操场')">
+                        <div class="hotspot-icon">⚽</div>
+                        <div class="hotspot-info">
+                            <h4>运动场</h4>
+                            <p>运动装备丢失区</p>
+                            <span class="hotspot-count">5件待认领</span>
+                        </div>
+                    </div>
+                    <div class="hotspot-card" onclick="hbmzuMap.showMap('学生宿舍1栋')">
+                        <div class="hotspot-icon">🏠</div>
+                        <div class="hotspot-info">
+                            <h4>学生宿舍</h4>
+                            <p>生活用品遗失区</p>
+                            <span class="hotspot-count">15件待认领</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 发布页面 -->
-        <section id="publish" class="page">
-            <div class="publish-container">
-                <h2>发布信息</h2>
-                <form class="publish-form" id="publishForm">
+        <section id="publish" class="section">
+            <div class="publish-form-container">
+                <h2>📝 发布信息</h2>
+                <form id="publishForm" class="publish-form">
                     <div class="form-group">
-                        <label>类型</label>
-                        <div class="type-selector">
-                            <input type="radio" name="type" value="lost" id="typeLost" checked>
-                            <label for="typeLost">寻物启事</label>
-                            <input type="radio" name="type" value="found" id="typeFound">
-                            <label for="typeFound">失物招领</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="title">标题</label>
-                        <input type="text" id="title" required placeholder="例如：寻找黑色钱包">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="category">分类</label>
-                        <select id="category" required>
-                            <option value="">选择分类</option>
-                            <option value="证件">证件类</option>
-                            <option value="书本">书本类</option>
-                            <option value="电子产品">电子产品</option>
-                            <option value="衣物">衣物类</option>
-                            <option value="钥匙">钥匙类</option>
-                            <option value="其他">其他</option>
+                        <label for="itemType">信息类型</label>
+                        <select id="itemType" required>
+                            <option value="">请选择</option>
+                            <option value="lost">寻物启事</option>
+                            <option value="found">失物招领</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="description">详细描述</label>
-                        <textarea id="description" required placeholder="请详细描述物品特征..."></textarea>
+                        <label for="itemTitle">物品名称</label>
+                        <input type="text" id="itemTitle" placeholder="例如：黑色钱包、学生证等" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">物品分类</label>
+                        <select id="category" required>
+                            <option value="">请选择</option>
+                            <option value="证件">证件类</option>
+                            <option value="电子">电子设备</option>
+                            <option value="书籍">书籍文具</option>
+                            <option value="衣物">衣物配饰</option>
+                            <option value="其他">其他物品</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
                         <label for="location">丢失/发现地点</label>
-                        <input type="text" id="location" required placeholder="例如：图书馆三楼">
-                        <button type="button" class="btn-map" onclick="advancedFeatures.showMap()">🗺️ 查看地图</button>
+                        <input type="text" id="location" placeholder="例如：图书馆三楼、食堂门口" required>
+                        <div class="campus-location-selector">
+                            <div class="selector-header">
+                                <span>选择校园地点:</span>
+                                <button type="button" class="btn-select-campus" onclick="showCampusLocationPicker()">
+                                    🗺️ 从地图选择
+                                </button>
+                            </div>
+                            <div class="campus-location-suggestions">
+                                <div class="suggestion-item" onclick="selectCampusLocation('图书馆')">图书馆</div>
+                                <div class="suggestion-item" onclick="selectCampusLocation('主教学楼')">主教学楼</div>
+                                <div class="suggestion-item" onclick="selectCampusLocation('学生食堂')">学生食堂</div>
+                                <div class="suggestion-item" onclick="selectCampusLocation('操场')">操场</div>
+                                <div class="suggestion-item" onclick="selectCampusLocation('学生宿舍1栋')">学生宿舍1栋</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">详细描述</label>
+                        <textarea id="description" placeholder="请详细描述物品特征、颜色、品牌等信息" rows="4" required></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="contact">联系方式</label>
-                        <input type="text" id="contact" required placeholder="电话/微信">
-                    </div>
-
-                    <!-- AI图片识别区域 -->
-                    <div id="aiRecognition" class="ai-recognition">
-                        <h4>🤖 AI智能识别</h4>
-                        <div class="ai-upload">
-                            <input type="file" id="aiImageInput" accept="image/*" onchange="advancedFeatures.analyzeImage(this.files[0])">
-                            <label for="aiImageInput" class="ai-upload-btn">
-                                <span>📷 上传图片识别</span>
-                            </label>
-                        </div>
-                        <div id="aiResults" class="ai-results"></div>
+                        <input type="text" id="contact" placeholder="手机号或微信号" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="image">上传图片</label>
-                        <input type="file" id="image" accept="image/*">
-                        <div class="image-preview" id="imagePreview"></div>
+                        <label for="itemImage">物品图片（可选）</label>
+                        <input type="file" id="itemImage" accept="image/*" onchange="previewImage(event)">
+                        <div id="imagePreview" class="image-preview"></div>
                     </div>
 
-                    <button type="submit" class="btn-primary">发布信息</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">发布信息</button>
+                        <button type="reset" class="btn-secondary">重置</button>
+                    </div>
                 </form>
             </div>
         </section>
 
         <!-- 搜索页面 -->
-        <section id="search" class="page">
+        <section id="search" class="section">
             <div class="search-container">
-                <h2>搜索物品</h2>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="输入关键词搜索...">
-                    <button onclick="searchItems()">搜索</button>
-                </div>
-                
-                <div class="filter-options">
-                    <select id="categoryFilter">
-                        <option value="">全部分类</option>
-                        <option value="证件">证件类</option>
-                        <option value="书本">书本类</option>
-                        <option value="电子产品">电子产品</option>
-                        <option value="衣物">衣物类</option>
-                        <option value="钥匙">钥匙类</option>
-                        <option value="其他">其他</option>
-                    </select>
-                    
-                    <select id="typeFilter">
-                        <option value="">全部类型</option>
-                        <option value="lost">寻物启事</option>
-                        <option value="found">失物招领</option>
-                    </select>
-                    
-                    <select id="statusFilter">
-                        <option value="">全部状态</option>
-                        <option value="pending">待解决</option>
-                        <option value="resolved">已解决</option>
-                    </select>
+                <h2>🔍 搜索物品</h2>
+                <div class="search-controls">
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" placeholder="搜索物品或校园地点...">
+                        <button onclick="searchItems()">搜索</button>
+                    </div>
+                    <div class="search-filters">
+                        <select id="searchType">
+                            <option value="all">全部类型</option>
+                            <option value="lost">寻物启事</option>
+                            <option value="found">失物招领</option>
+                        </select>
+                        <select id="searchCategory">
+                            <option value="all">全部分类</option>
+                            <option value="证件">证件类</option>
+                            <option value="电子">电子设备</option>
+                            <option value="书籍">书籍文具</option>
+                            <option value="衣物">衣物配饰</option>
+                            <option value="其他">其他物品</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="search-results" id="searchResults">
-                    <!-- 动态加载搜索结果 -->
+                <div id="searchResults" class="search-results">
+                    <!-- 搜索结果将在这里显示 -->
                 </div>
             </div>
         </section>
 
         <!-- 个人中心 -->
-        <section id="profile" class="page">
+        <section id="profile" class="section">
             <div class="profile-container">
-                <h2>个人中心</h2>
-                
-                <!-- 高级用户认证 -->
-                <div id="advancedAuth" class="advanced-auth">
-                    <h4>快速登录</h4>
-                    <div class="auth-buttons">
-                        <button class="auth-btn wechat" onclick="advancedFeatures.loginWithWechat()">
-                            <span>微信登录</span>
-                        </button>
-                        <button class="auth-btn qq" onclick="advancedFeatures.loginWithQQ()">
-                            <span>QQ登录</span>
-                        </button>
-                        <button class="auth-btn phone" onclick="advancedFeatures.loginWithPhone()">
-                            <span>手机验证码登录</span>
-                        </button>
+                <h2>👤 个人中心</h2>
+                <div class="profile-info">
+                    <div class="user-avatar">
+                        <div class="avatar-placeholder">👤</div>
                     </div>
-                    <div class="user-profile" id="userProfile" style="display: none;">
-                        <div class="profile-header">
-                            <div class="avatar" id="userAvatar">👤</div>
-                            <div class="profile-info">
-                                <div class="username" id="userDisplayName">用户</div>
-                                <div class="user-score">
-                                    <span class="score-label">信誉分:</span>
-                                    <span class="score-value" id="userScore">100</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-stats">
-                    <h3>我的统计</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-value" id="myItems">0</span>
-                            <span class="stat-label">我的发布</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-value" id="myResolved">0</span>
-                            <span class="stat-label">已解决</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-value" id="myMessages">0</span>
-                            <span class="stat-label">消息</span>
+                    <div class="user-details">
+                        <h3 id="userName">游客</h3>
+                        <p id="userContact">未设置联系方式</p>
+                        <div class="user-stats">
+                            <span>发布: <strong id="userPosts">0</strong></span>
+                            <span>成功: <strong id="userSuccess">0</strong></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="profile-actions">
-                    <h3>快捷操作</h3>
-                    <div class="action-buttons">
-                        <button class="btn-action" onclick="showPage('publish')">发布新信息</button>
-                        <button class="btn-action" onclick="showMyItems()">我的发布</button>
-                        <button class="btn-action" onclick="showMessages()">我的消息</button>
-                        <button class="btn-action" onclick="advancedFeatures.showAdvancedFeatures()">高级功能</button>
+                    <button onclick="showMyPosts()">我的发布</button>
+                    <button onclick="editProfile()">编辑资料</button>
+                    <button onclick="showHelp()">使用帮助</button>
+                </div>
+
+                <div id="myPosts" class="my-posts">
+                    <!-- 我的发布内容 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 管理员后台 -->
+        <section id="admin" class="section">
+            <div class="admin-container">
+                <h2>⚙️ 管理员后台</h2>
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <h3>平台数据</h3>
+                        <div class="stat-content">
+                            <p>总物品数: <span id="adminTotalItems">0</span></p>
+                            <p>待审核: <span id="adminPendingItems">0</span></p>
+                            <p>已找回: <span id="adminFoundItems">0</span></p>
+                        </div>
                     </div>
+                    <div class="stat-card">
+                        <h3>用户统计</h3>
+                        <div class="stat-content">
+                            <p>注册用户: <span id="adminTotalUsers">0</span></p>
+                            <p>今日活跃: <span id="adminActiveUsers">0</span></p>
+                            <p>发布次数: <span id="adminTotalPosts">0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-actions">
+                    <button onclick="manageItems()">物品管理</button>
+                    <button onclick="manageUsers()">用户管理</button>
+                    <button onclick="viewAnalytics()">数据分析</button>
+                    <button onclick="systemSettings()">系统设置</button>
+                </div>
+
+                <div id="adminContent" class="admin-content">
+                    <!-- 管理内容区域 -->
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- 实时聊天组件 -->
-    <div id="chatWidget" class="chat-widget" style="display: none;">
-        <div class="chat-header">
-            <span>💬 实时聊天</span>
-            <button class="chat-toggle">−</button>
-        </div>
-        <div class="chat-body">
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="输入消息...">
-                <button id="sendMessage">发送</button>
+    <!-- 高级功能区域 -->
+    <div class="advanced-features">
+        <!-- 实时聊天窗口 -->
+        <div id="chatWidget" class="chat-widget">
+            <div class="chat-header" onclick="toggleChat()">
+                <span>💬 在线客服</span>
+                <span class="chat-toggle">−</span>
+            </div>
+            <div class="chat-body">
+                <div id="chatMessages" class="chat-messages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="输入消息...">
+                    <button onclick="sendMessage()">发送</button>
+                </div>
             </div>
         </div>
+
+        <!-- 通知提示 -->
+        <div id="notificationArea" class="notification-area"></div>
     </div>
 
-    <!-- 智能地图模态框 -->
-    <div id="mapModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="advancedFeatures.closeMap()">&times;</span>
-            <h3>校园地图</h3>
-            <div id="campusMap" class="campus-map"></div>
-            <div class="map-controls">
-                <input type="text" id="searchLocation" placeholder="搜索地点...">
-                <button onclick="advancedFeatures.searchLocation()">搜索</button>
-            </div>
-        </div>
-    </div>
+    <!-- 模态框容器 -->
+    <div id="modalContainer"></div>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 校园失物招领PWA平台. 基于现代Web技术构建.</p>
-            <div class="tech-stack">
-                <span>技术栈: HTML5 • CSS3 • JavaScript • PWA</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- JavaScript文件 -->
+    <!-- JavaScript 文件 -->
     <script src="js/app.js"></script>
     <script src="js/advanced-features.js"></script>
+    <script src="js/hbmzu-map.js"></script>
+    <script src="js/app-integration.js"></script>
     <script src="js/sw-register.js"></script>
+
+    <!-- 初始化应用 -->
+    <script>
+        // 应用初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化基础应用
+            if (typeof app !== 'undefined') {
+                app.init();
+            }
+            
+            // 初始化高级功能
+            if (typeof advancedFeatures !== 'undefined') {
+                advancedFeatures.init();
+            }
+            
+            // 初始化湖北民族大学地图
+            if (typeof hbmzuMap !== 'undefined') {
+                console.log('湖北民族大学地图已加载');
+            }
+            
+            // 显示首页
+            showSection('home');
+            
+            // 更新统计数据
+            updateStatistics();
+        });
+
+        // 全局函数
+        function showSection(sectionId) {
+            // 隐藏所有section
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 显示目标section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 更新导航状态
+            updateNavState(sectionId);
+        }
+
+        function updateNavState(sectionId) {
+            // 更新导航按钮状态
+            document.querySelectorAll('.nav-actions button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.querySelector(`.nav-actions button[onclick="showSection('${sectionId}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        function updateStatistics() {
+            // 更新首页统计数据
+            const items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
+            const users = JSON.parse(localStorage.getItem('lostFoundUsers') || '[]');
+            
+            document.getElementById('totalItems').textContent = items.length;
+            document.getElementById('foundItems').textContent = items.filter(item => item.status === 'found').length;
+            document.getElementById('activeUsers').textContent = users.length;
+            
+            // 更新管理员统计数据
+            if (document.getElementById('adminTotalItems')) {
+                document.getElementById('adminTotalItems').textContent = items.length;
+                document.getElementById('adminPendingItems').textContent = items.filter(item => item.status === 'pending').length;
+                document.getElementById('adminFoundItems').textContent = items.filter(item => item.status === 'found').length;
+                document.getElementById('adminTotalUsers').textContent = users.length;
+                document.getElementById('adminActiveUsers').textContent = users.filter(user => user.lastActive > Date.now() - 24*60*60*1000).length;
+                document.getElementById('adminTotalPosts').textContent = items.length;
+            }
+        }
+
+        // 校园地图相关全局函数
+        function showCampusLocationPicker() {
+            if (typeof hbmzuMap !== 'undefined') {
+                hbmzuMap.showMap();
+            } else {
+                alert('校园地图功能加载中...');
+            }
+        }
+
+        function selectCampusLocation(location) {
+            const locationInput = document.getElementById('location');
+            if (locationInput) {
+                locationInput.value = `湖北民族大学 ${location}`;
+            }
+        }
+
+        // 搜索功能
+        function searchItems() {
+            const searchInput = document.getElementById('searchInput');
+            const keyword = searchInput.value.trim();
+            
+            if (keyword) {
+                if (typeof app !== 'undefined' && app.searchItems) {
+                    app.searchItems(keyword);
+                }
+            } else {
+                alert('请输入搜索关键词');
+            }
+        }
+
+        // 图片预览
+        function previewImage(event) {
+            const preview = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="预览图片">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+    </script>
 </body>
 </html>

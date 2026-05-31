@@ -1,0 +1,449 @@
+/* 响应式设计 - 校园失物招领PWA应用 */
+
+/* 平板设备 (768px - 1024px) */
+@media (max-width: 1024px) {
+    .nav-container {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-section h2 {
+        font-size: 2rem;
+    }
+    
+    .hero-stats {
+        gap: 2rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .main-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+    
+    .publish-form-container,
+    .search-container,
+    .profile-container,
+    .admin-container {
+        padding: 1.5rem;
+    }
+    
+    .hotspots-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 手机设备 (480px - 768px) */
+@media (max-width: 768px) {
+    .nav-brand h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+    
+    .nav-subtitle {
+        text-align: center;
+    }
+    
+    .nav-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .nav-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .hotspots-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hotspot-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .search-controls {
+        flex-direction: column;
+    }
+    
+    .search-input-group {
+        flex-direction: column;
+    }
+    
+    .search-filters {
+        flex-direction: column;
+    }
+    
+    .profile-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .user-stats {
+        justify-content: center;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+    }
+    
+    .admin-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .campus-location-suggestions {
+        justify-content: center;
+    }
+    
+    .selector-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+/* 小屏手机 (320px - 480px) */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .nav-container {
+        padding: 0.5rem;
+    }
+    
+    .nav-brand h1 {
+        font-size: 1.3rem;
+    }
+    
+    .hero-section {
+        padding: 1.5rem 1rem;
+        margin: 1rem 0;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .main-container {
+        margin: 0.5rem auto;
+        padding: 0 0.25rem;
+    }
+    
+    .publish-form-container,
+    .search-container,
+    .profile-container,
+    .admin-container,
+    .campus-highlights {
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .hotspot-icon {
+        font-size: 2rem;
+    }
+    
+    .hotspot-info h4 {
+        font-size: 1.1rem;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* 校园地图响应式调整 */
+    .campus-map-modal {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+    
+    .campus-map-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 10px 0;
+    }
+    
+    .campus-map-display {
+        height: 300px;
+    }
+    
+    .category-filters {
+        justify-content: center;
+    }
+    
+    .location-actions {
+        flex-direction: column;
+    }
+    
+    .map-marker .marker-label {
+        display: none;
+    }
+    
+    .location-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 8px;
+    }
+    
+    .location-coords {
+        display: none;
+    }
+}
+
+/* 超大屏幕 (1200px+) */
+@media (min-width: 1200px) {
+    .main-container {
+        max-width: 1400px;
+    }
+    
+    .hero-section {
+        padding: 4rem 3rem;
+    }
+    
+    .hero-section h2 {
+        font-size: 3rem;
+    }
+    
+    .hotspots-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 横屏手机优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+    .nav-container {
+        padding: 0.5rem 1rem;
+    }
+    
+    .hero-section {
+        padding: 1rem 2rem;
+    }
+    
+    .main-container {
+        margin: 0.5rem auto;
+    }
+    
+    .section {
+        min-height: auto;
+    }
+}
+
+/* 高DPI屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .nav-brand h1 {
+        font-weight: 600;
+    }
+    
+    .btn-primary,
+    .btn-secondary,
+    .nav-actions button {
+        border-width: 0.5px;
+    }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .nav-actions button:hover,
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        transform: none;
+    }
+    
+    .hotspot-card:hover {
+        transform: none;
+    }
+    
+    /* 增加触摸目标大小 */
+    .nav-actions button,
+    .btn-primary,
+    .btn-secondary {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .suggestion-item {
+        padding: 10px 15px;
+        min-height: 44px;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+        --accent-color: #4CAF50;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #2c3e50 0%, #4a235a 100%);
+        color: var(--text-primary);
+    }
+    
+    .nav-container {
+        background: rgba(45, 45, 45, 0.95);
+    }
+    
+    .hero-section,
+    .publish-form-container,
+    .search-container,
+    .profile-container,
+    .admin-container,
+    .campus-highlights {
+        background: rgba(45, 45, 45, 0.95);
+        color: var(--text-primary);
+    }
+    
+    .form-group label {
+        color: var(--text-primary);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        background: var(--bg-primary);
+        border-color: #555;
+        color: var(--text-primary);
+    }
+    
+    .campus-location-selector {
+        background: #333;
+        border-color: #555;
+    }
+    
+    .suggestion-item {
+        background: #444;
+        border-color: #555;
+        color: var(--text-primary);
+    }
+    
+    .suggestion-item:hover {
+        background: #4CAF50;
+        color: white;
+    }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+    .nav-actions button {
+        border: 2px solid;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        border: 2px solid;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        border-width: 2px;
+    }
+}
+
+/* 打印样式优化 */
+@media print {
+    .nav-container,
+    .advanced-features,
+    .campus-location-selector,
+    .btn-select-campus {
+        display: none !important;
+    }
+    
+    .section {
+        display: block !important;
+        background: white !important;
+        color: black !important;
+        margin: 0 !important;
+        padding: 1cm !important;
+    }
+    
+    .hero-section,
+    .publish-form-container,
+    .search-container,
+    .profile-container,
+    .admin-container {
+        box-shadow: none !important;
+        background: white !important;
+    }
+    
+    a::after {
+        content: " (" attr(href) ")";
+    }
+}
