@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试管理员后台</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+        }
+        .error {
+            color: #721c24;
+            background: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <h1>管理员后台功能测试</h1>
+    
+    <div class="test-section">
+        <h2>测试1: 检查本地存储数据</h2>
+        <button class="test-button" onclick="testLocalStorage()">测试本地存储</button>
+        <div id="test1-result" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试2: 检查AdminApp类</h2>
+        <button class="test-button" onclick="testAdminApp()">测试AdminApp</button>
+        <div id="test2-result" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试3: 检查CSS和JS文件</h2>
+        <button class="test-button" onclick="testFiles()">测试文件加载</button>
+        <div id="test3-result" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试4: 导航到管理员后台</h2>
+        <button class="test-button" onclick="window.location.href='admin.html'">打开管理员后台</button>
+        <div id="test4-result" class="test-result">
+            点击按钮将打开完整的管理员后台页面
+        </div>
+    </div>
+    
+    <script>
+        function testLocalStorage() {
+            const result = document.getElementById('test1-result');
+            try {
+                // 测试本地存储
+                localStorage.setItem('test', 'test-value');
+                const value = localStorage.getItem('test');
+                
+                if (value === 'test-value') {
+                    result.innerHTML = '<span class="success">✓ 本地存储功能正常</span>';
+                } else {
+                    result.innerHTML = '<span class="error">✗ 本地存储功能异常</span>';
+                }
+                
+                // 清理测试数据
+                localStorage.removeItem('test');
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ 本地存储错误: ${error.message}</span>`;
+            }
+        }
+        
+        function testAdminApp() {
+            const result = document.getElementById('test2-result');
+            try {
+                // 检查AdminApp是否已定义
+                if (typeof AdminApp === 'function') {
+                    result.innerHTML = '<span class="success">✓ AdminApp类已定义</span>';
+                } else {
+                    // 尝试加载admin.js
+                    const script = document.createElement('script');
+                    script.src = 'js/admin.js';
+                    script.onload = function() {
+                        if (typeof AdminApp === 'function') {
+                            result.innerHTML = '<span class="success">✓ AdminApp类加载成功</span>';
+                        } else {
+                            result.innerHTML = '<span class="error">✗ AdminApp类未定义</span>';
+                        }
+                    };
+                    script.onerror = function() {
+                        result.innerHTML = '<span class="error">✗ 无法加载admin.js文件</span>';
+                    };
+                    document.head.appendChild(script);
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ AdminApp测试错误: ${error.message}</span>`;
+            }
+        }
+        
+        function testFiles() {
+            const result = document.getElementById('test3-result');
+            const files = [
+                'admin.html',
+                'styles/admin.css',
+                'js/admin.js',
+                'example-data.js'
+            ];
+            
+            let successCount = 0;
+            let errorCount = 0;
+            let results = [];
+            
+            files.forEach(file => {
+                fetch(file)
+                    .then(response => {
+                        if (response.ok) {
+                            successCount++;
+                            results.push(`✓ ${file} 可访问`);
+                        } else {
+                            errorCount++;
+                            results.push(`✗ ${file} 不可访问 (${response.status})`);
+                        }
+                    })
+                    .catch(error => {
+                        errorCount++;
+                        results.push(`✗ ${file} 错误: ${error.message}`);
+                    })
+                    .finally(() => {
+                        if (successCount + errorCount === files.length) {
+                            const status = errorCount === 0 ? 'success' : 'error';
+                            result.innerHTML = `
+                                <div class="${status}">
+                                    <strong>文件检查完成:</strong><br>
+                                    ${results.join('<br>')}<br>
+                                    <br>
+                                    成功: ${successCount}, 失败: ${errorCount}
+                                </div>
+                            `;
+                        }
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

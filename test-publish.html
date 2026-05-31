@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+        }
+        .error {
+            color: #721c24;
+            background: #f8d7da;
+        }
+        .info {
+            color: #0c5460;
+            background: #d1ecf1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>发布功能测试</h1>
+    
+    <div class="test-section">
+        <h2>测试1: 检查应用初始化</h2>
+        <button class="test-button" onclick="testAppInit()">测试应用初始化</button>
+        <div id="test1-result" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试2: 模拟发布表单</h2>
+        <div class="form-group">
+            <label for="testItemType">信息类型</label>
+            <select id="testItemType">
+                <option value="lost">寻物启事</option>
+                <option value="found">失物招领</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="testItemTitle">物品名称</label>
+            <input type="text" id="testItemTitle" placeholder="例如：黑色钱包">
+        </div>
+        
+        <div class="form-group">
+            <label for="testCategory">物品分类</label>
+            <select id="testCategory">
+                <option value="证件">证件类</option>
+                <option value="电子">电子设备</option>
+                <option value="书籍">书籍文具</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="testLocation">地点</label>
+            <input type="text" id="testLocation" placeholder="例如：图书馆">
+        </div>
+        
+        <div class="form-group">
+            <label for="testDescription">描述</label>
+            <textarea id="testDescription" rows="3" placeholder="物品描述..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="testContact">联系方式</label>
+            <input type="text" id="testContact" placeholder="手机或微信">
+        </div>
+        
+        <button class="test-button" onclick="testPublish()">测试发布功能</button>
+        <div id="test2-result" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试3: 检查本地存储</h2>
+        <button class="test-button" onclick="testLocalStorage()">检查存储数据</button>
+        <button class="test-button" onclick="clearTestData()">清除测试数据</button>
+        <div id="test3-result" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试4: 导航到主应用</h2>
+        <button class="test-button" onclick="window.location.href='index.html'">打开主应用</button>
+        <button class="test-button" onclick="window.location.href='admin.html'">打开管理员后台</button>
+        <div id="test4-result" class="test-result info">
+            点击按钮打开完整应用测试发布功能
+        </div>
+    </div>
+    
+    <script>
+        // 测试应用初始化
+        function testAppInit() {
+            const result = document.getElementById('test1-result');
+            try {
+                // 检查app.js是否加载
+                if (typeof LostFoundApp === 'function') {
+                    // 创建测试应用实例
+                    const testApp = new LostFoundApp();
+                    result.innerHTML = '<div class="success">✓ 应用初始化成功！LostFoundApp类已加载。</div>';
+                } else {
+                    // 尝试加载app.js
+                    const script = document.createElement('script');
+                    script.src = 'js/app.js';
+                    script.onload = function() {
+                        if (typeof LostFoundApp === 'function') {
+                            result.innerHTML = '<div class="success">✓ 应用初始化成功！app.js已加载。</div>';
+                        } else {
+                            result.innerHTML = '<div class="error">✗ 应用初始化失败：LostFoundApp类未定义</div>';
+                        }
+                    };
+                    script.onerror = function() {
+                        result.innerHTML = '<div class="error">✗ 无法加载app.js文件</div>';
+                    };
+                    document.head.appendChild(script);
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 应用初始化错误：${error.message}</div>`;
+            }
+        }
+        
+        // 测试发布功能
+        function testPublish() {
+            const result = document.getElementById('test2-result');
+            
+            // 获取表单值
+            const itemType = document.getElementById('testItemType').value;
+            const itemTitle = document.getElementById('testItemTitle').value;
+            const category = document.getElementById('testCategory').value;
+            const location = document.getElementById('testLocation').value;
+            const description = document.getElementById('testDescription').value;
+            const contact = document.getElementById('testContact').value;
+            
+            // 验证必填字段
+            if (!itemTitle || !location || !description || !contact) {
+                result.innerHTML = '<div class="error">✗ 请填写所有必填字段</div>';
+                return;
+            }
+            
+            try {
+                // 创建测试数据
+                const testItem = {
+                    id: Date.now().toString(),
+                    type: itemType,
+                    title: itemTitle,
+                    category: category,
+                    description: description,
+                    location: location,
+                    contact: contact,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending',
+                    createdBy: '测试用户'
+                };
+                
+                // 获取现有数据
+                let items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
+                
+                // 添加测试数据
+                items.push(testItem);
+                
+                // 保存到本地存储
+                localStorage.setItem('lostFoundItems', JSON.stringify(items));
+                
+                result.innerHTML = `
+                    <div class="success">
+                        ✓ 发布测试成功！<br>
+                        <strong>物品名称：</strong>${itemTitle}<br>
+                        <strong>类型：</strong>${itemType === 'lost' ? '寻物启事' : '失物招领'}<br>
+                        <strong>地点：</strong>${location}<br>
+                        <strong>总物品数：</strong>${items.length}
+                    </div>
+                `;
+                
+                // 清空表单
+                document.getElementById('testItemTitle').value = '';
+                document.getElementById('testLocation').value = '';
+                document.getElementById('testDescription').value = '';
+                document.getElementById('testContact').value = '';
+                
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 发布测试失败：${error.message}</div>`;
+            }
+        }
+        
+        // 测试本地存储
+        function testLocalStorage() {
+            const result = document.getElementById('test3-result');
+            
+            try {
+                const items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
+                const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+                
+                let html = '<div class="info">';
+                html += `<strong>本地存储状态：</strong><br>`;
+                html += `<strong>物品数量：</strong>${items.length} 个<br>`;
+                html += `<strong>分类数量：</strong>${categories.length} 个<br><br>`;
+                
+                if (items.length > 0) {
+                    html += `<strong>最近发布的物品：</strong><br>`;
+                    items.slice(-3).reverse().forEach(item => {
+                        html += `• ${item.title} (${item.type === 'lost' ? '寻物' : '招领'})<br>`;
+                    });
+                } else {
+                    html += `暂无物品数据`;
+                }
+                
+                html += '</div>';
+                result.innerHTML = html;
+                
+            } catch (error) {
+                result.innerHTML = `<div class="error">✗ 本地存储检查失败：${error.message}</div>`;
+            }
+        }
+        
+        // 清除测试数据
+        function clearTestData() {
+            const result = document.getElementById('test3-result');
+            
+            if (confirm('确定要清除所有测试数据吗？')) {
+                try {
+                    // 只清除物品数据，保留分类
+                    localStorage.setItem('lostFoundItems', JSON.stringify([]));
+                    result.innerHTML = '<div class="success">✓ 测试数据已清除</div>';
+                } catch (error) {
+                    result.innerHTML = `<div class="error">✗ 清除数据失败：${error.message}</div>`;
+                }
+            }
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            console.log('发布功能测试页面已加载');
+            
+            // 预加载app.js
+            const script = document.createElement('script');
+            script.src = 'js/app.js';
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>

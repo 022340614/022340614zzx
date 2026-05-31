@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 校园失物招领</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div id="admin-app">
+        <!-- 管理员导航 -->
+        <nav class="admin-nav">
+            <div class="nav-container">
+                <h1>管理员后台</h1>
+                <div class="nav-links">
+                    <a href="#dashboard" class="nav-link active">仪表板</a>
+                    <a href="#posts" class="nav-link">帖子管理</a>
+                    <a href="#categories" class="nav-link">分类管理</a>
+                    <a href="#users" class="nav-link">用户管理</a>
+                    <a href="../index.html" class="nav-link">返回前台</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="admin-main">
+            <!-- 仪表板 -->
+            <section id="dashboard" class="admin-page active">
+                <h2>数据概览</h2>
+                
+                <!-- 管理操作按钮 -->
+                <div class="admin-actions" style="margin-bottom: 2rem;" role="toolbar" aria-label="管理操作工具栏">
+                    <button onclick="batchApprove()" class="btn-primary" aria-label="批量通过所有待审核帖子">
+                        批量通过待审核
+                    </button>
+                    <button onclick="generateReport()" class="btn-primary" aria-label="生成系统统计报告">
+                        生成统计报告
+                    </button>
+                    <button onclick="exportData()" class="btn-primary" aria-label="导出系统数据为JSON文件">
+                        导出数据
+                    </button>
+                    <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;" aria-label="选择要导入的数据文件">
+                    <button onclick="document.getElementById('importFile').click()" class="btn-primary" aria-label="从JSON文件导入数据">
+                        导入数据
+                    </button>
+                    <button onclick="initExampleData()" class="btn-secondary" aria-label="初始化示例数据（将清除现有数据）">
+                        初始化示例数据
+                    </button>
+                    <button onclick="clearAllData()" class="btn-secondary" style="background: #f44336;" aria-label="清除所有系统数据（不可恢复）">
+                        清除所有数据
+                    </button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>总帖子数</h3>
+                        <span id="totalPosts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>待审核</h3>
+                        <span id="pendingPosts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已解决</h3>
+                        <span id="resolvedPosts">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>今日新增</h3>
+                        <span id="todayPosts">0</span>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>最近活动</h3>
+                    <div id="recentActivity" class="activity-list">
+                        <!-- 动态加载活动记录 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 帖子管理 -->
+            <section id="posts" class="admin-page">
+                <h2>帖子管理</h2>
+                <div class="filters" role="search" aria-label="帖子筛选工具">
+                    <select id="postStatusFilter" aria-label="按状态筛选帖子">
+                        <option value="">全部状态</option>
+                        <option value="pending">待审核</option>
+                        <option value="approved">已审核</option>
+                        <option value="rejected">已拒绝</option>
+                    </select>
+                    <input type="text" id="postSearch" placeholder="搜索帖子..." 
+                           aria-label="搜索帖子内容" 
+                           onkeypress="if(event.key === 'Enter') adminApp.filterPosts()">
+                    <button onclick="adminApp.filterPosts()" class="btn-primary" aria-label="应用筛选条件">
+                        筛选
+                    </button>
+                </div>
+
+                <div id="postsList" class="posts-list">
+                    <!-- 帖子列表 -->
+                </div>
+            </section>
+
+            <!-- 分类管理 -->
+            <section id="categories" class="admin-page">
+                <h2>分类管理</h2>
+                <div class="category-management">
+                    <div class="add-category" role="form" aria-label="添加新分类">
+                        <input type="text" id="newCategory" placeholder="新分类名称" 
+                               aria-label="输入新分类名称"
+                               onkeypress="if(event.key === 'Enter') adminApp.addCategory()">
+                        <button onclick="adminApp.addCategory()" class="btn-primary" aria-label="添加新分类">
+                            添加分类
+                        </button>
+                    </div>
+                    
+                    <div id="categoriesList" class="categories-grid" role="list" aria-label="分类列表">
+                        <!-- 分类列表 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 用户管理 -->
+            <section id="users" class="admin-page">
+                <h2>用户管理</h2>
+                <div id="usersList" class="users-list">
+                    <!-- 用户列表 -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 审核模态框 -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="adminApp.closeReviewModal()">&times;</span>
+            <div id="reviewContent"></div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
