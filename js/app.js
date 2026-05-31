@@ -16,7 +16,106 @@ class LostFoundApp {
         // 集成高级功能
         this.integrateAdvancedFeatures();
         
+        // 确保按钮可点击
+        this.fixAllButtons();
+        
         console.log('校园失物招领PWA应用初始化完成');
+    }
+    
+    fixAllButtons() {
+        // 修复所有按钮的点击问题
+        setTimeout(() => {
+            this.ensureNavButtonsClickable();
+            this.fixProfileButtons();
+            this.fixAdminButtons();
+            this.fixFormButtons();
+        }, 1000);
+    }
+    
+    fixProfileButtons() {
+        // 修复个人中心按钮
+        const profileButtons = document.querySelectorAll('.profile-actions button');
+        profileButtons.forEach(button => {
+            button.style.pointerEvents = 'auto';
+            button.style.cursor = 'pointer';
+            button.disabled = false;
+            
+            // 确保有点击事件
+            if (!button.onclick) {
+                const buttonText = button.textContent.trim();
+                if (buttonText.includes('我的发布')) {
+                    button.onclick = () => this.showMyPosts();
+                } else if (buttonText.includes('编辑资料')) {
+                    button.onclick = () => this.editProfile();
+                } else if (buttonText.includes('使用帮助')) {
+                    button.onclick = () => this.showHelp();
+                }
+            }
+        });
+    }
+    
+    fixAdminButtons() {
+        // 修复管理员按钮
+        const adminButtons = document.querySelectorAll('.admin-actions button');
+        adminButtons.forEach(button => {
+            button.style.pointerEvents = 'auto';
+            button.style.cursor = 'pointer';
+            button.disabled = false;
+            
+            // 确保有点击事件
+            if (!button.onclick) {
+                const buttonText = button.textContent.trim();
+                if (buttonText.includes('物品管理')) {
+                    button.onclick = () => this.manageItems();
+                } else if (buttonText.includes('用户管理')) {
+                    button.onclick = () => this.manageUsers();
+                } else if (buttonText.includes('数据分析')) {
+                    button.onclick = () => this.viewAnalytics();
+                } else if (buttonText.includes('系统设置')) {
+                    button.onclick = () => this.systemSettings();
+                }
+            }
+        });
+    }
+    
+    fixFormButtons() {
+        // 修复表单按钮
+        const formButtons = document.querySelectorAll('.btn-primary, .btn-secondary, .search-input-group button');
+        formButtons.forEach(button => {
+            button.style.pointerEvents = 'auto';
+            button.style.cursor = 'pointer';
+            button.disabled = false;
+        });
+    }
+    
+    // 个人中心按钮功能
+    showMyPosts() {
+        alert('我的发布功能');
+    }
+    
+    editProfile() {
+        alert('编辑资料功能');
+    }
+    
+    showHelp() {
+        alert('使用帮助功能');
+    }
+    
+    // 管理员按钮功能
+    manageItems() {
+        alert('物品管理功能');
+    }
+    
+    manageUsers() {
+        alert('用户管理功能');
+    }
+    
+    viewAnalytics() {
+        alert('数据分析功能');
+    }
+    
+    systemSettings() {
+        alert('系统设置功能');
     }
 
     // 集成高级功能
@@ -138,6 +237,33 @@ class LostFoundApp {
                 const targetPage = link.getAttribute('href').replace('#', '');
                 this.showPage(targetPage);
             });
+        });
+        
+        // 确保导航按钮可以点击
+        this.ensureNavButtonsClickable();
+    }
+    
+    ensureNavButtonsClickable() {
+        // 确保所有导航按钮可以点击
+        const navButtons = document.querySelectorAll('.nav-actions button');
+        navButtons.forEach(button => {
+            // 移除可能阻止点击的样式
+            button.style.pointerEvents = 'auto';
+            button.style.cursor = 'pointer';
+            button.style.zIndex = '100';
+            
+            // 确保按钮不在禁用状态
+            button.disabled = false;
+            
+            // 添加点击事件监听器（如果还没有）
+            if (!button.hasAttribute('data-click-fixed')) {
+                const originalOnClick = button.onclick;
+                if (originalOnClick) {
+                    // 保留原始onclick
+                    button.setAttribute('data-original-onclick', 'true');
+                }
+                button.setAttribute('data-click-fixed', 'true');
+            }
         });
     }
 

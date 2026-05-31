@@ -53,23 +53,41 @@ body {
     border: none;
     padding: 0.8rem 1.5rem;
     border-radius: 25px;
-    cursor: pointer;
+    cursor: pointer !important;
     font-weight: 600;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    pointer-events: auto !important;
 }
 
-.nav-actions button:hover {
+.nav-actions button:hover,
+.nav-actions button:active,
+.nav-actions button:focus {
     background: #45a049;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    outline: none;
 }
 
 .nav-actions button.active {
     background: #2196F3;
     box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.nav-actions button:disabled {
+    background: #cccccc;
+    cursor: not-allowed !important;
+    transform: none;
+    box-shadow: none;
 }
 
 /* 校园地图导航按钮特殊样式 */
@@ -337,15 +355,32 @@ body {
     border: none;
     padding: 1rem 2rem;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: pointer !important;
     font-size: 1.1rem;
     font-weight: 600;
     transition: all 0.3s;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    pointer-events: auto !important;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
     background: #45a049;
     transform: translateY(-2px);
+    outline: none;
+}
+
+.btn-primary:disabled {
+    background: #cccccc;
+    cursor: not-allowed !important;
+    transform: none;
 }
 
 .btn-secondary {
@@ -354,15 +389,32 @@ body {
     border: none;
     padding: 1rem 2rem;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: pointer !important;
     font-size: 1.1rem;
     font-weight: 600;
     transition: all 0.3s;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    pointer-events: auto !important;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:active,
+.btn-secondary:focus {
     background: #5a6268;
     transform: translateY(-2px);
+    outline: none;
+}
+
+.btn-secondary:disabled {
+    background: #cccccc;
+    cursor: not-allowed !important;
+    transform: none;
 }
 
 /* 搜索页面样式 */
@@ -406,8 +458,31 @@ body {
     border: none;
     padding: 1rem 2rem;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: pointer !important;
     font-weight: 600;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    transition: all 0.3s;
+    pointer-events: auto !important;
+}
+
+.search-input-group button:hover,
+.search-input-group button:active,
+.search-input-group button:focus {
+    background: #45a049;
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.search-input-group button:disabled {
+    background: #cccccc;
+    cursor: not-allowed !important;
+    transform: none;
 }
 
 .search-filters {
@@ -495,9 +570,17 @@ body {
     border: none;
     padding: 1rem 2rem;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: pointer !important;
     font-weight: 600;
     transition: all 0.3s;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    pointer-events: auto !important;
 }
 
 .profile-actions button:hover {
@@ -557,9 +640,17 @@ body {
     border: none;
     padding: 1rem;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: pointer !important;
     font-weight: 600;
     transition: all 0.3s;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    pointer-events: auto !important;
 }
 
 .admin-actions button:hover {

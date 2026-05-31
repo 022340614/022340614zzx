@@ -312,6 +312,7 @@
     <script src="js/hbmzu-map.js"></script>
     <script src="js/app-integration.js"></script>
     <script src="js/sw-register.js"></script>
+    <script src="js/button-diagnostic.js"></script>
 
     <!-- 初始化应用 -->
     <script>
@@ -351,7 +352,87 @@
             
             // 更新导航状态
             updateNavState(sectionId);
+            
+            // 修复当前section的按钮
+            setTimeout(() => fixCurrentSectionButtons(), 100);
         }
+        
+        // 修复按钮点击问题的全局函数
+        function fixAllButtons() {
+            console.log('开始修复所有按钮...');
+            
+            // 修复导航按钮
+            document.querySelectorAll('.nav-actions button').forEach(btn => {
+                fixButton(btn);
+            });
+            
+            // 修复个人中心按钮
+            document.querySelectorAll('.profile-actions button').forEach(btn => {
+                fixButton(btn);
+            });
+            
+            // 修复管理员按钮
+            document.querySelectorAll('.admin-actions button').forEach(btn => {
+                fixButton(btn);
+            });
+            
+            // 修复表单按钮
+            document.querySelectorAll('.btn-primary, .btn-secondary, .search-input-group button').forEach(btn => {
+                fixButton(btn);
+            });
+            
+            console.log('按钮修复完成');
+        }
+        
+        function fixButton(button) {
+            if (!button) return;
+            
+            // 确保按钮可点击
+            button.style.pointerEvents = 'auto';
+            button.style.cursor = 'pointer';
+            button.style.zIndex = '100';
+            button.disabled = false;
+            
+            // 移除可能阻止点击的类
+            button.classList.remove('disabled', 'inactive', 'hidden');
+            
+            // 确保按钮可见
+            button.style.opacity = '1';
+            button.style.visibility = 'visible';
+            button.style.display = 'flex';
+            
+            // 添加点击反馈
+            if (!button.hasAttribute('data-click-fixed')) {
+                button.addEventListener('click', function(e) {
+                    console.log('按钮被点击:', this.textContent.trim());
+                });
+                button.setAttribute('data-click-fixed', 'true');
+            }
+        }
+        
+        function fixCurrentSectionButtons() {
+            const activeSection = document.querySelector('.section.active');
+            if (!activeSection) return;
+            
+            // 修复当前活动section中的所有按钮
+            activeSection.querySelectorAll('button').forEach(btn => {
+                fixButton(btn);
+            });
+        }
+        
+        // 页面加载后自动修复按钮
+        setTimeout(() => {
+            fixAllButtons();
+            
+            // 每5秒检查一次按钮状态
+            setInterval(() => {
+                const brokenButtons = document.querySelectorAll('button[disabled], button[style*="pointer-events: none"], button[style*="opacity: 0"]');
+                if (brokenButtons.length > 0) {
+                    console.log('发现', brokenButtons.length, '个可能无法点击的按钮，正在修复...');
+                    brokenButtons.forEach(fixButton);
+                }
+            }, 5000);
+        }, 2000);
 
         function updateNavState(sectionId) {
             // 更新导航按钮状态
