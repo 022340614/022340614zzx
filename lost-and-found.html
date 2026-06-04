@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学院失物招领系统 - 022340614</title>
+    <meta name="description" content="学院失物招领网站，支持用户注册登录、发布启事、搜索筛选、留言沟通和管理员后台管理">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="lost-found-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .logo-sub {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* 主要内容区域 */
+        .main {
+            padding: 2rem 0;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0da271;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* 搜索栏 */
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* 启事列表 */
+        .notice-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .notice-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .notice-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .notice-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: var(--bg-light);
+        }
+
+        .notice-content {
+            padding: 1.5rem;
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .notice-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .notice-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .notice-type.lost {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .notice-type.found {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .notice-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .notice-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .notice-description {
+            color: var(--text);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .notice-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .notice-contact {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        /* 详情页样式 */
+        .notice-detail {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .detail-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+        }
+
+        .detail-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: var(--radius);
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* 留言区 */
+        .comments-section {
+            margin-top: 3rem;
+        }
+
+        .comment-form {
+            margin-bottom: 2rem;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .comment-item {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .comment-time {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .comment-content {
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* 管理员面板 */
+        .admin-panel {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            min-height: 600px;
+        }
+
+        .admin-sidebar {
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .admin-menu {
+            list-style: none;
+        }
+
+        .admin-menu-item {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .admin-menu-item:hover {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .admin-menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .admin-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .admin-table th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .admin-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--error);
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            color: var(--text-light);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .notice-list {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sidebar {
+                order: 2;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1rem;
+            }
+
+            .detail-info {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 1rem;
+                width: 95%;
+            }
+        }
+
+        /* 工具类 */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .justify-content-between {
+            justify-content: space-between;
+        }
+
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+        .gap-3 { gap: 1.5rem; }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 状态标签 */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-approved {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-urgent {
+            background: #fef3c7;
+            color: #d97706;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">🔍</div>
+                    <div>
+                        <div class="logo-text">学院失物招领系统</div>
+                        <div class="logo-sub">022340614</div>
+                    </div>
+                </a>
+                
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">
+                        <i class="fas fa-home"></i> 首页
+                    </a>
+                    <a href="#lost" class="nav-link">
+                        <i class="fas fa-search"></i> 失物招领
+                    </a>
+                    <a href="#publish" class="nav-link">
+                        <i class="fas fa-plus-circle"></i> 发布启事
+                    </a>
+                    <a href="#admin" class="nav-link">
+                        <i class="fas fa-cog"></i> 管理后台
+                    </a>
+                </nav>
+                
+                <div class="user-info">
+                    <div class="user-avatar">访</div>
+                    <div>
+                        <div class="d-flex align-items-center gap-1">
+                            <a href="#login" class="btn btn-outline btn-small">登录</a>
+                            <a href="#register" class="btn btn-primary btn-small">注册</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="main">
+        <div class="container">
+            <!-- 首页 -->
+            <section id="home" class="section active">
+                <div class="hero">
+                    <h1>学院失物招领系统</h1>
+                    <p>帮助您快速找回丢失物品，或归还捡到的物品</p>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a href="#lost" class="btn btn-primary">
+                            <i class="fas fa-search"></i> 查找失物
+                        </a>
+                        <a href="#found" class="btn btn-secondary">
+                            <i class="fas fa-eye"></i> 查看招领
+                        </a>
+                        <a href="#publish" class="btn btn-success">
+                            <i class="fas fa-plus"></i> 发布启事
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 快速搜索 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-search"></i> 快速搜索
+                        </h2>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" class="form-control search-input" placeholder="输入物品名称、地点或描述...">
+                        <select class="form-select" style="width: 150px;">
+                            <option value="">所有分类</option>
+                            <option value="electronics">电子产品</option>
+                            <option value="books">书籍资料</option>
+                            <option value="clothing">衣物饰品</option>
+                            <option value="cards">证件卡片</option>
+                            <option value="others">其他物品</option>
+                        </select>
+                        <select class="form-select" style="width: 150px;">
+                            <option value="">所有类型</option>
+                            <option value="lost">失物启事</option>
+                            <option value="found">招领启事</option>
+                        </select>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 最新启事 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-bell"></i> 最新启事
+                        </h2>
+                        <a href="#all" class="btn btn-outline">查看全部</a>
+                    </div>
+                    <div class="notice-list" id="latest-notices">
+                        <!-- 动态加载的启事卡片 -->
+                    </div>
+                </div>
+
+                <!-- 统计数据 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-bar"></i> 系统统计
+                        </h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-notices">0</div>
+                            <div class="stat-label">总启事数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="lost-count">0</div>
+                            <div class="stat-label">失物启事</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="found-count">0</div>
+                            <div class="stat-label">招领启事</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="solved-count">0</div>
+                            <div class="stat-label">已解决</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 失物招领列表 -->
+            <section id="lost" class="section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-search"></i> 失物招领
+                        </h2>
+                        <div class="filter-group">
+                            <select class="form-select" id="category-filter">
+                                <option value="">所有分类</option>
+                                <option value="electronics">电子产品</option>
+                                <option value="books">书籍资料</option>
+                                <option value="clothing">衣物饰品</option>
+                                <option value="cards">证件卡片</option>
+                                <option value="others">其他物品</option>
+                            </select>
+                            <select class="form-select" id="type-filter">
+                                <option value="">所有类型</option>
+                                <option value="lost">失物启事</option>
+                                <option value="found">招领启事</option>
+                            </select>
+                            <select class="form-select" id="time-filter">
+                                <option value="">发布时间</option>
+                                <option value="today">今天</option>
+                                <option value="week">本周</option>
+                                <option value="month">本月</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="notice-list" id="notices-list">
+                        <!-- 动态加载的启事列表 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 发布启事 -->
+            <section id="publish" class="section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-plus-circle"></i> 发布启事
+                        </h2>
+                    </div>
+                    <form id="publish-form">
+                        <div class="form-group">
+                            <label class="form-label">启事类型</label>
+                            <div class="d-flex gap-2">
+                                <label class="form-check">
+                                    <input type="radio" name="notice-type" value="lost" checked>
+                                    <span>失物启事</span>
+                                </label>
+                                <label class="form-check">
+                                    <input type="radio" name="notice-type" value="found">
+                                    <span>招领启事</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">物品名称 *</label>
+                            <input type="text" class="form-control" id="item-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">物品分类 *</label>
+                            <select class="form-select" id="item-category" required>
+                                <option value="">请选择分类</option>
+                                <option value="electronics">电子产品</option>
+                                <option value="books">书籍资料</option>
+                                <option value="clothing">衣物饰品</option>
+                                <option value="cards">证件卡片</option>
+                                <option value="others">其他物品</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">丢失/捡拾时间 *</label>
+                            <input type="datetime-local" class="form-control" id="item-time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">地点 *</label>
+                            <input type="text" class="form-control" id="item-location" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">详细描述 *</label>
+                            <textarea class="form-control form-textarea" id="item-description" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">联系方式 *</label>
+                            <input type="text" class="form-control" id="contact-info" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">上传图片</label>
+                            <input type="file" class="form-control" id="item-image" accept="image/*">
+                            <small class="text-muted">支持 JPG、PNG 格式，最大 5MB</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-check">
+                                <input type="checkbox" id="urgent">
+                                <span>紧急启事（置顶显示）</span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> 发布启事
+                            </button>
+                            <button type="reset" class="btn btn-outline">
+                                <i class="fas fa-redo"></i> 重置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 详情页 -->
+            <section id="detail" class="section hidden">
+                <div class="card notice-detail">
+                    <div class="card-header">
+                        <h2 class="card-title" id="detail-title">
+                            <i class="fas fa-info-circle"></i> 启事详情
+                        </h2>
+                        <button class="btn btn-outline" onclick="history.back()">
+                            <i class="fas fa-arrow-left"></i> 返回
+                        </button>
+                    </div>
+
+                    <div id="detail-content">
+                        <!-- 动态加载的详情内容 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 管理员后台 -->
+            <section id="admin" class="section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-cog"></i> 管理员后台
+                        </h2>
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="admin-status">未登录</span>
+                            <button class="btn btn-primary btn-small" id="admin-login-btn">
+                                <i class="fas fa-sign-in-alt"></i> 管理员登录
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel hidden" id="admin-panel">
+                        <div class="admin-sidebar">
+                            <ul class="admin-menu">
+                                <li class="admin-menu-item active" data-tab="dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> 仪表板
+                                </li>
+                                <li class="admin-menu-item" data-tab="pending">
+                                    <i class="fas fa-clock"></i> 待审核
+                                </li>
+                                <li class="admin-menu-item" data-tab="all-notices">
+                                    <i class="fas fa-list"></i> 所有启事
+                                </li>
+                                <li class="admin-menu-item" data-tab="users">
+                                    <i class="fas fa-users"></i> 用户管理
+                                </li>
+                                <li class="admin-menu-item" data-tab="settings">
+                                    <i class="fas fa-sliders-h"></i> 系统设置
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="admin-content">
+                            <!-- 仪表板 -->
+                            <div class="admin-tab active" id="dashboard-tab">
+                                <h3 class="mb-3">系统概览</h3>
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-total">0</div>
+                                        <div class="stat-label">总启事数</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-pending">0</div>
+                                        <div class="stat-label">待审核</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-users">0</div>
+                                        <div class="stat-label">注册用户</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-solved">0</div>
+                                        <div class="stat-label">已解决</div>
+                                    </div>
+                                </div>
+
+                                <h3 class="mt-4 mb-3">最近活动</h3>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>时间</th>
+                                                <th>用户</th>
+                                                <th>操作</th>
+                                                <th>详情</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-activities">
+                                            <!-- 动态加载活动记录 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 待审核 -->
+                            <div class="admin-tab hidden" id="pending-tab">
+                                <h3 class="mb-3">待审核启事</h3>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>标题</th>
+                                                <th>类型</th>
+                                                <th>发布者</th>
+                                                <th>时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pending-list">
+                                            <!-- 动态加载待审核列表 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 所有启事 -->
+                            <div class="admin-tab hidden" id="all-notices-tab">
+                                <h3 class="mb-3">所有启事</h3>
+                                <div class="search-bar mb-3">
+                                    <input type="text" class="form-control search-input" placeholder="搜索启事...">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-search"></i> 搜索
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>标题</th>
+                                                <th>类型</th>
+                                                <th>状态</th>
+                                                <th>发布者</th>
+                                                <th>发布时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="all-notices-list">
+                                            <!-- 动态加载所有启事 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 用户管理 -->
+                            <div class="admin-tab hidden" id="users-tab">
+                                <h3 class="mb-3">用户管理</h3>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>用户名</th>
+                                                <th>邮箱</th>
+                                                <th>注册时间</th>
+                                                <th>发布数</th>
+                                                <th>状态</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="users-list">
+                                            <!-- 动态加载用户列表 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 系统设置 -->
+                            <div class="admin-tab hidden" id="settings-tab">
+                                <h3 class="mb-3">系统设置</h3>
+                                <form id="admin-settings">
+                                    <div class="form-group">
+                                        <label class="form-label">网站名称</label>
+                                        <input type="text" class="form-control" value="学院失物招领系统">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">自动审核</label>
+                                        <label class="form-check">
+                                            <input type="checkbox" checked>
+                                            <span>启用自动审核（新启事自动通过）</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">紧急启事置顶时间（天）</label>
+                                        <input type="number" class="form-control" value="7" min="1" max="30">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">启事保留时间（天）</label>
+                                        <input type="number" class="form-control" value="30" min="1" max="365">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> 保存设置
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 登录/注册模态框 -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="auth-title">用户登录</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="auth-username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-control" id="auth-password" required>
+                </div>
+                <div class="form-group hidden" id="auth-email-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-control" id="auth-email">
+                </div>
+                <div class="form-group hidden" id="auth-confirm-group">
+                    <label class="form-label">确认密码</label>
+                    <input type="password" class="form-control" id="auth-confirm">
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100" id="auth-submit">
+                        登录
+                    </button>
+                    <button type="button" class="btn btn-outline w-100" id="auth-switch">
+                        切换到注册
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理员登录模态框 -->
+    <div class="modal" id="admin-auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">管理员登录</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="admin-auth-form">
+                <div class="form-group">
+                    <label class="form-label">管理员账号</label>
+                    <input type="text" class="form-control" id="admin-username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-control" id="admin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>学院失物招领系统</h3>
+                    <p>帮助师生快速找回丢失物品，共建和谐校园环境。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#lost">失物招领</a></li>
+                        <li><a href="#publish">发布启事</a></li>
+                        <li><a href="#admin">管理后台</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我们</h3>
+                    <p>邮箱：support@campus.edu</p>
+                    <p>电话：123-456-7890</p>
+                    <p>地址：学院行政楼101室</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 学院失物招领系统. 学号：022340614</p>
+                <p class="copyright">本系统仅用于校园内部使用，请妥善保管个人信息。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 模拟数据
+        const mockNotices = [
+            {
+                id: 1,
+                type: 'lost',
+                title: '丢失校园卡',
+                category: 'cards',
+                description: '在图书馆附近丢失校园卡，卡号为2023123456，姓名张三。如有拾到请联系。',
+                location: '图书馆二楼',
+                time: '2024-06-01 14:30',
+                contact: '13800138000',
+                image: 'https://via.placeholder.com/400x300/667eea/ffffff?text=校园卡',
+                urgent: true,
+                status: 'approved',
+                author: '张三',
+                createdAt: '2024-06-01 15:00',
+                comments: [
+                    { id: 1, author: '李四', content: '我在图书馆看到一张卡，请联系我', time: '2024-06-01 16:30' },
+                    { id: 2, author: '张三', content: '非常感谢！已经联系您了', time: '2024-06-01 17:00' }
+                ]
+            },
+            {
+                id: 2,
+                type: 'found',
+                title: '捡到黑色钱包',
+                category: 'others',
+                description: '在食堂门口捡到一个黑色钱包，内有身份证和银行卡若干。',
+                location: '食堂门口',
+                time: '2024-06-02 12:00',
+                contact: '13900139000',
+                image: 'https://via.placeholder.com/400x300/764ba2/ffffff?text=钱包',
+                urgent: false,
+                status: 'approved',
+                author: '王五',
+                createdAt: '2024-06-02 12:30',
+                comments: []
+            },
+            {
+                id: 3,
+                type: 'lost',
+                title: '丢失笔记本电脑',
+                category: 'electronics',
+                description: '在教室丢失一台银色MacBook Pro，型号2023款，内有重要学习资料。',
+                location: '教学楼301',
+                time: '2024-06-03 09:00',
+                contact: '13700137000',
+                image: 'https://via.placeholder.com/400x300/06b6d4/ffffff?text=笔记本电脑',
+                urgent: true,
+                status: 'approved',
+                author: '赵六',
+                createdAt: '2024-06-03 10:00',
+                comments: []
+            },
+            {
+                id: 4,
+                type: 'found',
+                title: '捡到课本',
+                category: 'books',
+                description: '在操场捡到一本《高等数学》教材，封面写有姓名。',
+                location: '操场看台',
+                time: '2024-06-04 16:00',
+                contact: '13600136000',
+                image: 'https://via.placeholder.com/400x300/10b981/ffffff?text=课本',
+                urgent: false,
+                status: 'pending',
+                author: '钱七',
+                createdAt: '2024-06-04 16:30',
+                comments: []
+            }
+        ];
+
+        const mockUsers = [
+            { id: 1, username: '张三', email: 'zhangsan@campus.edu', registered: '2024-01-15', notices: 3, status: 'active' },
+            { id: 2, username: '李四', email: 'lisi@campus.edu', registered: '2024-02-20', notices: 2, status: 'active' },
+            { id: 3, username: '王五', email: 'wangwu@campus.edu', registered: '2024-03-10', notices: 1, status: 'active' },
+            { id: 4, username: '赵六', email: 'zhaoliu@campus.edu', registered: '2024-04-05', notices: 2, status: 'active' },
+            { id: 5, username: '钱七', email: 'qianqi@campus.edu', registered: '2024-05-12', notices: 1, status: 'active' }
+        ];
+
+        // 状态管理
+        let currentUser = null;
+        let isAdmin = false;
+        let currentSection = 'home';
+        let isLoginMode = true;
+
+        // DOM 加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            loadHomePage();
+            initAuthModal();
+            initAdminPanel();
+            initPublishForm();
+        });
+
+        // 初始化导航
+        function initNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('href').substring(1);
+                    showSection(sectionId);
+                    
+                    // 更新活动状态
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // 登录/注册按钮
+            document.querySelectorAll('a[href="#login"], a[href="#register"]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const isRegister = this.getAttribute('href') === '#register';
+                    showAuthModal(isRegister);
+                });
+            });
+        }
+
+        // 显示指定区域
+        function showSection(sectionId) {
+            // 隐藏所有区域
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // 显示目标区域
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                currentSection = sectionId;
+                
+                // 加载对应区域的内容
+                switch(sectionId) {
+                    case 'home':
+                        loadHomePage();
+                        break;
+                    case 'lost':
+                        loadNoticesList();
+                        break;
+                    case 'publish':
+                        // 发布页面已初始化
+                        break;
+                    case 'admin':
+                        loadAdminPanel();
+                        break;
+                }
+            }
+        }
+
+        // 加载首页
+        function loadHomePage() {
+            // 更新统计数据
+            updateStats();
+            
+            // 加载最新启事
+            loadLatestNotices();
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            const total = mockNotices.length;
+            const lostCount = mockNotices.filter(n => n.type === 'lost').length;
+            const foundCount = mockNotices.filter(n => n.type === 'found').length;
+            const solvedCount = mockNotices.filter(n => n.status === 'approved' && n.comments.length > 0).length;
+
+            document.getElementById('total-notices').textContent = total;
+            document.getElementById('lost-count').textContent = lostCount;
+            document.getElementById('found-count').textContent = foundCount;
+            document.getElementById('solved-count').textContent = solvedCount;
+        }
+
+        // 加载最新启事
+        function loadLatestNotices() {
+            const container = document.getElementById('latest-notices');
+            if (!container) return;
+
+            // 按时间排序，取前6个
+            const latestNotices = [...mockNotices]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 6);
+
+            container.innerHTML = latestNotices.map(notice => `
+                <div class="notice-card" onclick="showNoticeDetail(${notice.id})">
+                    <img src="${notice.image}" alt="${notice.title}" class="notice-image">
+                    <div class="notice-content">
+                        <div class="notice-header">
+                            <div>
+                                <h3 class="notice-title">${notice.title}</h3>
+                                <div class="notice-meta">
+                                    <span class="notice-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i> ${notice.location}
+                                    </span>
+                                    <span class="notice-meta-item">
+                                        <i class="fas fa-clock"></i> ${formatTime(notice.time)}
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="notice-type ${notice.type}">
+                                ${notice.type === 'lost' ? '失物' : '招领'}
+                            </span>
+                        </div>
+                        <p class="notice-description">${notice.description.substring(0, 100)}...</p>
+                        <div class="notice-footer">
+                            <span class="notice-contact">
+                                <i class="fas fa-user"></i> ${notice.author}
+                            </span>
+                            <span class="notice-meta-item">
+                                <i class="fas fa-comment"></i> ${notice.comments.length}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 加载启事列表
+        function loadNoticesList() {
+            const container = document.getElementById('notices-list');
+            if (!container) return;
+
+            // 获取筛选条件
+            const category = document.getElementById('category-filter').value;
+            const type = document.getElementById('type-filter').value;
+            const timeFilter = document.getElementById('time-filter').value;
+
+            // 筛选启事
+            let filteredNotices = mockNotices.filter(notice => {
+                if (category && notice.category !== category) return false;
+                if (type && notice.type !== type) return false;
+                if (timeFilter) {
+                    const noticeDate = new Date(notice.createdAt);
+                    const now = new Date();
+                    const diffTime = now - noticeDate;
+                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                    
+                    switch(timeFilter) {
+                        case 'today':
+                            return diffDays < 1;
+                        case 'week':
+                            return diffDays < 7;
+                        case 'month':
+                            return diffDays < 30;
+                    }
+                }
+                return true;
+            });
+
+            // 按紧急程度和时间排序
+            filteredNotices.sort((a, b) => {
+                if (a.urgent && !b.urgent) return -1;
+                if (!a.urgent && b.urgent) return 1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            container.innerHTML = filteredNotices.map(notice => `
+                <div class="notice-card" onclick="showNoticeDetail(${notice.id})">
+                    <img src="${notice.image}" alt="${notice.title}" class="notice-image">
+                    <div class="notice-content">
+                        <div class="notice-header">
+                            <div>
+                                <h3 class="notice-title">
+                                    ${notice.urgent ? '🔴 ' : ''}${notice.title}
+                                </h3>
+                                <div class="notice-meta">
+                                    <span class="notice-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i> ${notice.location}
+                                    </span>
+                                    <span class="notice-meta-item">
+                                        <i class="fas fa-clock"></i> ${formatTime(notice.time)}
+                                    </span>
+                                    <span class="notice-meta-item">
+                                        <i class="fas fa-tag"></i> ${getCategoryName(notice.category)}
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="notice-type ${notice.type}">
+                                ${notice.type === 'lost' ? '失物' : '招领'}
+                            </span>
+                        </div>
+                        <p class="notice-description">${notice.description.substring(0, 100)}...</p>
+                        <div class="notice-footer">
+                            <span class="notice-contact">
+                                <i class="fas fa-user"></i> ${notice.author}
+                            </span>
+                            <div class="d-flex gap-1">
+                                <span class="status-badge ${notice.status === 'pending' ? 'status-pending' : 'status-approved'}">
+                                    ${notice.status === 'pending' ? '待审核' : '已发布'}
+                                </span>
+                                <span class="notice-meta-item">
+                                    <i class="fas fa-comment"></i> ${notice.comments.length}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 显示启事详情
+        function showNoticeDetail(id) {
+            const notice = mockNotices.find(n => n.id === id);
+            if (!notice) return;
+
+            showSection('detail');
+            
+            const container = document.getElementById('detail-content');
+            container.innerHTML = `
+                <div class="mb-4">
+                    <img src="${notice.image}" alt="${notice.title}" class="detail-image">
+                </div>
+                
+                <div class="detail-info">
+                    <div class="info-item">
+                        <div class="info-label">物品名称</div>
+                        <div class="info-value">${notice.title}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">启事类型</div>
+                        <div class="info-value">
+                            <span class="notice-type ${notice.type}">
+                                ${notice.type === 'lost' ? '失物启事' : '招领启事'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">物品分类</div>
+                        <div class="info-value">${getCategoryName(notice.category)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">${notice.type === 'lost' ? '丢失时间' : '捡拾时间'}</div>
+                        <div class="info-value">${formatDateTime(notice.time)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">${notice.type === 'lost' ? '丢失地点' : '捡拾地点'}</div>
+                        <div class="info-value">${notice.location}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">联系方式</div>
+                        <div class="info-value">${notice.contact}</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="mb-2">详细描述</h3>
+                    <p>${notice.description}</p>
+                </div>
+
+                <div class="comments-section">
+                    <h3 class="mb-3">留言沟通 (${notice.comments.length})</h3>
+                    
+                    <div class="comment-form mb-4">
+                        <textarea class="form-control form-textarea" placeholder="请输入留言内容..." id="comment-input"></textarea>
+                        <button class="btn btn-primary mt-2" onclick="addComment(${notice.id})">
+                            <i class="fas fa-paper-plane"></i> 发表留言
+                        </button>
+                    </div>
+
+                    <div class="comment-list" id="comments-list-${notice.id}">
+                        ${notice.comments.map(comment => `
+                            <div class="comment-item">
+                                <div class="comment-header">
+                                    <div class="comment-author">
+                                        <div class="comment-avatar">${comment.author.charAt(0)}</div>
+                                        <div>
+                                            <strong>${comment.author}</strong>
+                                            <div class="comment-time">${formatDateTime(comment.time)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comment-content">${comment.content}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 添加留言
+        function addComment(noticeId) {
+            const input = document.getElementById('comment-input');
+            const content = input.value.trim();
+            
+            if (!content) {
+                alert('请输入留言内容');
+                return;
+            }
+
+            if (!currentUser) {
+                showAuthModal(false);
+                return;
+            }
+
+            const notice = mockNotices.find(n => n.id === noticeId);
+            if (notice) {
+                const newComment = {
+                    id: notice.comments.length + 1,
+                    author: currentUser.username,
+                    content: content,
+                    time: new Date().toISOString()
+                };
+                
+                notice.comments.push(newComment);
+                input.value = '';
+                
+                // 重新加载评论列表
+                const commentsList = document.getElementById(`comments-list-${noticeId}`);
+                if (commentsList) {
+                    commentsList.innerHTML += `
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-author">
+                                    <div class="comment-avatar">${newComment.author.charAt(0)}</div>
+                                    <div>
+                                        <strong>${newComment.author}</strong>
+                                        <div class="comment-time">${formatDateTime(newComment.time)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-content">${newComment.content}</div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // 初始化认证模态框
+        function initAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            const title = document.getElementById('auth-title');
+            const submitBtn = document.getElementById('auth-submit');
+            const switchBtn = document.getElementById('auth-switch');
+            const emailGroup = document.getElementById('auth-email-group');
+            const confirmGroup = document.getElementById('auth-confirm-group');
+            const form = document.getElementById('auth-form');
+
+            switchBtn.addEventListener('click', function() {
+                isLoginMode = !isLoginMode;
+                
+                if (isLoginMode) {
+                    title.textContent = '用户登录';
+                    submitBtn.textContent = '登录';
+                    switchBtn.textContent = '切换到注册';
+                    emailGroup.classList.add('hidden');
+                    confirmGroup.classList.add('hidden');
+                } else {
+                    title.textContent = '用户注册';
+                    submitBtn.textContent = '注册';
+                    switchBtn.textContent = '切换到登录';
+                    emailGroup.classList.remove('hidden');
+                    confirmGroup.classList.remove('hidden');
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('auth-username').value;
+                const password = document.getElementById('auth-password').value;
+                
+                if (isLoginMode) {
+                    // 模拟登录
+                    currentUser = {
+                        id: 1,
+                        username: username,
+                        email: 'user@campus.edu'
+                    };
+                    
+                    updateUserInfo();
+                    closeModal();
+                    alert('登录成功！');
+                } else {
+                    const email = document.getElementById('auth-email').value;
+                    const confirm = document.getElementById('auth-confirm').value;
+                    
+                    if (password !== confirm) {
+                        alert('两次输入的密码不一致');
+                        return;
+                    }
+                    
+                    // 模拟注册
+                    currentUser = {
+                        id: mockUsers.length + 1,
+                        username: username,
+                        email: email
+                    };
+                    
+                    mockUsers.push({
+                        id: currentUser.id,
+                        username: username,
+                        email: email,
+                        registered: new Date().toISOString().split('T')[0],
+                        notices: 0,
+                        status: 'active'
+                    });
+                    
+                    updateUserInfo();
+                    closeModal();
+                    alert('注册成功！');
+                }
+            });
+        }
+
+        // 显示认证模态框
+        function showAuthModal(isRegister = false) {
+            const modal = document.getElementById('auth-modal');
+            const title = document.getElementById('auth-title');
+            const submitBtn = document.getElementById('auth-submit');
+            const switchBtn = document.getElementById('auth-switch');
+            const emailGroup = document.getElementById('auth-email-group');
+            const confirmGroup = document.getElementById('auth-confirm-group');
+            const form = document.getElementById('auth-form');
+
+            isLoginMode = !isRegister;
+            
+            if (isLoginMode) {
+                title.textContent = '用户登录';
+                submitBtn.textContent = '登录';
+                switchBtn.textContent = '切换到注册';
+                emailGroup.classList.add('hidden');
+                confirmGroup.classList.add('hidden');
+            } else {
+                title.textContent = '用户注册';
+                submitBtn.textContent = '注册';
+                switchBtn.textContent = '切换到登录';
+                emailGroup.classList.remove('hidden');
+                confirmGroup.classList.remove('hidden');
+            }
+            
+            form.reset();
+            modal.classList.add('active');
+        }
+
+        // 初始化发布表单
+        function initPublishForm() {
+            const form = document.getElementById('publish-form');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!currentUser) {
+                    showAuthModal(false);
+                    return;
+                }
+                
+                const type = document.querySelector('input[name="notice-type"]:checked').value;
+                const name = document.getElementById('item-name').value;
+                const category = document.getElementById('item-category').value;
+                const time = document.getElementById('item-time').value;
+                const location = document.getElementById('item-location').value;
+                const description = document.getElementById('item-description').value;
+                const contact = document.getElementById('contact-info').value;
+                const urgent = document.getElementById('urgent').checked;
+                const imageInput = document.getElementById('item-image');
+                
+                // 验证必填字段
+                if (!name || !category || !time || !location || !description || !contact) {
+                    alert('请填写所有必填字段');
+                    return;
+                }
+                
+                // 创建新启事
+                const newNotice = {
+                    id: mockNotices.length + 1,
+                    type: type,
+                    title: name,
+                    category: category,
+                    description: description,
+                    location: location,
+                    time: time.replace('T', ' '),
+                    contact: contact,
+                    image: imageInput.files.length > 0 ? 
+                        URL.createObjectURL(imageInput.files[0]) : 
+                        `https://via.placeholder.com/400x300/${type === 'lost' ? '667eea' : '764ba2'}/ffffff?text=${encodeURIComponent(name)}`,
+                    urgent: urgent,
+                    status: 'pending',
+                    author: currentUser.username,
+                    createdAt: new Date().toISOString(),
+                    comments: []
+                };
+                
+                mockNotices.unshift(newNotice);
+                form.reset();
+                
+                // 更新用户发布数
+                const user = mockUsers.find(u => u.username === currentUser.username);
+                if (user) {
+                    user.notices++;
+                }
+                
+                alert('启事发布成功！等待管理员审核。');
+                showSection('home');
+                loadHomePage();
+            });
+        }
+
+        // 初始化管理员面板
+        function initAdminPanel() {
+            // 管理员登录按钮
+            document.getElementById('admin-login-btn').addEventListener('click', function() {
+                document.getElementById('admin-auth-modal').classList.add('active');
+            });
+            
+            // 管理员登录表单
+            document.getElementById('admin-auth-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('admin-username').value;
+                const password = document.getElementById('admin-password').value;
+                
+                // 模拟管理员登录（实际应用中需要后端验证）
+                if (username === 'admin' && password === 'admin123') {
+                    isAdmin = true;
+                    document.getElementById('admin-status').textContent = `管理员：${username}`;
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    document.getElementById('admin-auth-modal').classList.remove('active');
+                    loadAdminDashboard();
+                } else {
+                    alert('管理员账号或密码错误');
+                }
+            });
+            
+            // 管理员菜单切换
+            document.querySelectorAll('.admin-menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    
+                    // 更新活动菜单项
+                    document.querySelectorAll('.admin-menu-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 显示对应标签页
+                    document.querySelectorAll('.admin-tab').forEach(t => {
+                        t.classList.add('hidden');
+                    });
+                    document.getElementById(`${tab}-tab`).classList.remove('hidden');
+                    
+                    // 加载对应数据
+                    switch(tab) {
+                        case 'dashboard':
+                            loadAdminDashboard();
+                            break;
+                        case 'pending':
+                            loadPendingNotices();
+                            break;
+                        case 'all-notices':
+                            loadAllNotices();
+                            break;
+                        case 'users':
+                            loadUsersList();
+                            break;
+                    }
+                });
+            });
+            
+            // 管理员设置表单
+            document.getElementById('admin-settings').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('设置已保存');
+            });
+        }
+
+        // 加载管理员仪表板
+        function loadAdminDashboard() {
+            if (!isAdmin) return;
+            
+            document.getElementById('admin-total').textContent = mockNotices.length;
+            document.getElementById('admin-pending').textContent = mockNotices.filter(n => n.status === 'pending').length;
+            document.getElementById('admin-users').textContent = mockUsers.length;
+            document.getElementById('admin-solved').textContent = mockNotices.filter(n => n.status === 'approved' && n.comments.length > 0).length;
+            
+            // 加载最近活动
+            const activities = [
+                { time: '刚刚', user: '张三', action: '发布了启事', detail: '丢失校园卡' },
+                { time: '10分钟前', user: '李四', action: '发表了留言', detail: '在"丢失校园卡"下' },
+                { time: '1小时前', user: '管理员', action: '审核通过', detail: '捡到黑色钱包' },
+                { time: '2小时前', user: '王五', action: '注册账号', detail: '新用户注册' },
+                { time: '3小时前', user: '赵六', action: '发布了启事', detail: '丢失笔记本电脑' }
+            ];
+            
+            const container = document.getElementById('recent-activities');
+            container.innerHTML = activities.map(activity => `
+                <tr>
+                    <td>${activity.time}</td>
+                    <td>${activity.user}</td>
+                    <td>${activity.action}</td>
+                    <td>${activity.detail}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载待审核启事
+        function loadPendingNotices() {
+            if (!isAdmin) return;
+            
+            const pendingNotices = mockNotices.filter(n => n.status === 'pending');
+            const container = document.getElementById('pending-list');
+            
+            container.innerHTML = pendingNotices.map(notice => `
+                <tr>
+                    <td>${notice.id}</td>
+                    <td>${notice.title}</td>
+                    <td><span class="notice-type ${notice.type}">${notice.type === 'lost' ? '失物' : '招领'}</span></td>
+                    <td>${notice.author}</td>
+                    <td>${formatDateTime(notice.createdAt)}</td>
+                    <td class="table-actions">
+                        <button class="btn btn-success btn-small" onclick="approveNotice(${notice.id})">
+                            <i class="fas fa-check"></i> 通过
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="rejectNotice(${notice.id})">
+                            <i class="fas fa-times"></i> 拒绝
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="showNoticeDetail(${notice.id})">
+                            <i class="fas fa-eye"></i> 查看
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载所有启事
+        function loadAllNotices() {
+            if (!isAdmin) return;
+            
+            const container = document.getElementById('all-notices-list');
+            
+            container.innerHTML = mockNotices.map(notice => `
+                <tr>
+                    <td>${notice.id}</td>
+                    <td>${notice.title}</td>
+                    <td><span class="notice-type ${notice.type}">${notice.type === 'lost' ? '失物' : '招领'}</span></td>
+                    <td>
+                        <span class="status-badge ${notice.status === 'pending' ? 'status-pending' : notice.status === 'approved' ? 'status-approved' : 'status-rejected'}">
+                            ${notice.status === 'pending' ? '待审核' : notice.status === 'approved' ? '已发布' : '已拒绝'}
+                        </span>
+                        ${notice.urgent ? '<span class="status-badge status-urgent ml-1">紧急</span>' : ''}
+                    </td>
+                    <td>${notice.author}</td>
+                    <td>${formatDateTime(notice.createdAt)}</td>
+                    <td class="table-actions">
+                        ${notice.status === 'pending' ? `
+                            <button class="btn btn-success btn-small" onclick="approveNotice(${notice.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="rejectNotice(${notice.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-outline btn-small" onclick="showNoticeDetail(${notice.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="toggleUrgent(${notice.id})">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="deleteNotice(${notice.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 加载用户列表
+        function loadUsersList() {
+            if (!isAdmin) return;
+            
+            const container = document.getElementById('users-list');
+            
+            container.innerHTML = mockUsers.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.registered}</td>
+                    <td>${user.notices}</td>
+                    <td>
+                        <span class="status-badge status-approved">${user.status}</span>
+                    </td>
+                    <td class="table-actions">
+                        <button class="btn btn-outline btn-small" onclick="editUser(${user.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="deleteUser(${user.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 管理员操作函数
+        function approveNotice(id) {
+            const notice = mockNotices.find(n => n.id === id);
+            if (notice) {
+                notice.status = 'approved';
+                alert('启事已审核通过');
+                loadPendingNotices();
+                loadAllNotices();
+                loadAdminDashboard();
+            }
+        }
+
+        function rejectNotice(id) {
+            const notice = mockNotices.find(n => n.id === id);
+            if (notice) {
+                notice.status = 'rejected';
+                alert('启事已拒绝');
+                loadPendingNotices();
+                loadAllNotices();
+                loadAdminDashboard();
+            }
+        }
+
+        function toggleUrgent(id) {
+            const notice = mockNotices.find(n => n.id === id);
+            if (notice) {
+                notice.urgent = !notice.urgent;
+                alert(`启事已${notice.urgent ? '设为紧急' : '取消紧急'}`);
+                loadAllNotices();
+            }
+        }
+
+        function deleteNotice(id) {
+            if (confirm('确定要删除这个启事吗？')) {
+                const index = mockNotices.findIndex(n => n.id === id);
+                if (index !== -1) {
+                    mockNotices.splice(index, 1);
+                    alert('启事已删除');
+                    loadAllNotices();
+                    loadAdminDashboard();
+                    loadHomePage();
+                }
+            }
+        }
+
+        function editUser(id) {
+            const user = mockUsers.find(u => u.id === id);
+            if (user) {
+                const newUsername = prompt('请输入新的用户名：', user.username);
+                if (newUsername) {
+                    user.username = newUsername;
+                    alert('用户信息已更新');
+                    loadUsersList();
+                }
+            }
+        }
+
+        function deleteUser(id) {
+            if (confirm('确定要删除这个用户吗？')) {
+                const index = mockUsers.findIndex(u => u.id === id);
+                if (index !== -1) {
+                    mockUsers.splice(index, 1);
+                    alert('用户已删除');
+                    loadUsersList();
+                    loadAdminDashboard();
+                }
+            }
+        }
+
+        // 加载管理员面板
+        function loadAdminPanel() {
+            if (isAdmin) {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadAdminDashboard();
+            }
+        }
+
+        // 更新用户信息显示
+        function updateUserInfo() {
+            const userInfo = document.querySelector('.user-info');
+            if (currentUser) {
+                userInfo.innerHTML = `
+                    <div class="user-avatar">${currentUser.username.charAt(0)}</div>
+                    <div>
+                        <div style="font-weight: 500;">${currentUser.username}</div>
+                        <div style="font-size: 0.875rem; color: var(--text-light);">已登录</div>
+                    </div>
+                `;
+            } else {
+                userInfo.innerHTML = `
+                    <div class="user-avatar">访</div>
+                    <div>
+                        <div class="d-flex align-items-center gap-1">
+                            <a href="#login" class="btn btn-outline btn-small">登录</a>
+                            <a href="#register" class="btn btn-primary btn-small">注册</a>
+                        </div>
+                    </div>
+                `;
+                
+                // 重新绑定登录/注册按钮事件
+                document.querySelectorAll('a[href="#login"], a[href="#register"]').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const isRegister = this.getAttribute('href') === '#register';
+                        showAuthModal(isRegister);
+                    });
+                });
+            }
+        }
+
+        // 工具函数
+        function formatTime(timeStr) {
+            const date = new Date(timeStr);
+            const now = new Date();
+            const diff = now - date;
+            const diffMinutes = Math.floor(diff / (1000 * 60));
+            const diffHours = Math.floor(diff / (1000 * 60 * 60));
+            const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (diffMinutes < 60) {
+                return `${diffMinutes}分钟前`;
+            } else if (diffHours < 24) {
+                return `${diffHours}小时前`;
+            } else if (diffDays < 7) {
+                return `${diffDays}天前`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        function formatDateTime(dateTimeStr) {
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString('zh-CN');
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                'electronics': '电子产品',
+                'books': '书籍资料',
+                'clothing': '衣物饰品',
+                'cards': '证件卡片',
+                'others': '其他物品'
+            };
+            return categories[category] || category;
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 全局点击事件关闭模态框
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                closeModal();
+            }
+        });
+
+        // 初始化筛选器事件
+        document.getElementById('category-filter')?.addEventListener('change', loadNoticesList);
+        document.getElementById('type-filter')?.addEventListener('change', loadNoticesList);
+        document.getElementById('time-filter')?.addEventListener('change', loadNoticesList);
+
+        // 初始化搜索功能
+        document.querySelector('.search-bar .btn-primary')?.addEventListener('click', function() {
+            const searchInput = document.querySelector('.search-bar .search-input');
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            if (searchTerm) {
+                const filtered = mockNotices.filter(notice => 
+                    notice.title.toLowerCase().includes(searchTerm) ||
+                    notice.description.toLowerCase().includes(searchTerm) ||
+                    notice.location.toLowerCase().includes(searchTerm)
+                );
+                
+                // 显示搜索结果
+                const container = document.getElementById('notices-list') || document.getElementById('latest-notices');
+                if (container) {
+                    container.innerHTML = filtered.map(notice => `
+                        <div class="notice-card" onclick="showNoticeDetail(${notice.id})">
+                            <img src="${notice.image}" alt="${notice.title}" class="notice-image">
+                            <div class="notice-content">
+                                <div class="notice-header">
+                                    <div>
+                                        <h3 class="notice-title">${notice.title}</h3>
+                                        <div class="notice-meta">
+                                            <span class="notice-meta-item">
+                                                <i class="fas fa-map-marker-alt"></i> ${notice.location}
+                                            </span>
+                                            <span class="notice-meta-item">
+                                                <i class="fas fa-clock"></i> ${formatTime(notice.time)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span class="notice-type ${notice.type}">
+                                        ${notice.type === 'lost' ? '失物' : '招领'}
+                                    </span>
+                                </div>
+                                <p class="notice-description">${notice.description.substring(0, 100)}...</p>
+                                <div class="notice-footer">
+                                    <span class="notice-contact">
+                                        <i class="fas fa-user"></i> ${notice.author}
+                                    </span>
+                                    <span class="notice-meta-item">
+                                        <i class="fas fa-comment"></i> ${notice.comments.length}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    if (filtered.length === 0) {
+                        container.innerHTML = '<div class="text-center" style="grid-column: 1/-1; padding: 2rem; color: var(--text-light);">未找到相关启事</div>';
+                    }
+                }
+            } else {
+                loadNoticesList();
+            }
+        });
+
+        // 搜索框回车键支持
+        document.querySelector('.search-bar .search-input')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.search-bar .btn-primary').click();
+            }
+        });
+    </script>
+    
+    <!-- 引入外部JavaScript文件 -->
+    <script src="lost-found-app.js"></script>
+    <script>
+        // 全局错误处理
+        window.addEventListener('error', function(event) {
+            console.error('全局错误:', event.error);
+            
+            // 显示用户友好的错误提示
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 9999;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            errorDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>系统出现错误，请刷新页面重试</span>
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 5000);
+        });
+
+        // 添加动画样式
+        if (!document.querySelector('#error-styles')) {
+            const style = document.createElement('style');
+            style.id = 'error-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 确保应用初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查应用是否已加载
+            if (typeof app === 'undefined') {
+                console.error('应用未正确加载，请检查JavaScript文件');
+                
+                // 显示错误提示
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #f59e0b;
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.75rem;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                    z-index: 9999;
+                    max-width: 400px;
+                    text-align: center;
+                `;
+                errorDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>应用加载失败，请刷新页面</span>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => errorDiv.remove(), 5000);
+            } else {
+                console.log('失物招领系统已成功加载');
+            }
+        });
+    </script>
+</body>
+</html>

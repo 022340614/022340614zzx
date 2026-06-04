@@ -1,55 +1,90 @@
 {
-    "name": "校园失物招领",
-    "short_name": "失物招领",
-    "description": "校园失物招领平台 - 帮助师生找回失物",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#4CAF50",
-    "orientation": "portrait",
-    "scope": "/",
-    "icons": [
+  "name": "学院失物招领系统",
+  "short_name": "失物招领",
+  "description": "校园失物招领平台，帮助师生快速找回丢失物品",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%234f46e5%22>🔍</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://via.placeholder.com/192x192/4f46e5/ffffff?text=🔍",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/4f46e5/ffffff?text=🔍",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity", "education"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "orientation": "portrait",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope": "/",
+  "screenshots": [
+    {
+      "src": "https://via.placeholder.com/1280x720/4f46e5/ffffff?text=校园失物招领系统",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://via.placeholder.com/750x1334/4f46e5/ffffff?text=校园失物招领系统",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "发布启事",
+      "short_name": "发布",
+      "description": "发布新的失物或招领启事",
+      "url": "/#publish",
+      "icons": [
         {
-            "src": "assets/icon-72x72.png",
-            "sizes": "72x72",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-96x96.png",
-            "sizes": "96x96",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-128x128.png",
-            "sizes": "128x128",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-144x144.png",
-            "sizes": "144x144",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-152x152.png",
-            "sizes": "152x152",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-384x384.png",
-            "sizes": "384x384",
-            "type": "image/png"
-        },
-        {
-            "src": "assets/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
+          "src": "https://via.placeholder.com/96x96/4f46e5/ffffff?text=➕",
+          "sizes": "96x96",
+          "type": "image/png"
         }
-    ],
-    "categories": ["utilities", "social"],
-    "lang": "zh-CN"
+      ]
+    },
+    {
+      "name": "查看启事",
+      "short_name": "查看",
+      "description": "浏览所有失物招领启事",
+      "url": "/#lost",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96x96/4f46e5/ffffff?text=🔍",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "管理后台",
+      "short_name": "管理",
+      "description": "管理员后台管理系统",
+      "url": "/#admin",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96x96/4f46e5/ffffff?text=⚙️",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

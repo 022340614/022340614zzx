@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学院失物招领系统 - 022340614</title>
+    <meta name="description" content="学院失物招领网站，支持用户注册登录、发布启事、搜索筛选、留言沟通和管理员后台管理">
+    
+    <!-- PWA配置 -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="失物招领">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192x192/4f46e5/ffffff?text=🔍">
+    
+    <!-- 样式表 -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="lost-found-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 图标 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">🔍</div>
+                    <div>
+                        <div class="logo-text">学院失物招领系统</div>
+                        <div class="logo-sub">022340614</div>
+                    </div>
+                </a>
+                
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">
+                        <i class="fas fa-home"></i> 首页
+                    </a>
+                    <a href="#lost" class="nav-link">
+                        <i class="fas fa-search"></i> 失物招领
+                    </a>
+                    <a href="#publish" class="nav-link">
+                        <i class="fas fa-plus-circle"></i> 发布启事
+                    </a>
+                    <a href="#admin" class="nav-link">
+                        <i class="fas fa-cog"></i> 管理后台
+                    </a>
+                </nav>
+                
+                <div class="user-info">
+                    <div class="user-avatar">访</div>
+                    <div>
+                        <div class="d-flex align-items-center gap-1">
+                            <a href="#login" class="btn btn-outline btn-small">登录</a>
+                            <a href="#register" class="btn btn-primary btn-small">注册</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="main">
+        <div class="container">
+            <!-- 首页 -->
+            <section id="home" class="section active">
+                <div class="hero">
+                    <h1>学院失物招领系统</h1>
+                    <p>帮助您快速找回丢失物品，或归还捡到的物品</p>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a href="#lost" class="btn btn-primary">
+                            <i class="fas fa-search"></i> 查找失物
+                        </a>
+                        <a href="#found" class="btn btn-secondary">
+                            <i class="fas fa-eye"></i> 查看招领
+                        </a>
+                        <a href="#publish" class="btn btn-success">
+                            <i class="fas fa-plus"></i> 发布启事
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 快速搜索 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-search"></i> 快速搜索
+                        </h2>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" class="form-control search-input" placeholder="输入物品名称、地点或描述...">
+                        <select class="form-select" id="search-category" style="width: 150px;">
+                            <option value="">所有分类</option>
+                            <option value="electronics">电子产品</option>
+                            <option value="books">书籍资料</option>
+                            <option value="clothing">衣物饰品</option>
+                            <option value="cards">证件卡片</option>
+                            <option value="others">其他物品</option>
+                        </select>
+                        <select class="form-select" id="search-type" style="width: 150px;">
+                            <option value="">所有类型</option>
+                            <option value="lost">失物启事</option>
+                            <option value="found">招领启事</option>
+                        </select>
+                        <button class="btn btn-primary" id="search-btn">
+                            <i class="fas fa-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 最新启事 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-bell"></i> 最新启事
+                        </h2>
+                        <a href="#all" class="btn btn-outline">查看全部</a>
+                    </div>
+                    <div class="notice-list" id="latest-notices">
+                        <!-- 动态加载的启事卡片 -->
+                    </div>
+                </div>
+
+                <!-- 统计数据 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-bar"></i> 系统统计
+                        </h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-notices">0</div>
+                            <div class="stat-label">总启事数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="lost-count">0</div>
+                            <div class="stat-label">失物启事</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="found-count">0</div>
+                            <div class="stat-label">招领启事</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="solved-count">0</div>
+                            <div class="stat-label">已解决</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 失物招领列表 -->
+            <section id="lost" class="section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-search"></i> 失物招领
+                        </h2>
+                        <div class="filter-group">
+                            <select class="form-select" id="category-filter">
+                                <option value="">所有分类</option>
+                                <option value="electronics">电子产品</option>
+                                <option value="books">书籍资料</option>
+                                <option value="clothing">衣物饰品</option>
+                                <option value="cards">证件卡片</option>
+                                <option value="others">其他物品</option>
+                            </select>
+                            <select class="form-select" id="type-filter">
+                                <option value="">所有类型</option>
+                                <option value="lost">失物启事</option>
+                                <option value="found">招领启事</option>
+                            </select>
+                            <select class="form-select" id="time-filter">
+                                <option value="">发布时间</option>
+                                <option value="today">今天</option>
+                                <option value="week">本周</option>
+                                <option value="month">本月</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="notice-list" id="notices-list">
+                        <!-- 动态加载的启事列表 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 发布启事 -->
+            <section id="publish" class="section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-plus-circle"></i> 发布启事
+                        </h2>
+                    </div>
+                    <form id="publish-form">
+                        <div class="form-group">
+                            <label class="form-label">启事类型</label>
+                            <div class="d-flex gap-2">
+                                <label class="form-check">
+                                    <input type="radio" name="notice-type" value="lost" checked>
+                                    <span>失物启事</span>
+                                </label>
+                                <label class="form-check">
+                                    <input type="radio" name="notice-type" value="found">
+                                    <span>招领启事</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">物品名称 *</label>
+                            <input type="text" class="form-control" id="item-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">物品分类 *</label>
+                            <select class="form-select" id="item-category" required>
+                                <option value="">请选择分类</option>
+                                <option value="electronics">电子产品</option>
+                                <option value="books">书籍资料</option>
+                                <option value="clothing">衣物饰品</option>
+                                <option value="cards">证件卡片</option>
+                                <option value="others">其他物品</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">丢失/捡拾时间 *</label>
+                            <input type="datetime-local" class="form-control" id="item-time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">地点 *</label>
+                            <input type="text" class="form-control" id="item-location" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">详细描述 *</label>
+                            <textarea class="form-control form-textarea" id="item-description" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">联系方式 *</label>
+                            <input type="text" class="form-control" id="contact-info" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">上传图片</label>
+                            <input type="file" class="form-control" id="item-image" accept="image/*">
+                            <small class="text-muted">支持 JPG、PNG 格式，最大 5MB</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-check">
+                                <input type="checkbox" id="urgent">
+                                <span>紧急启事（置顶显示）</span>
+                            </label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> 发布启事
+                            </button>
+                            <button type="reset" class="btn btn-outline">
+                                <i class="fas fa-redo"></i> 重置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 详情页 -->
+            <section id="detail" class="section hidden">
+                <div class="card notice-detail">
+                    <div class="card-header">
+                        <h2 class="card-title" id="detail-title">
+                            <i class="fas fa-info-circle"></i> 启事详情
+                        </h2>
+                        <button class="btn btn-outline" id="back-btn">
+                            <i class="fas fa-arrow-left"></i> 返回
+                        </button>
+                    </div>
+
+                    <div id="detail-content">
+                        <!-- 动态加载的详情内容 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 管理员后台 -->
+            <section id="admin" class="section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-cog"></i> 管理员后台
+                        </h2>
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="admin-status">未登录</span>
+                            <button class="btn btn-primary btn-small" id="admin-login-btn">
+                                <i class="fas fa-sign-in-alt"></i> 管理员登录
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel hidden" id="admin-panel">
+                        <div class="admin-sidebar">
+                            <ul class="admin-menu">
+                                <li class="admin-menu-item active" data-tab="dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> 仪表板
+                                </li>
+                                <li class="admin-menu-item" data-tab="pending">
+                                    <i class="fas fa-clock"></i> 待审核
+                                </li>
+                                <li class="admin-menu-item" data-tab="all-notices">
+                                    <i class="fas fa-list"></i> 所有启事
+                                </li>
+                                <li class="admin-menu-item" data-tab="users">
+                                    <i class="fas fa-users"></i> 用户管理
+                                </li>
+                                <li class="admin-menu-item" data-tab="settings">
+                                    <i class="fas fa-sliders-h"></i> 系统设置
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="admin-content">
+                            <!-- 仪表板 -->
+                            <div class="admin-tab active" id="dashboard-tab">
+                                <h3 class="mb-3">系统概览</h3>
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-total">0</div>
+                                        <div class="stat-label">总启事数</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-pending">0</div>
+                                        <div class="stat-label">待审核</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-users">0</div>
+                                        <div class="stat-label">注册用户</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="admin-solved">0</div>
+                                        <div class="stat-label">已解决</div>
+                                    </div>
+                                </div>
+
+                                <h3 class="mt-4 mb-3">最近活动</h3>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>时间</th>
+                                                <th>用户</th>
+                                                <th>操作</th>
+                                                <th>详情</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-activities">
+                                            <!-- 动态加载活动记录 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 待审核 -->
+                            <div class="admin-tab hidden" id="pending-tab">
+                                <h3 class="mb-3">待审核启事</h3>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>标题</th>
+                                                <th>类型</th>
+                                                <th>发布者</th>
+                                                <th>时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pending-list">
+                                            <!-- 动态加载待审核列表 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 所有启事 -->
+                            <div class="admin-tab hidden" id="all-notices-tab">
+                                <h3 class="mb-3">所有启事</h3>
+                                <div class="search-bar mb-3">
+                                    <input type="text" class="form-control search-input" placeholder="搜索启事...">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-search"></i> 搜索
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>标题</th>
+                                                <th>类型</th>
+                                                <th>状态</th>
+                                                <th>发布者</th>
+                                                <th>发布时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="all-notices-list">
+                                            <!-- 动态加载所有启事 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 用户管理 -->
+                            <div class="admin-tab hidden" id="users-tab">
+                                <h3 class="mb-3">用户管理</h3>
+                                <div class="table-responsive">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>用户名</th>
+                                                <th>邮箱</th>
+                                                <th>注册时间</th>
+                                                <th>发布数</th>
+                                                <th>状态</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="users-list">
+                                            <!-- 动态加载用户列表 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 系统设置 -->
+                            <div class="admin-tab hidden" id="settings-tab">
+                                <h3 class="mb-3">系统设置</h3>
+                                <form id="admin-settings">
+                                    <div class="form-group">
+                                        <label class="form-label">网站名称</label>
+                                        <input type="text" class="form-control" value="学院失物招领系统">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">自动审核</label>
+                                        <label class="form-check">
+                                            <input type="checkbox" checked>
+                                            <span>启用自动审核（新启事自动通过）</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">紧急启事置顶时间（天）</label>
+                                        <input type="number" class="form-control" value="7" min="1" max="30">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">启事保留时间（天）</label>
+                                        <input type="number" class="form-control" value="30" min="1" max="365">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> 保存设置
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 登录/注册模态框 -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="auth-title">用户登录</h3>
+                <button class="modal-close" id="auth-close">&times;</button>
+            </div>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="auth-username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-control" id="auth-password" required>
+                </div>
+                <div class="form-group hidden" id="auth-email-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-control" id="auth-email">
+                </div>
+                <div class="form-group hidden" id="auth-confirm-group">
+                    <label class="form-label">确认密码</label>
+                    <input type="password" class="form-control" id="auth-confirm">
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100" id="auth-submit">
+                        登录
+                    </button>
+                    <button type="button" class="btn btn-outline w-100" id="auth-switch">
+                        切换到注册
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理员登录模态框 -->
+    <div class="modal" id="admin-auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">管理员登录</h3>
+                <button class="modal-close" id="admin-auth-close">&times;</button>
+            </div>
+            <form id="admin-auth-form">
+                <div class="form-group">
+                    <label class="form-label">管理员账号</label>
+                    <input type="text" class="form-control" id="admin-username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-control" id="admin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>学院失物招领系统</h3>
+                    <p>帮助师生快速找回丢失物品，共建和谐校园环境。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#lost">失物招领</a></li>
+                        <li><a href="#publish">发布启事</a></li>
+                        <li><a href="#admin">管理后台</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我们</h3>
+                    <p>邮箱：support@campus.edu</p>
+                    <p>电话：123-456-7890</p>
+                    <p>地址：学院行政楼101室</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 学院失物招领系统. 学号：022340614</p>
+                <p class="copyright">本系统仅用于校园内部使用，请妥善保管个人信息。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入JavaScript文件 -->
+    <script src="app.js"></script>
+    <script>
+        // 全局错误处理
+        window.addEventListener('error', function(event) {
+            console.error('全局错误:', event.error);
+            
+            // 显示用户友好的错误提示
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 9999;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            errorDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>系统出现错误，请刷新页面重试</span>
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 5000);
+        });
+
+        // 添加动画样式
+        if (!document.querySelector('#error-styles')) {
+            const style = document.createElement('style');
+            style.id = 'error-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 确保应用初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查应用是否已加载
+            if (typeof app === 'undefined') {
+                console.error('应用未正确加载，请检查JavaScript文件');
+                
+                // 显示错误提示
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #f59e0b;
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.75rem;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                    z-index: 9999;
+                    max-width: 400px;
+                    text-align: center;
+                `;
+                errorDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>应用加载失败，请刷新页面</span>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => errorDiv.remove(), 5000);
+            } else {
+                console.log('失物招领系统已成功加载');
+            }
+        });
+
+        // 注册Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                        
+                        // 检查更新
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            console.log('Service Worker 更新发现:', newWorker.state);
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                console.log('Service Worker 状态变化:', newWorker.state);
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('新内容可用，请刷新页面');
+                                    // 可以在这里显示更新提示
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker 注册失败:', error);
+                    });
+            });
+        }
+
+        // PWA安装提示
+        let deferredPrompt;
+        const installButton = document.createElement('button');
+        installButton.innerHTML = '<i class="fas fa-download"></i> 安装应用';
+        installButton.className = 'btn btn-primary';
+        installButton.style.cssText = 'position: fixed; bottom: 80px; right: 20px; z-index: 1000; display: none;';
+        document.body.appendChild(installButton);
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+            
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('用户接受了PWA安装提示');
+                    } else {
+                        console.log('用户拒绝了PWA安装提示');
+                    }
+                    deferredPrompt = null;
+                });
+            });
+        });
+
+        // 检测网络状态
+        window.addEventListener('online', () => {
+            console.log('网络已连接');
+            app.showAlert('网络已恢复连接', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('网络已断开');
+            app.showAlert('网络连接已断开，部分功能可能受限', 'warning');
+        });
+
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // 创建主题切换按钮
+            const themeToggle = document.createElement('button');
+            themeToggle.className = 'theme-toggle';
+            themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            themeToggle.title = savedTheme === 'dark' ? '切换到浅色主题' : '切换到深色主题';
+            themeToggle.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: var(--primary);
+                color: white;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 1000;
+                transition: all 0.3s ease;
+            `;
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                themeToggle.title = newTheme === 'dark' ? '切换到浅色主题' : '切换到深色主题';
+                app.showAlert(`已切换到${newTheme === 'dark' ? '深色' : '浅色'}主题`, 'success');
+            });
+            
+            document.body.appendChild(themeToggle);
+        }
+
+        // 页面加载完成后初始化主题
+        document.addEventListener('DOMContentLoaded', initTheme);
+    </script>
+</body>
+</html>

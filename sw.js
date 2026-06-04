@@ -1,171 +1,286 @@
-// Service Worker for Lost and Found PWA
-const CACHE_NAME = 'lost-found-v1.0.1';
-const URLS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/admin.html',
-    '/styles/main.css',
-    '/styles/responsive.css',
-    '/styles/advanced.css',
-    '/styles/hbmzu-map.css',
-    '/js/app.js',
-    '/js/advanced-features.js',
-    '/js/hbmzu-map.js',
-    '/js/app-integration.js',
-    '/js/sw-register.js',
-    '/manifest.json'
+// 学院失物招领系统 - Service Worker
+// 学号：022340614
+
+const CACHE_NAME = 'lost-and-found-v1.0.0';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/lost-found-styles.css',
+  '/app.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+  'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=300&q=80',
+  'https://images.unsplash.com/photo-1549924231-f129b911e442?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=300&q=80',
+  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=300&q=80',
+  'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=300&q=80'
 ];
 
-// 安装事件
-self.addEventListener('install', (event) => {
-    console.log('Service Worker 安装中...');
-    
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('缓存资源中...');
-                return cache.addAll(URLS_TO_CACHE);
-            })
-            .then(() => {
-                console.log('所有资源已缓存');
-                return self.skipWaiting();
-            })
-    );
+// 安装Service Worker
+self.addEventListener('install', event => {
+  console.log('Service Worker: 正在安装...');
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Service Worker: 缓存文件中...');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        console.log('Service Worker: 安装完成');
+        return self.skipWaiting();
+      })
+      .catch(error => {
+        console.error('Service Worker: 安装失败:', error);
+      })
+  );
 });
 
-// 激活事件
-self.addEventListener('activate', (event) => {
-    console.log('Service Worker 激活中...');
-    
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('删除旧缓存:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => {
-            console.log('Service Worker 已激活');
-            return self.clients.claim();
+// 激活Service Worker
+self.addEventListener('activate', event => {
+  console.log('Service Worker: 正在激活...');
+  
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Service Worker: 清除旧缓存:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
-    );
+      );
+    })
+    .then(() => {
+      console.log('Service Worker: 激活完成');
+      return self.clients.claim();
+    })
+  );
 });
 
-// 拦截请求
-self.addEventListener('fetch', (event) => {
-    // 跳过非GET请求
-    if (event.request.method !== 'GET') return;
-
-    event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // 返回缓存或网络请求
-                return response || fetch(event.request)
-                    .then((fetchResponse) => {
-                        // 检查是否为有效响应
-                        if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
-                            return fetchResponse;
-                        }
-
-                        // 克隆响应
-                        const responseToCache = fetchResponse.clone();
-
-                        // 缓存新请求
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(event.request, responseToCache);
-                            });
-
-                        return fetchResponse;
-                    })
-                    .catch(() => {
-                        // 网络失败时，对于HTML页面返回缓存的页面
-                        if (event.request.headers.get('accept').includes('text/html')) {
-                            const url = new URL(event.request.url);
-                            if (url.pathname.includes('admin')) {
-                                return caches.match('/admin.html');
-                            }
-                            return caches.match('/index.html');
-                        }
-                    });
-            })
-    );
-});
-
-// 推送通知处理
-self.addEventListener('push', (event) => {
-    if (!event.data) return;
-
-    const data = event.data.json();
-    const options = {
-        body: data.body || '校园失物招领有新消息',
-        icon: '/assets/icon-192x192.png',
-        badge: '/assets/icon-72x72.png',
-        tag: 'lost-found-notification',
-        requireInteraction: true,
-        actions: [
-            {
-                action: 'view',
-                title: '查看'
-            },
-            {
-                action: 'dismiss',
-                title: '忽略'
+// 拦截网络请求
+self.addEventListener('fetch', event => {
+  // 跳过非GET请求
+  if (event.request.method !== 'GET') return;
+  
+  // 跳过浏览器扩展请求
+  if (event.request.url.startsWith('chrome-extension://')) return;
+  
+  // 处理请求
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // 如果缓存中有响应，直接返回
+        if (response) {
+          console.log('Service Worker: 从缓存返回:', event.request.url);
+          return response;
+        }
+        
+        // 否则从网络获取
+        console.log('Service Worker: 从网络获取:', event.request.url);
+        return fetch(event.request)
+          .then(response => {
+            // 检查响应是否有效
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
             }
-        ]
-    };
-
-    event.waitUntil(
-        self.registration.showNotification('校园失物招领', options)
-    );
+            
+            // 克隆响应以进行缓存
+            const responseToCache = response.clone();
+            
+            // 将响应添加到缓存
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+                console.log('Service Worker: 缓存新资源:', event.request.url);
+              });
+            
+            return response;
+          })
+          .catch(error => {
+            console.error('Service Worker: 网络请求失败:', error);
+            
+            // 对于HTML页面，返回离线页面
+            if (event.request.headers.get('accept').includes('text/html')) {
+              return caches.match('/index.html');
+            }
+            
+            // 对于其他资源，返回占位符
+            if (event.request.url.match(/\.(jpg|jpeg|png|gif|svg)$/)) {
+              return new Response(
+                `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+                  <rect width="400" height="300" fill="#f3f4f6"/>
+                  <text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="20" fill="#6b7280">
+                    图片加载失败
+                  </text>
+                </svg>`,
+                {
+                  headers: { 'Content-Type': 'image/svg+xml' }
+                }
+              );
+            }
+            
+            // 返回错误响应
+            return new Response('网络连接失败，请检查网络设置。', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: { 'Content-Type': 'text/plain' }
+            });
+          });
+      })
+  );
 });
 
-// 通知点击处理
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-
-    if (event.action === 'view') {
-        event.waitUntil(
-            clients.matchAll({ type: 'window' })
-                .then((clientList) => {
-                    // 如果已有窗口打开，聚焦它
-                    for (const client of clientList) {
-                        if (client.url.includes(self.location.origin) && 'focus' in client) {
-                            return client.focus();
-                        }
-                    }
-                    
-                    // 否则打开新窗口
-                    if (clients.openWindow) {
-                        return clients.openWindow('/');
-                    }
-                })
-        );
-    }
+// 处理推送通知
+self.addEventListener('push', event => {
+  console.log('Service Worker: 收到推送通知');
+  
+  const options = {
+    body: event.data ? event.data.text() : '新的失物招领通知',
+    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%234f46e5%22>🔍</text></svg>',
+    badge: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%234f46e5%22>🔍</text></svg>',
+    vibrate: [200, 100, 200],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: '1'
+    },
+    actions: [
+      {
+        action: 'explore',
+        title: '查看',
+        icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%234f46e5%22>👀</text></svg>'
+      },
+      {
+        action: 'close',
+        title: '关闭',
+        icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%234f46e5%22>❌</text></svg>'
+      }
+    ]
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification('学院失物招领系统', options)
+  );
 });
 
-// 后台同步处理
-self.addEventListener('sync', (event) => {
-    if (event.tag === 'background-sync') {
-        event.waitUntil(doBackgroundSync());
-    }
+// 处理通知点击
+self.addEventListener('notificationclick', event => {
+  console.log('Service Worker: 通知被点击');
+  
+  event.notification.close();
+  
+  if (event.action === 'close') {
+    return;
+  }
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(windowClients => {
+        // 如果已经有打开的窗口，聚焦它
+        for (const client of windowClients) {
+          if (client.url === '/' && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        
+        // 否则打开新窗口
+        if (clients.openWindow) {
+          return clients.openWindow('/');
+        }
+      })
+  );
 });
 
-// 后台同步任务
-async function doBackgroundSync() {
-    // 这里可以实现后台数据同步逻辑
-    // 例如：同步离线时发布的数据到服务器
-    console.log('执行后台同步...');
+// 处理后台同步
+self.addEventListener('sync', event => {
+  console.log('Service Worker: 后台同步事件:', event.tag);
+  
+  if (event.tag === 'sync-notices') {
+    event.waitUntil(syncNotices());
+  }
+});
+
+// 同步启事数据
+function syncNotices() {
+  console.log('Service Worker: 正在同步启事数据...');
+  
+  // 这里可以添加数据同步逻辑
+  // 例如：将本地存储的数据同步到服务器
+  
+  return Promise.resolve();
 }
 
-// 消息处理
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
+// 处理消息
+self.addEventListener('message', event => {
+  console.log('Service Worker: 收到消息:', event.data);
+  
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data.type === 'CACHE_DATA') {
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.put(event.data.url, new Response(event.data.content));
+      })
+      .then(() => {
+        event.ports[0].postMessage({ success: true });
+      })
+      .catch(error => {
+        event.ports[0].postMessage({ success: false, error: error.message });
+      });
+  }
 });
 
-console.log('Service Worker 已加载');
+// 处理错误
+self.addEventListener('error', event => {
+  console.error('Service Worker: 发生错误:', event.error);
+});
+
+// 处理未捕获的异常
+self.addEventListener('unhandledrejection', event => {
+  console.error('Service Worker: 未处理的Promise拒绝:', event.reason);
+});
+
+// 定期清理旧缓存
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'cleanup-cache') {
+    event.waitUntil(cleanupCache());
+  }
+});
+
+// 清理缓存
+function cleanupCache() {
+  console.log('Service Worker: 正在清理缓存...');
+  
+  return caches.keys().then(cacheNames => {
+    return Promise.all(
+      cacheNames.map(cacheName => {
+        if (cacheName !== CACHE_NAME) {
+          console.log('Service Worker: 删除旧缓存:', cacheName);
+          return caches.delete(cacheName);
+        }
+      })
+    );
+  });
+}
+
+// 注册定期同步
+async function registerPeriodicSync() {
+  if ('periodicSync' in self.registration) {
+    try {
+      await self.registration.periodicSync.register('cleanup-cache', {
+        minInterval: 24 * 60 * 60 * 1000 // 24小时
+      });
+      console.log('Service Worker: 定期同步已注册');
+    } catch (error) {
+      console.error('Service Worker: 注册定期同步失败:', error);
+    }
+  }
+}
+
+// 初始化Service Worker
+self.addEventListener('activate', event => {
+  event.waitUntil(registerPeriodicSync());
+});
+
+console.log('Service Worker: 已加载');

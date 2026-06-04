@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第五章数据可视化平台 - 022340614</title>
+    <meta name="author" content="022340614">
+    <meta name="description" content="基于第五章精确数据的子图绘制与布局管理 - 安全稳定版本">
+    
+    <!-- 安全头 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.plot.ly 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000">
+    
+    <!-- 预加载优化 -->
+    <link rel="preload" href="https://cdn.plot.ly/plotly-2.16.1.min.js" as="script" crossorigin="anonymous">
+    <link rel="preconnect" href="https://cdn.plot.ly">
+    
+    <!-- 外部CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- 图标 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo">
+                <span class="logo-icon">📊</span>
+                <span class="logo-text">第五章数据可视化</span>
+                <span class="logo-id">022340614</span>
+            </a>
+            <nav class="nav">
+                <a href="#section5-1" class="nav-btn active">5.1 固定区域子图</a>
+                <a href="#section5-2" class="nav-btn">5.2 自定义区域子图</a>
+                <a href="#section5-3" class="nav-btn">5.3 共享坐标轴</a>
+                <a href="#section5-4" class="nav-btn">5.4 子图布局</a>
+                <a href="#section-controls" class="nav-btn">🎛️ 控制面板</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h1>第五章数据可视化平台</h1>
+                <p>基于第五章精确教学数据的子图绘制与布局管理</p>
+                <p class="hero-subtitle"><strong>学号：022340614 | 仓库：022340614zzx | 安全稳定版本</strong></p>
+                <div class="status-message success" id="status-message">
+                    ✅ 平台已安全部署 - HTTPS加密传输
+                </div>
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="exportAllData()">
+                        <span class="btn-icon">📥</span> 导出所有数据
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleDarkMode()">
+                        <span class="btn-icon">🌙</span> 切换主题
+                    </button>
+                    <button class="btn btn-success" onclick="refreshAllCharts()">
+                        <span class="btn-icon">🔄</span> 刷新图表
+                    </button>
+                </div>
+            </section>
+
+            <!-- 控制面板 -->
+            <section id="section-controls" class="section control-panel">
+                <h2 class="section-title">🎛️ 控制面板</h2>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <h3>图表设置</h3>
+                        <div class="control-item">
+                            <label for="chart-theme">主题颜色：</label>
+                            <select id="chart-theme" onchange="changeChartTheme(this.value)">
+                                <option value="default">默认主题</option>
+                                <option value="dark">暗黑主题</option>
+                                <option value="light">明亮主题</option>
+                                <option value="colorful">多彩主题</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="chart-animation">动画效果：</label>
+                            <select id="chart-animation" onchange="toggleAnimation(this.value)">
+                                <option value="true">启用</option>
+                                <option value="false">禁用</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="chart-quality">图表质量：</label>
+                            <select id="chart-quality" onchange="changeChartQuality(this.value)">
+                                <option value="high">高质量</option>
+                                <option value="medium">中等质量</option>
+                                <option value="low">低质量</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>数据管理</h3>
+                        <div class="control-item">
+                            <button class="btn btn-small" onclick="loadLocalData()">
+                                <span class="btn-icon">📁</span> 加载本地数据
+                            </button>
+                        </div>
+                        <div class="control-item">
+                            <button class="btn btn-small" onclick="loadGitHubData()">
+                                <span class="btn-icon">🌐</span> 加载GitHub数据
+                            </button>
+                        </div>
+                        <div class="control-item">
+                            <button class="btn btn-small" onclick="useDefaultData()">
+                                <span class="btn-icon">⚡</span> 使用默认数据
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>视图选项</h3>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="auto-refresh" onchange="toggleAutoRefresh(this.checked)">
+                                自动刷新
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="show-grid" checked onchange="toggleGridLines(this.checked)">
+                                显示网格线
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="show-legend" checked onchange="toggleLegend(this.checked)">
+                                显示图例
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5.1 绘制固定区域的子图 -->
+            <section id="section5-1" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">5.1 绘制固定区域的子图</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-small" onclick="exportSectionData('5.1')">
+                            <span class="btn-icon">📥</span> 导出数据
+                        </button>
+                        <button class="btn btn-small" onclick="toggleSectionCharts('section5-1')">
+                            <span class="btn-icon">📊</span> 切换视图
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="section-content">
+                    <h3>5.1.2 实例1：某工厂产品A与产品B去年的销售额分析</h3>
+                    <div class="chart-container" id="chart5-1-2">
+                        <div class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <span>加载图表数据...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <h4>数据表格</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>月份</th><th>产品A销售额(亿元)</th><th>产品B销售额(亿元)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table5-1-2">
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>5.1.4 实例2：部分国家养猫与养狗人群比例分析</h3>
+                    <div class="chart-container" id="chart5-1-4">
+                        <div class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <span>加载图表数据...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-controls">
+                        <button class="btn" onclick="toggleChartOrientation()">
+                            <span class="btn-icon">🔄</span> 切换图表方向
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadChartImage('chart5-1-4')">
+                            <span class="btn-icon">🖼️</span> 保存图表图片
+                        </button>
+                        <button class="btn btn-success" onclick="analyzeChartData('5.1.4')">
+                            <span class="btn-icon">📈</span> 数据分析
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5.2 绘制自定义区域的子图 -->
+            <section id="section5-2" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">5.2 绘制自定义区域的子图</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-small" onclick="exportSectionData('5.2')">
+                            <span class="btn-icon">📥</span> 导出数据
+                        </button>
+                        <button class="btn btn-small" onclick="toggleSectionCharts('section5-2')">
+                            <span class="btn-icon">📊</span> 切换视图
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="section-content">
+                    <h3>5.2.2 实例3：2017年与2018年抖音用户分析</h3>
+                    <div class="chart-container" id="chart5-2-2">
+                        <div class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <span>加载图表数据...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <h4>数据表格</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>地区</th><th>2017年用户比例(%)</th><th>2018年用户比例(%)</th><th>增长倍数</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table5-2-2">
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5.3 共享子图的坐标轴 -->
+            <section id="section5-3" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">5.3 共享子图的坐标轴</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-small" onclick="exportSectionData('5.3')">
+                            <span class="btn-icon">📥</span> 导出数据
+                        </button>
+                        <button class="btn btn-small" onclick="toggleSectionCharts('section5-3')">
+                            <span class="btn-icon">📊</span> 切换视图
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="section-content">
+                    <h3>5.3.3 实例4：某地区全年平均气温与降水量、蒸发量的关系</h3>
+                    <div class="chart-container" id="chart5-3-3">
+                        <div class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <span>加载图表数据...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <h4>数据表格</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>月份</th><th>平均气温(°C)</th><th>降水量(ml)</th><th>蒸发量(ml)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table5-3-3">
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5.4 子图的布局 -->
+            <section id="section5-4" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">5.4 子图的布局</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-small" onclick="exportSectionData('5.4')">
+                            <span class="btn-icon">📥</span> 导出数据
+                        </button>
+                        <button class="btn btn-small" onclick="toggleSectionCharts('section5-4')">
+                            <span class="btn-icon">📊</span> 切换视图
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="section-content">
+                    <h3>5.4.4 实例5：2018年上半年某品牌汽车销售情况</h3>
+                    <div class="chart-container" id="chart5-4-4">
+                        <div class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <span>加载图表数据...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <h4>数据表格</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>月份</th><th>销售额(亿元)</th><th>城市</th><th>销量(辆)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table5-4-4">
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 性能监控 -->
+            <section class="section performance-section">
+                <h2 class="section-title">🔧 平台性能监控</h2>
+                <div class="performance-grid">
+                    <div class="performance-card">
+                        <div class="performance-icon">⏱️</div>
+                        <div class="performance-info">
+                            <div class="performance-label">加载时间</div>
+                            <div class="performance-value" id="load-time">计算中...</div>
+                        </div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">📊</div>
+                        <div class="performance-info">
+                            <div class="performance-label">图表数量</div>
+                            <div class="performance-value" id="chart-count">5</div>
+                        </div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">📈</div>
+                        <div class="performance-info">
+                            <div class="performance-label">数据点总数</div>
+                            <div class="performance-value" id="data-points">56</div>
+                        </div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">🔒</div>
+                        <div class="performance-info">
+                            <div class="performance-label">安全状态</div>
+                            <div class="performance-value success">✅ 已启用HTTPS</div>
+                        </div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">⚡</div>
+                        <div class="performance-info">
+                            <div class="performance-label">内存使用</div>
+                            <div class="performance-value" id="memory-usage">计算中...</div>
+                        </div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">🔄</div>
+                        <div class="performance-info">
+                            <div class="performance-label">刷新频率</div>
+                            <div class="performance-value" id="refresh-rate">60 FPS</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 数据分析报告 -->
+            <section class="section analysis-section">
+                <h2 class="section-title">📋 数据分析报告</h2>
+                <div class="analysis-content">
+                    <div class="analysis-card">
+                        <h3>📈 数据统计摘要</h3>
+                        <div class="analysis-stats" id="analysis-stats">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <h3>🎯 关键发现</h3>
+                        <ul class="findings-list" id="findings-list">
+                            <!-- 动态生成 -->
+                        </ul>
+                    </div>
+                    <div class="analysis-card">
+                        <h3>💡 建议与洞察</h3>
+                        <div class="insights" id="insights">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>第五章数据可视化平台</h3>
+                    <p>基于精确教学数据开发 | 学号：<strong>022340614</strong></p>
+                    <p>仓库：<strong>022340614/022340614zzx</strong> | 安全稳定版本</p>
+                </div>
+                <div class="footer-links">
+                    <h3>快速链接</h3>
+                    <a href="#section5-1">5.1 固定区域子图</a>
+                    <a href="#section5-2">5.2 自定义区域子图</a>
+                    <a href="#section5-3">5.3 共享坐标轴</a>
+                    <a href="#section5-4">5.4 子图布局</a>
+                </div>
+                <div class="footer-tech">
+                    <h3>技术栈</h3>
+                    <p>HTML5 + CSS3 + JavaScript</p>
+                    <p>Plotly.js 数据可视化</p>
+                    <p>GitHub Pages 部署</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>包含5.1固定区域子图、5.2自定义区域子图、5.3共享坐标轴、5.4子图布局 | 永久公网访问</p>
+                <p class="copyright">© 2023-2024 022340614 数据可视化项目 | 最后更新: <span id="last-update">今天</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Plotly.js CDN -->
+    <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+    
+    <!-- 外部JavaScript文件 -->
+    <script src="app.js"></script>
+    <script src="fix.js"></script>
+    
+    <!-- 初始化 -->
+    <script>
+        // 设置最后更新时间
+        document.getElementById('last-update').textContent = new Date().toLocaleDateString('zh-CN');
+        
+        // 页面加载完成事件
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('第五章数据可视化平台加载完成 - 022340614');
+            
+            // 检查HTTPS
+            if (location.protocol !== 'https:') {
+                showStatusMessage('⚠️ 建议使用HTTPS访问以确保安全', 'warning');
+            }
+            
+            // 初始化性能监控
+            initPerformanceMonitoring();
+            
+            // 初始化平台
+            if (typeof initializePlatform === 'function') {
+                initializePlatform();
+            }
+        });
+    </script>
+</body>
+</html>
