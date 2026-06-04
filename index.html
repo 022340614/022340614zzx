@@ -222,22 +222,24 @@
                 <h2>👤 个人中心</h2>
                 <div class="profile-info">
                     <div class="user-avatar">
-                        <div class="avatar-placeholder">👤</div>
+                        <div id="userAvatarDisplay" class="avatar-placeholder">👤</div>
                     </div>
                     <div class="user-details">
                         <h3 id="userName">游客</h3>
                         <p id="userContact">未设置联系方式</p>
                         <div class="user-stats">
-                            <span>发布: <strong id="userPosts">0</strong></span>
-                            <span>成功: <strong id="userSuccess">0</strong></span>
+                            <span>发布: <strong id="myItems">0</strong></span>
+                            <span>成功: <strong id="myResolved">0</strong></span>
+                            <span>消息: <strong id="myMessages">0</strong></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="profile-actions">
-                    <button onclick="showMyPosts()">我的发布</button>
-                    <button onclick="editProfile()">编辑资料</button>
-                    <button onclick="showHelp()">使用帮助</button>
+                    <button onclick="app.showMyPosts()">我的发布</button>
+                    <button onclick="app.editProfile()">编辑资料</button>
+                    <button onclick="app.showHelp()">使用帮助</button>
+                    <button onclick="app.clearCache()">清除缓存</button>
                 </div>
 
                 <div id="myPosts" class="my-posts">

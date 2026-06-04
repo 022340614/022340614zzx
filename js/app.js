@@ -337,15 +337,477 @@ class LostFoundApp {
     
     // 个人中心按钮功能
     showMyPosts() {
-        alert('我的发布功能');
+        // 显示用户发布的物品
+        const currentUser = this.currentUser;
+        if (!currentUser) {
+            alert('请先登录以查看您的发布');
+            return;
+        }
+
+        const userItems = this.items.filter(item => item.createdBy === currentUser.name);
+        
+        if (userItems.length === 0) {
+            alert('您还没有发布任何物品');
+            return;
+        }
+
+        // 创建显示用户发布物品的模态框
+        let itemsHtml = '<div class="my-posts-modal">';
+        itemsHtml += '<h3>我的发布 (' + userItems.length + ')</h3>';
+        itemsHtml += '<div class="my-posts-list">';
+        
+        userItems.forEach(item => {
+            const statusText = item.status === 'resolved' ? '已解决' : 
+                             item.status === 'pending' ? '待审核' : '进行中';
+            const statusClass = item.status === 'resolved' ? 'status-resolved' : 
+                              item.status === 'pending' ? 'status-pending' : 'status-active';
+            
+            itemsHtml += `
+                <div class="my-post-item ${statusClass}">
+                    <div class="post-header">
+                        <span class="post-title">${item.title}</span>
+                        <span class="post-status">${statusText}</span>
+                    </div>
+                    <div class="post-details">
+                        <span>类型: ${item.type === 'lost' ? '寻物' : '招领'}</span>
+                        <span>分类: ${item.category}</span>
+                        <span>地点: ${item.location}</span>
+                    </div>
+                    <div class="post-time">${new Date(item.timestamp).toLocaleDateString()}</div>
+                    <div class="post-actions">
+                        <button onclick="app.viewItemDetail('${item.id}')">查看详情</button>
+                        <button onclick="app.editItem('${item.id}')">编辑</button>
+                        <button onclick="app.deleteItem('${item.id}')">删除</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        itemsHtml += '</div></div>';
+        
+        // 显示模态框
+        this.showModal('我的发布', itemsHtml);
     }
     
     editProfile() {
-        alert('编辑资料功能');
+        // 编辑用户资料
+        const currentUser = this.currentUser || { name: '游客', contact: '未设置' };
+        
+        const profileHtml = `
+            <div class="edit-profile-modal">
+                <h3>编辑资料</h3>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="userNameInput">昵称:</label>
+                        <input type="text" id="userNameInput" value="${currentUser.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userContactInput">联系方式:</label>
+                        <input type="text" id="userContactInput" value="${currentUser.contact || ''}" 
+                               placeholder="请输入手机号或邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label for="userAvatar">头像:</label>
+                        <div class="avatar-options">
+                            <div class="avatar-option" onclick="app.selectAvatar('👤')">👤</div>
+                            <div class="avatar-option" onclick="app.selectAvatar('👨')">👨</div>
+                            <div class="avatar-option" onclick="app.selectAvatar('👩')">👩</div>
+                            <div class="avatar-option" onclick="app.selectAvatar('🎓')">🎓</div>
+                            <div class="avatar-option" onclick="app.selectAvatar('🔍')">🔍</div>
+                        </div>
+                        <input type="hidden" id="userAvatar" value="${currentUser.avatar || '👤'}">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" onclick="app.saveProfile()">保存</button>
+                        <button type="button" onclick="app.closeModal()">取消</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        this.showModal('编辑资料', profileHtml);
     }
     
     showHelp() {
-        alert('使用帮助功能');
+        // 显示使用帮助
+        const helpContent = `
+            <div class="help-modal">
+                <h3>📱 校园失物招领平台使用指南</h3>
+                <div class="help-section">
+                    <h4>1. 发布物品</h4>
+                    <ul>
+                        <li>点击顶部导航栏的"发布"按钮</li>
+                        <li>选择物品类型（寻物/招领）</li>
+                        <li>填写物品信息（名称、分类、地点、描述）</li>
+                        <li>输入联系方式（手机号或邮箱）</li>
+                        <li>点击"发布"按钮提交</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>2. 查找物品</h4>
+                    <ul>
+                        <li>在首页浏览最新发布的物品</li>
+                        <li>使用搜索框输入关键词查找</li>
+                        <li>使用筛选器按分类、类型、状态筛选</li>
+                        <li>点击物品卡片查看详细信息</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>3. 我的发布</h4>
+                    <ul>
+                        <li>在个人中心查看自己发布的所有物品</li>
+                        <li>管理进行中和已解决的发布</li>
+                        <li>编辑或删除已发布的物品</li>
+                        <li>查看物品状态和联系记录</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>4. 个人资料</h4>
+                    <ul>
+                        <li>编辑个人昵称和联系方式</li>
+                        <li>选择个性化头像</li>
+                        <li>查看发布统计信息</li>
+                        <li>管理账户设置</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>5. 高级功能</h4>
+                    <ul>
+                        <li>💬 实时在线客服</li>
+                        <li>🗺️ 校园地图定位</li>
+                        <li>🤖 AI智能识别</li>
+                        <li>📊 数据统计分析</li>
+                        <li>🔔 智能消息推送</li>
+                    </ul>
+                </div>
+                <div class="help-contact">
+                    <h4>📞 联系我们</h4>
+                    <p>如有问题或建议，请联系：</p>
+                    <p>📧 邮箱：support@campus.com</p>
+                    <p>📞 电话：400-123-4567</p>
+                    <p>🕒 工作时间：周一至周五 9:00-18:00</p>
+                </div>
+            </div>
+        `;
+        
+        this.showModal('使用帮助', helpContent);
+    }
+    
+    // 辅助函数：显示模态框
+    showModal(title, content) {
+        // 移除现有的模态框
+        const existingModal = document.getElementById('customModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // 创建模态框
+        const modalHtml = `
+            <div id="customModal" class="custom-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${title}</h3>
+                        <span class="modal-close" onclick="app.closeModal()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 添加到页面
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // 添加样式
+        this.addModalStyles();
+    }
+    
+    closeModal() {
+        const modal = document.getElementById('customModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+    
+    addModalStyles() {
+        // 如果样式不存在，添加模态框样式
+        if (!document.getElementById('modalStyles')) {
+            const style = document.createElement('style');
+            style.id = 'modalStyles';
+            style.textContent = `
+                .custom-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0,0,0,0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+                .modal-content {
+                    background: white;
+                    border-radius: 10px;
+                    width: 90%;
+                    max-width: 500px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                }
+                .modal-header {
+                    padding: 15px 20px;
+                    border-bottom: 1px solid #eee;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .modal-header h3 {
+                    margin: 0;
+                    color: #333;
+                }
+                .modal-close {
+                    cursor: pointer;
+                    font-size: 24px;
+                    color: #999;
+                }
+                .modal-close:hover {
+                    color: #333;
+                }
+                .modal-body {
+                    padding: 20px;
+                }
+                .my-posts-modal h3 {
+                    margin-top: 0;
+                    color: #4CAF50;
+                }
+                .my-post-item {
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    background: #f9f9f9;
+                }
+                .post-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                }
+                .post-title {
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+                .post-status {
+                    padding: 3px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    color: white;
+                }
+                .status-resolved { background: #4CAF50; }
+                .status-pending { background: #FF9800; }
+                .status-active { background: #2196F3; }
+                .post-details {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 10px;
+                    color: #666;
+                    font-size: 14px;
+                }
+                .post-time {
+                    color: #999;
+                    font-size: 12px;
+                    margin-bottom: 10px;
+                }
+                .post-actions {
+                    display: flex;
+                    gap: 10px;
+                }
+                .post-actions button {
+                    padding: 5px 10px;
+                    border: none;
+                    border-radius: 4px;
+                    background: #4CAF50;
+                    color: white;
+                    cursor: pointer;
+                }
+                .post-actions button:hover {
+                    background: #45a049;
+                }
+                .edit-profile-modal .form-group {
+                    margin-bottom: 15px;
+                }
+                .edit-profile-modal label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                }
+                .edit-profile-modal input {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                }
+                .avatar-options {
+                    display: flex;
+                    gap: 10px;
+                    margin-top: 10px;
+                }
+                .avatar-option {
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 2px solid #ddd;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 20px;
+                }
+                .avatar-option:hover {
+                    border-color: #4CAF50;
+                }
+                .form-actions {
+                    display: flex;
+                    gap: 10px;
+                    margin-top: 20px;
+                }
+                .form-actions button {
+                    flex: 1;
+                    padding: 10px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                .form-actions button:first-child {
+                    background: #4CAF50;
+                    color: white;
+                }
+                .form-actions button:last-child {
+                    background: #f0f0f0;
+                    color: #333;
+                }
+                .help-modal h3 {
+                    color: #4CAF50;
+                    margin-top: 0;
+                }
+                .help-section {
+                    margin-bottom: 20px;
+                }
+                .help-section h4 {
+                    color: #333;
+                    margin-bottom: 10px;
+                }
+                .help-section ul {
+                    margin: 0;
+                    padding-left: 20px;
+                }
+                .help-section li {
+                    margin-bottom: 5px;
+                }
+                .help-contact {
+                    margin-top: 20px;
+                    padding-top: 20px;
+                    border-top: 1px solid #eee;
+                }
+                .help-contact h4 {
+                    color: #333;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    // 选择头像
+    selectAvatar(avatar) {
+        document.getElementById('userAvatar').value = avatar;
+        // 更新显示
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+        avatarOptions.forEach(option => {
+            option.style.borderColor = option.textContent === avatar ? '#4CAF50' : '#ddd';
+        });
+    }
+    
+    // 保存资料
+    saveProfile() {
+        const name = document.getElementById('userNameInput').value;
+        const contact = document.getElementById('userContactInput').value;
+        const avatar = document.getElementById('userAvatar').value;
+        
+        if (!name.trim()) {
+            alert('请输入昵称');
+            return;
+        }
+        
+        this.currentUser = {
+            name: name.trim(),
+            contact: contact.trim(),
+            avatar: avatar
+        };
+        
+        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+        
+        // 更新页面显示
+        document.getElementById('userName').textContent = name;
+        document.getElementById('userContact').textContent = contact || '未设置联系方式';
+        
+        alert('资料保存成功！');
+        this.closeModal();
+    }
+    
+    // 查看物品详情
+    viewItemDetail(itemId) {
+        const item = this.items.find(i => i.id === itemId);
+        if (!item) {
+            alert('物品不存在');
+            return;
+        }
+        
+        const detailHtml = `
+            <div class="item-detail-modal">
+                <h3>${item.title}</h3>
+                <div class="item-info">
+                    <p><strong>类型:</strong> ${item.type === 'lost' ? '寻物' : '招领'}</p>
+                    <p><strong>分类:</strong> ${item.category}</p>
+                    <p><strong>地点:</strong> ${item.location}</p>
+                    <p><strong>状态:</strong> ${item.status === 'resolved' ? '已解决' : 
+                                               item.status === 'pending' ? '待审核' : '进行中'}</p>
+                    <p><strong>发布时间:</strong> ${new Date(item.timestamp).toLocaleString()}</p>
+                    <p><strong>发布者:</strong> ${item.createdBy}</p>
+                </div>
+                <div class="item-description">
+                    <h4>物品描述</h4>
+                    <p>${item.description}</p>
+                </div>
+                <div class="item-contact">
+                    <h4>联系方式</h4>
+                    <p>${item.contact}</p>
+                </div>
+                <div class="item-actions">
+                    <button onclick="app.closeModal()">关闭</button>
+                </div>
+            </div>
+        `;
+        
+        this.showModal('物品详情', detailHtml);
+    }
+    
+    // 编辑物品
+    editItem(itemId) {
+        alert('编辑物品功能开发中...');
+    }
+    
+    // 删除物品
+    deleteItem(itemId) {
+        if (confirm('确定要删除这个物品吗？')) {
+            this.items = this.items.filter(item => item.id !== itemId);
+            localStorage.setItem('lostFoundItems', JSON.stringify(this.items));
+            alert('物品已删除');
+            this.closeModal();
+            this.showMyPosts(); // 刷新显示
+        }
     }
     
     // 管理员按钮功能
@@ -858,6 +1320,31 @@ class LostFoundApp {
         document.getElementById('myMessages').textContent = stats.myMessages;
     }
 
+    // 清除缓存
+    clearCache() {
+        if (confirm('确定要清除所有缓存数据吗？这将删除所有本地存储的物品和用户信息。')) {
+            localStorage.removeItem('lostFoundItems');
+            localStorage.removeItem('currentUser');
+            
+            // 重置应用数据
+            this.items = [];
+            this.currentUser = null;
+            
+            // 更新显示
+            document.getElementById('userName').textContent = '游客';
+            document.getElementById('userContact').textContent = '未设置联系方式';
+            document.getElementById('userAvatarDisplay').textContent = '👤';
+            document.getElementById('myItems').textContent = '0';
+            document.getElementById('myResolved').textContent = '0';
+            document.getElementById('myMessages').textContent = '0';
+            
+            // 更新首页统计
+            this.updateAdvancedStats();
+            
+            alert('缓存已清除！');
+        }
+    }
+
     // PWA设置
     setupPWA() {
         if ('serviceWorker' in navigator) {
@@ -878,4 +1365,11 @@ const app = new LostFoundApp();
 // 全局函数供HTML调用
 window.showPage = (pageName) => app.showPage(pageName);
 window.searchItems = (keyword) => app.searchItems(keyword);
+window.showMyPosts = () => app.showMyPosts();
+window.editProfile = () => app.editProfile();
+window.showHelp = () => app.showHelp();
+window.clearCache = () => app.clearCache();
 window.advancedFeatures = typeof advancedFeatures !== 'undefined' ? advancedFeatures : null;
+
+// 确保app在全局可用
+window.app = app;

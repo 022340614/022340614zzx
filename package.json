@@ -1,0 +1,37 @@
+{
+  "name": "hbmzu-lost-and-found-pwa",
+  "version": "2.1.0",
+  "description": "湖北民族大学校园失物招领智能PWA平台",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "serve": "npx http-server -p 3000",
+    "build": "echo 'PWA应用无需构建'",
+    "deploy": "node deploy.js"
+  },
+  "keywords": [
+    "pwa",
+    "lost-and-found",
+    "campus",
+    "hbmzu",
+    "湖北民族大学"
+  ],
+  "author": "校园技术团队",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/022340614/022340614zzx"
+  },
+  "homepage": "https://022340614.github.io/022340614zzx/",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
