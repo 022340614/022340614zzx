@@ -691,22 +691,54 @@ class LostFoundApp {
     }
 
     publishItem() {
+        console.log('publishItem函数被调用');
+        
         // 直接获取表单元素的值，因为FormData需要name属性
-        const itemType = document.getElementById('itemType').value;
-        const itemTitle = document.getElementById('itemTitle').value;
-        const category = document.getElementById('category').value;
-        const location = document.getElementById('location').value;
-        const description = document.getElementById('description').value;
-        const contact = document.getElementById('contact').value;
+        const itemType = document.getElementById('itemType');
+        const itemTitle = document.getElementById('itemTitle');
+        const category = document.getElementById('category');
+        const location = document.getElementById('location');
+        const description = document.getElementById('description');
+        const contact = document.getElementById('contact');
+        
+        // 检查元素是否存在
+        if (!itemType || !itemTitle || !category || !location || !description || !contact) {
+            console.error('表单元素未找到:', { itemType, itemTitle, category, location, description, contact });
+            alert('表单加载失败，请刷新页面重试');
+            return;
+        }
+        
+        // 获取值
+        const itemTypeValue = itemType.value;
+        const itemTitleValue = itemTitle.value;
+        const categoryValue = category.value;
+        const locationValue = location.value;
+        const descriptionValue = description.value;
+        const contactValue = contact.value;
+        
+        // 验证必填字段
+        if (!itemTypeValue || !itemTitleValue || !categoryValue || !locationValue || !descriptionValue || !contactValue) {
+            alert('请填写所有必填字段');
+            return;
+        }
+        
+        console.log('表单数据:', {
+            type: itemTypeValue,
+            title: itemTitleValue,
+            category: categoryValue,
+            location: locationValue,
+            description: descriptionValue,
+            contact: contactValue
+        });
         
         const item = {
             id: Date.now().toString(),
-            type: itemType,
-            title: itemTitle,
-            category: category,
-            description: description,
-            location: location,
-            contact: contact,
+            type: itemTypeValue,
+            title: itemTitleValue,
+            category: categoryValue,
+            description: descriptionValue,
+            location: locationValue,
+            contact: contactValue,
             timestamp: new Date().toISOString(),
             status: 'pending',
             createdBy: this.currentUser ? this.currentUser.name : '匿名用户'
@@ -714,17 +746,28 @@ class LostFoundApp {
 
         this.items.push(item);
         localStorage.setItem('lostFoundItems', JSON.stringify(this.items));
+        
+        console.log('物品已保存到localStorage，当前物品数:', this.items.length);
 
         // 显示成功消息
         alert('发布成功！');
         
         // 重置表单
-        document.getElementById('publishForm').reset();
-        document.getElementById('imagePreview').innerHTML = '';
+        const publishForm = document.getElementById('publishForm');
+        if (publishForm) {
+            publishForm.reset();
+        }
+        
+        const imagePreview = document.getElementById('imagePreview');
+        if (imagePreview) {
+            imagePreview.innerHTML = '';
+        }
         
         // 更新统计和显示
         this.updateAdvancedStats();
         this.displayRecentItems();
+        
+        console.log('发布完成，更新显示');
 
         // 触发智能推送
         if (typeof advancedFeatures !== 'undefined' && advancedFeatures.checkAndSendNotifications) {

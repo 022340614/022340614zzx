@@ -178,6 +178,7 @@
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">发布信息</button>
                         <button type="reset" class="btn-secondary">重置</button>
+                        <button type="button" class="btn-test" onclick="testPublishForm()" style="background: #ff9800; margin-left: 10px;">测试发布</button>
                     </div>
                 </form>
             </div>
@@ -465,19 +466,8 @@
         function bindAllEvents() {
             console.log('绑定所有事件...');
             
-            // 绑定表单提交事件
-            const publishForm = document.getElementById('publishForm');
-            if (publishForm && !publishForm.hasAttribute('data-bound')) {
-                publishForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (typeof app !== 'undefined' && app.publishItem) {
-                        app.publishItem();
-                    } else {
-                        alert('发布功能加载中...');
-                    }
-                });
-                publishForm.setAttribute('data-bound', 'true');
-            }
+            // 绑定表单提交事件 - 直接绑定，不等待页面切换
+            bindPublishForm();
             
             // 绑定搜索事件
             const searchButton = document.querySelector('.search-input-group button');
@@ -500,7 +490,158 @@
                 chatInput.setAttribute('data-bound', 'true');
             }
             
+            // 绑定图片预览事件
+            const imageInput = document.getElementById('itemImage');
+            if (imageInput && !imageInput.hasAttribute('data-bound')) {
+                imageInput.addEventListener('change', previewImage);
+                imageInput.setAttribute('data-bound', 'true');
+            }
+            
             console.log('所有事件已绑定');
+        }
+        
+        function bindPublishForm() {
+            const publishForm = document.getElementById('publishForm');
+            if (publishForm && !publishForm.hasAttribute('data-bound')) {
+                console.log('绑定发布表单提交事件...');
+                publishForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('发布表单提交事件触发');
+                    
+                    // 验证表单
+                    if (!validatePublishForm()) {
+                        return;
+                    }
+                    
+                    if (typeof app !== 'undefined' && app.publishItem) {
+                        console.log('调用app.publishItem()');
+                        app.publishItem();
+                    } else {
+                        console.error('app.publishItem未定义');
+                        // 备用发布功能
+                        backupPublishItem();
+                    }
+                });
+                publishForm.setAttribute('data-bound', 'true');
+                console.log('发布表单事件绑定完成');
+            } else if (!publishForm) {
+                console.error('找不到发布表单元素');
+            }
+        }
+        
+        function validatePublishForm() {
+            const requiredFields = ['itemType', 'itemTitle', 'category', 'location', 'description', 'contact'];
+            let isValid = true;
+            let errorMessage = '';
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field && !field.value.trim()) {
+                    isValid = false;
+                    errorMessage += `${field.previousElementSibling?.textContent || fieldId} 不能为空
+`;
+                }
+            });
+            
+            if (!isValid) {
+                alert('请填写所有必填字段：
+' + errorMessage);
+            }
+            
+            return isValid;
+        }
+        
+        function backupPublishItem() {
+            console.log('使用备用发布功能');
+            
+            // 获取表单数据
+            const itemType = document.getElementById('itemType').value;
+            const itemTitle = document.getElementById('itemTitle').value;
+            const category = document.getElementById('category').value;
+            const location = document.getElementById('location').value;
+            const description = document.getElementById('description').value;
+            const contact = document.getElementById('contact').value;
+            
+            // 验证数据
+            if (!itemType || !itemTitle || !category || !location || !description || !contact) {
+                alert('请填写所有必填字段');
+                return;
+            }
+            
+            // 创建物品对象
+            const item = {
+                id: Date.now().toString(),
+                type: itemType,
+                title: itemTitle,
+                category: category,
+                description: description,
+                location: location,
+                contact: contact,
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                createdBy: '匿名用户'
+            };
+            
+            // 保存到localStorage
+            let items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
+            items.push(item);
+            localStorage.setItem('lostFoundItems', JSON.stringify(items));
+            
+            // 显示成功消息
+            alert('发布成功！物品已保存到本地存储。');
+            
+            // 重置表单
+            document.getElementById('publishForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            
+            // 更新统计
+            updateStatistics();
+            
+            // 显示成功提示
+            showSuccessMessage('发布成功！');
+        }
+        
+        function showSuccessMessage(message) {
+            // 创建成功消息提示
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            successDiv.textContent = message;
+            
+            document.body.appendChild(successDiv);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                successDiv.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => successDiv.remove(), 300);
+            }, 3000);
+            
+            // 添加CSS动画
+            if (!document.querySelector('#success-animation')) {
+                const style = document.createElement('style');
+                style.id = 'success-animation';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
         }
 
         function checkAndFixButtons() {
@@ -1170,6 +1311,36 @@
                 console.error('定期检查按钮状态错误:', error);
             }
         }, 10000);
+        
+        // 测试发布表单的函数
+        function testPublishForm() {
+            console.log('测试发布表单...');
+            
+            // 填充测试数据
+            document.getElementById('itemType').value = 'lost';
+            document.getElementById('itemTitle').value = '测试物品 - 学生证';
+            document.getElementById('category').value = '证件';
+            document.getElementById('location').value = '图书馆三楼';
+            document.getElementById('description').value = '这是一个测试物品，用于验证发布功能是否正常工作。';
+            document.getElementById('contact').value = '13800138000';
+            
+            console.log('测试数据已填充');
+            
+            // 检查app.publishItem是否存在
+            if (typeof app !== 'undefined' && app.publishItem) {
+                console.log('调用app.publishItem()...');
+                try {
+                    app.publishItem();
+                    alert('测试发布成功！请检查控制台输出。');
+                } catch (error) {
+                    console.error('发布失败:', error);
+                    alert('发布失败：' + error.message);
+                }
+            } else {
+                console.error('app.publishItem未定义');
+                alert('发布功能未加载，请刷新页面重试。');
+            }
+        }
     </script>
 </body>
 </html>
