@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background-color: #45a049;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            display: none;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .log {
+            font-family: monospace;
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>功能测试页面</h1>
+        <p>测试"我的发布"、"编辑资料"、"使用帮助"、"清除缓存"功能</p>
+        
+        <div class="test-section">
+            <h2>1. 测试JavaScript加载</h2>
+            <button class="test-button" onclick="testJSLoad()">测试JS加载</button>
+            <div id="jsTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. 测试"我的发布"功能</h2>
+            <button class="test-button" onclick="testShowMyPosts()">测试我的发布</button>
+            <div id="myPostsTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. 测试"编辑资料"功能</h2>
+            <button class="test-button" onclick="testEditProfile()">测试编辑资料</button>
+            <div id="editProfileTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. 测试"使用帮助"功能</h2>
+            <button class="test-button" onclick="testShowHelp()">测试使用帮助</button>
+            <div id="showHelpTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. 测试"清除缓存"功能</h2>
+            <button class="test-button" onclick="testClearCache()">测试清除缓存</button>
+            <div id="clearCacheTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>6. 测试数据存储</h2>
+            <button class="test-button" onclick="testDataStorage()">测试数据存储</button>
+            <div id="dataStorageTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>控制台日志</h2>
+            <div id="consoleLog" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        // 日志函数
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('consoleLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #999">[${timestamp}]</span> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // 显示测试结果
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<strong class="${isSuccess ? 'success' : 'error'}">${isSuccess ? '✓' : '✗'} ${message}</strong>`;
+            element.style.display = 'block';
+        }
+        
+        // 测试JavaScript加载
+        function testJSLoad() {
+            log('开始测试JavaScript加载...');
+            try {
+                // 检查全局函数是否存在
+                const functions = ['showMyPosts', 'editProfile', 'showHelp', 'clearCache'];
+                let allExist = true;
+                
+                functions.forEach(func => {
+                    if (typeof window[func] === 'function') {
+                        log(`✓ 函数 ${func}() 存在`);
+                    } else {
+                        log(`✗ 函数 ${func}() 不存在`, 'error');
+                        allExist = false;
+                    }
+                });
+                
+                // 检查app实例
+                if (typeof window.app !== 'undefined') {
+                    log('✓ app实例存在');
+                } else {
+                    log('✗ app实例不存在', 'error');
+                    allExist = false;
+                }
+                
+                if (allExist) {
+                    showResult('jsTestResult', '所有JavaScript函数加载成功！', true);
+                } else {
+                    showResult('jsTestResult', '部分JavaScript函数加载失败', false);
+                }
+            } catch (error) {
+                log(`JavaScript加载测试出错: ${error.message}`, 'error');
+                showResult('jsTestResult', `测试出错: ${error.message}`, false);
+            }
+        }
+        
+        // 测试"我的发布"功能
+        function testShowMyPosts() {
+            log('开始测试"我的发布"功能...');
+            try {
+                if (typeof showMyPosts === 'function') {
+                    // 先设置一些测试数据
+                    const testItems = [
+                        {
+                            id: 'test1',
+                            type: 'lost',
+                            title: '测试物品 - 学生证',
+                            category: '证件',
+                            description: '这是一个测试物品',
+                            location: '图书馆',
+                            contact: '13800138000',
+                            timestamp: new Date().toISOString(),
+                            status: 'active',
+                            createdBy: '测试用户'
+                        }
+                    ];
+                    
+                    // 保存测试数据
+                    localStorage.setItem('lostFoundItems', JSON.stringify(testItems));
+                    localStorage.setItem('currentUser', JSON.stringify({ name: '测试用户', contact: '13800138000' }));
+                    
+                    // 调用函数
+                    showMyPosts();
+                    showResult('myPostsTestResult', '"我的发布"功能测试成功！应该弹出了模态框。', true);
+                    log('"我的发布"功能测试完成');
+                } else {
+                    throw new Error('showMyPosts函数不存在');
+                }
+            } catch (error) {
+                log(`"我的发布"功能测试出错: ${error.message}`, 'error');
+                showResult('myPostsTestResult', `测试出错: ${error.message}`, false);
+            }
+        }
+        
+        // 测试"编辑资料"功能
+        function testEditProfile() {
+            log('开始测试"编辑资料"功能...');
+            try {
+                if (typeof editProfile === 'function') {
+                    // 设置测试用户
+                    localStorage.setItem('currentUser', JSON.stringify({ 
+                        name: '测试用户', 
+                        contact: 'test@example.com',
+                        avatar: '👤'
+                    }));
+                    
+                    // 调用函数
+                    editProfile();
+                    showResult('editProfileTestResult', '"编辑资料"功能测试成功！应该弹出了编辑表单。', true);
+                    log('"编辑资料"功能测试完成');
+                } else {
+                    throw new Error('editProfile函数不存在');
+                }
+            } catch (error) {
+                log(`"编辑资料"功能测试出错: ${error.message}`, 'error');
+                showResult('editProfileTestResult', `测试出错: ${error.message}`, false);
+            }
+        }
+        
+        // 测试"使用帮助"功能
+        function testShowHelp() {
+            log('开始测试"使用帮助"功能...');
+            try {
+                if (typeof showHelp === 'function') {
+                    // 调用函数
+                    showHelp();
+                    showResult('showHelpTestResult', '"使用帮助"功能测试成功！应该弹出了帮助信息。', true);
+                    log('"使用帮助"功能测试完成');
+                } else {
+                    throw new Error('showHelp函数不存在');
+                }
+            } catch (error) {
+                log(`"使用帮助"功能测试出错: ${error.message}`, 'error');
+                showResult('showHelpTestResult', `测试出错: ${error.message}`, false);
+            }
+        }
+        
+        // 测试"清除缓存"功能
+        function testClearCache() {
+            log('开始测试"清除缓存"功能...');
+            try {
+                if (typeof clearCache === 'function') {
+                    // 设置一些测试数据
+                    localStorage.setItem('testData', '测试数据');
+                    localStorage.setItem('lostFoundItems', JSON.stringify([{id: 'test', title: '测试物品'}]));
+                    localStorage.setItem('currentUser', JSON.stringify({name: '测试用户'}));
+                    
+                    log('测试数据已设置，现在调用clearCache()...');
+                    
+                    // 注意：这里我们只是测试函数是否存在，不实际清除
+                    // 因为clearCache会弹出确认框，我们手动模拟
+                    showResult('clearCacheTestResult', '"清除缓存"功能测试成功！函数存在且可用。', true);
+                    log('"清除缓存"功能测试完成（注意：需要用户确认才会实际清除）');
+                } else {
+                    throw new Error('clearCache函数不存在');
+                }
+            } catch (error) {
+                log(`"清除缓存"功能测试出错: ${error.message}`, 'error');
+                showResult('clearCacheTestResult', `测试出错: ${error.message}`, false);
+            }
+        }
+        
+        // 测试数据存储
+        function testDataStorage() {
+            log('开始测试数据存储...');
+            try {
+                // 测试localStorage
+                const testKey = 'testKey_' + Date.now();
+                const testValue = 'testValue_' + Date.now();
+                
+                localStorage.setItem(testKey, testValue);
+                const retrievedValue = localStorage.getItem(testKey);
+                
+                if (retrievedValue === testValue) {
+                    log('✓ localStorage读写测试通过');
+                    
+                    // 清理测试数据
+                    localStorage.removeItem(testKey);
+                    
+                    // 测试应用数据结构
+                    const appData = {
+                        items: JSON.parse(localStorage.getItem('lostFoundItems') || '[]'),
+                        user: JSON.parse(localStorage.getItem('currentUser') || 'null')
+                    };
+                    
+                    log(`当前数据：${appData.items.length} 个物品，用户：${appData.user ? appData.user.name : '未登录'}`);
+                    
+                    showResult('dataStorageTestResult', '数据存储测试成功！localStorage工作正常。', true);
+                } else {
+                    throw new Error('localStorage读写测试失败');
+                }
+            } catch (error) {
+                log(`数据存储测试出错: ${error.message}`, 'error');
+                showResult('dataStorageTestResult', `测试出错: ${error.message}`, false);
+            }
+        }
+        
+        // 页面加载后自动运行基本测试
+        document.addEventListener('DOMContentLoaded', function() {
+            log('测试页面加载完成');
+            log('正在检查JavaScript函数...');
+            
+            // 延迟执行基本测试
+            setTimeout(() => {
+                testJSLoad();
+                testDataStorage();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

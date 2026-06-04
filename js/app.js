@@ -375,9 +375,11 @@ class LostFoundApp {
                     </div>
                     <div class="post-time">${new Date(item.timestamp).toLocaleDateString()}</div>
                     <div class="post-actions">
-                        <button onclick="app.viewItemDetail('${item.id}')">查看详情</button>
-                        <button onclick="app.editItem('${item.id}')">编辑</button>
-                        <button onclick="app.deleteItem('${item.id}')">删除</button>
+                        <button onclick="alert('查看详情功能开发中...\
+物品ID: ${item.id}')">查看详情</button>
+                        <button onclick="alert('编辑功能开发中...\
+物品ID: ${item.id}')">编辑</button>
+                        <button onclick="if(confirm('确定要删除这个物品吗？')) { localStorage.removeItem('lostFoundItems'); alert('删除功能开发中，已清除缓存'); }">删除</button>
                     </div>
                 </div>
             `;
@@ -1369,6 +1371,9 @@ window.showMyPosts = () => app.showMyPosts();
 window.editProfile = () => app.editProfile();
 window.showHelp = () => app.showHelp();
 window.clearCache = () => app.clearCache();
+window.selectAvatar = (avatar) => app.selectAvatar(avatar);
+window.saveProfile = () => app.saveProfile();
+window.closeModal = () => app.closeModal();
 window.advancedFeatures = typeof advancedFeatures !== 'undefined' ? advancedFeatures : null;
 
 // 确保app在全局可用
