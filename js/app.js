@@ -23,6 +23,8 @@ class LostFoundApp {
     }
     
     ensureAllButtonsClickable() {
+        console.log('开始修复所有按钮可点击性...');
+        
         // 确保所有按钮可点击
         this.ensureNavButtonsClickable();
         this.ensureProfileButtonsClickable();
@@ -30,8 +32,197 @@ class LostFoundApp {
         this.ensureFormButtonsClickable();
         this.ensureHotspotCardsClickable();
         this.ensureSuggestionItemsClickable();
+        this.ensureChatButtonsClickable();
+        this.ensureMapButtonsClickable();
+        
+        // 额外检查：修复所有按钮的onclick事件
+        this.fixAllButtonClickEvents();
         
         console.log('所有按钮已确保可点击');
+    }
+    
+    fixAllButtonClickEvents() {
+        // 修复所有按钮的onclick事件
+        const allButtons = document.querySelectorAll('button');
+        allButtons.forEach(button => {
+            this.fixButtonClickEvent(button);
+        });
+        
+        // 修复所有可点击元素
+        const clickableElements = document.querySelectorAll('.hotspot-card, .suggestion-item, .chat-toggle, [onclick]');
+        clickableElements.forEach(element => {
+            this.fixElementClickEvent(element);
+        });
+    }
+    
+    fixButtonClickEvent(button) {
+        if (!button) return;
+        
+        // 确保按钮可点击
+        button.style.pointerEvents = 'auto';
+        button.style.cursor = 'pointer';
+        button.disabled = false;
+        button.style.opacity = '1';
+        
+        // 如果按钮没有onclick事件，根据文本内容添加
+        if (!button.onclick && !button.hasAttribute('data-click-fixed')) {
+            const buttonText = button.textContent.trim();
+            
+            // 导航按钮
+            if (buttonText.includes('校园地图')) {
+                button.onclick = () => this.showCampusMap();
+            } else if (buttonText.includes('首页')) {
+                button.onclick = () => this.showPage('home');
+            } else if (buttonText.includes('发布')) {
+                button.onclick = () => this.showPage('publish');
+            } else if (buttonText.includes('搜索')) {
+                button.onclick = () => this.showPage('search');
+            } else if (buttonText.includes('我的')) {
+                button.onclick = () => this.showPage('profile');
+            } else if (buttonText.includes('管理')) {
+                button.onclick = () => this.showPage('admin');
+            }
+            
+            // 标记为已修复
+            button.setAttribute('data-click-fixed', 'true');
+        }
+    }
+    
+    fixElementClickEvent(element) {
+        if (!element) return;
+        
+        // 确保元素可点击
+        element.style.pointerEvents = 'auto';
+        element.style.cursor = 'pointer';
+        
+        // 热点区域卡片
+        if (element.classList.contains('hotspot-card')) {
+            const location = element.querySelector('h4')?.textContent;
+            if (location && !element.onclick) {
+                element.onclick = () => this.showCampusMapWithLocation(location);
+            }
+        }
+        
+        // 建议项
+        if (element.classList.contains('suggestion-item')) {
+            const location = element.textContent.trim();
+            if (location && !element.onclick) {
+                element.onclick = () => this.selectCampusLocation(location);
+            }
+        }
+    }
+    
+    ensureChatButtonsClickable() {
+        // 确保聊天按钮可点击
+        const chatToggle = document.querySelector('.chat-toggle');
+        const chatSendBtn = document.querySelector('#chatWidget .chat-input button');
+        
+        if (chatToggle) {
+            this.fixButtonClickEvent(chatToggle);
+            if (!chatToggle.onclick) {
+                chatToggle.onclick = () => this.toggleChat();
+            }
+        }
+        
+        if (chatSendBtn) {
+            this.fixButtonClickEvent(chatSendBtn);
+            if (!chatSendBtn.onclick) {
+                chatSendBtn.onclick = () => this.sendChatMessage();
+            }
+        }
+    }
+    
+    ensureMapButtonsClickable() {
+        // 确保地图相关按钮可点击
+        const mapButtons = document.querySelectorAll('.btn-select-campus, .btn-campus-map, .btn-view-on-map');
+        mapButtons.forEach(button => {
+            this.fixButtonClickEvent(button);
+        });
+    }
+    
+    // 校园地图相关函数
+    showCampusMap() {
+        console.log('显示校园地图');
+        if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
+            hbmzuMap.showMap();
+        } else {
+            alert('校园地图功能加载中...');
+        }
+    }
+    
+    showCampusMapWithLocation(location) {
+        console.log('显示校园地图位置:', location);
+        if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
+            hbmzuMap.showMap(location);
+        } else {
+            alert('校园地图功能加载中...');
+            this.selectCampusLocation(location);
+        }
+    }
+    
+    selectCampusLocation(location) {
+        const locationInput = document.getElementById('location');
+        if (locationInput) {
+            locationInput.value = `湖北民族大学 ${location}`;
+            console.log('已选择校园地点:', location);
+        }
+    }
+    
+    toggleChat() {
+        const chatWidget = document.getElementById('chatWidget');
+        if (chatWidget) {
+            if (chatWidget.style.display === 'none' || chatWidget.style.display === '') {
+                chatWidget.style.display = 'block';
+            } else {
+                chatWidget.style.display = 'none';
+            }
+        }
+    }
+    
+    sendChatMessage() {
+        const chatInput = document.getElementById('chatInput');
+        const message = chatInput ? chatInput.value.trim() : '';
+        
+        if (!message) {
+            alert('请输入消息内容');
+            return;
+        }
+        
+        // 添加到消息列表
+        this.addChatMessage('我', message, true);
+        
+        // 清空输入框
+        if (chatInput) {
+            chatInput.value = '';
+        }
+        
+        // 模拟回复
+        setTimeout(() => {
+            const responses = [
+                '您好！我是校园失物招领助手，有什么可以帮您的吗？',
+                '请描述您丢失或捡到的物品，我会尽力帮助您。',
+                '您可以在发布页面填写详细信息，方便其他同学看到。',
+                '建议您检查一下校园地图，看看物品可能丢失的位置。',
+                '感谢您的使用！祝您早日找到失物。'
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            this.addChatMessage('客服', randomResponse, false);
+        }, 1000);
+    }
+    
+    addChatMessage(sender, message, isSelf = false) {
+        const messagesDiv = document.getElementById('chatMessages');
+        if (!messagesDiv) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isSelf ? 'self' : 'other'}`;
+        messageDiv.innerHTML = `
+            <div class="message-sender">${sender}</div>
+            <div class="message-content">${message}</div>
+            <div class="message-time">${new Date().toLocaleTimeString()}</div>
+        `;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
     
     ensureButtonClickable(button) {
@@ -143,17 +334,6 @@ class LostFoundApp {
             this.ensureButtonClickable(item);
         });
     }
-    
-    // 个人中心按钮功能
-    showMyPosts() {
-        alert('我的发布功能');
-    }
-    
-    editProfile() {
-        alert('编辑资料功能');
-    }
-    
-    showHelp() {
     
     // 个人中心按钮功能
     showMyPosts() {

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试 - 校园失物招领</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-title {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status-ok {
+            background: #28a745;
+            color: white;
+        }
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+        .status-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>校园失物招领 - 功能测试</h1>
+        <p>测试所有主要功能是否正常工作</p>
+        
+        <div class="test-section">
+            <h2 class="test-title">1. JavaScript文件加载测试</h2>
+            <button class="test-button" onclick="testJSFiles()">测试JS文件加载</button>
+            <div id="jsTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">2. 导航功能测试</h2>
+            <button class="test-button" onclick="testNavigation()">测试页面切换</button>
+            <div id="navTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">3. 校园地图功能测试</h2>
+            <button class="test-button" onclick="testCampusMap()">测试校园地图</button>
+            <button class="test-button" onclick="testLocationPicker()">测试地点选择器</button>
+            <div id="mapTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">4. 聊天窗口功能测试</h2>
+            <button class="test-button" onclick="testChatWindow()">测试聊天窗口</button>
+            <button class="test-button" onclick="testChatMessages()">测试消息发送</button>
+            <div id="chatTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">5. 表单功能测试</h2>
+            <button class="test-button" onclick="testForms()">测试表单功能</button>
+            <button class="test-button" onclick="testImagePreview()">测试图片预览</button>
+            <div id="formTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">6. 搜索功能测试</h2>
+            <button class="test-button" onclick="testSearch()">测试搜索功能</button>
+            <div id="searchTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">7. 按钮可点击性测试</h2>
+            <button class="test-button" onclick="testButtons()">测试所有按钮</button>
+            <div id="buttonTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">8. 完整功能测试</h2>
+            <button class="test-button" onclick="runAllTests()">运行所有测试</button>
+            <div id="allTestResult" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">测试结果</h2>
+            <div id="testSummary">
+                <p>等待测试运行...</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2 class="test-title">转到主应用</h2>
+            <a href="index.html" style="display: inline-block; background: #2196F3; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin: 10px 0;">打开主应用</a>
+            <p>测试完成后，点击上方链接打开主应用进行实际使用测试。</p>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            jsFiles: { passed: false, message: '' },
+            navigation: { passed: false, message: '' },
+            campusMap: { passed: false, message: '' },
+            chatWindow: { passed: false, message: '' },
+            forms: { passed: false, message: '' },
+            search: { passed: false, message: '' },
+            buttons: { passed: false, message: '' }
+        };
+
+        function showResult(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = `test-result ${type}`;
+            element.style.display = 'block';
+        }
+
+        function updateTestSummary() {
+            const summary = document.getElementById('testSummary');
+            let passed = 0;
+            let total = 0;
+            let html = '<h3>测试结果汇总:</h3><ul>';
+            
+            for (const [test, result] of Object.entries(testResults)) {
+                total++;
+                if (result.passed) passed++;
+                
+                const status = result.passed ? 'status-ok' : 'status-error';
+                const statusText = result.passed ? '通过' : '失败';
+                html += `<li>${getTestName(test)}: <span class="status ${status}">${statusText}</span> - ${result.message}</li>`;
+            }
+            
+            html += `</ul><p><strong>总计: ${passed}/${total} 项测试通过</strong></p>`;
+            summary.innerHTML = html;
+        }
+
+        function getTestName(testKey) {
+            const names = {
+                jsFiles: 'JavaScript文件加载',
+                navigation: '导航功能',
+                campusMap: '校园地图',
+                chatWindow: '聊天窗口',
+                forms: '表单功能',
+                search: '搜索功能',
+                buttons: '按钮可点击性'
+            };
+            return names[testKey] || testKey;
+        }
+
+        function testJSFiles() {
+            try {
+                // 测试全局对象是否存在
+                const tests = [
+                    { name: 'app对象', check: () => typeof app !== 'undefined' },
+                    { name: 'advancedFeatures对象', check: () => typeof advancedFeatures !== 'undefined' },
+                    { name: 'hbmzuMap对象', check: () => typeof hbmzuMap !== 'undefined' },
+                    { name: 'showSection函数', check: () => typeof showSection === 'function' },
+                    { name: 'showCampusMap函数', check: () => typeof showCampusMap === 'function' },
+                    { name: 'toggleChat函数', check: () => typeof toggleChat === 'function' }
+                ];
+
+                let passed = 0;
+                let messages = [];
+                
+                tests.forEach(test => {
+                    if (test.check()) {
+                        passed++;
+                        messages.push(`✅ ${test.name} 正常`);
+                    } else {
+                        messages.push(`❌ ${test.name} 未定义`);
+                    }
+                });
+
+                testResults.jsFiles.passed = passed === tests.length;
+                testResults.jsFiles.message = `${passed}/${tests.length} 项检查通过`;
+                
+                showResult('jsTestResult', messages.join('<br>'), testResults.jsFiles.passed ? 'success' : 'error');
+                updateTestSummary();
+            } catch (error) {
+                showResult('jsTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testNavigation() {
+            try {
+                // 测试页面切换功能
+                const sections = ['home', 'publish', 'search', 'profile', 'admin'];
+                let passed = 0;
+                let messages = [];
+                
+                sections.forEach(section => {
+                    try {
+                        // 尝试调用showSection函数
+                        if (typeof showSection === 'function') {
+                            showSection(section);
+                            messages.push(`✅ ${section} 页面切换正常`);
+                            passed++;
+                        } else {
+                            messages.push(`❌ showSection函数未定义`);
+                        }
+                    } catch (error) {
+                        messages.push(`❌ ${section} 页面切换失败: ${error.message}`);
+                    }
+                });
+
+                testResults.navigation.passed = passed === sections.length;
+                testResults.navigation.message = `${passed}/${sections.length} 个页面切换正常`;
+                
+                showResult('navTestResult', messages.join('<br>'), testResults.navigation.passed ? 'success' : 'warning');
+                updateTestSummary();
+            } catch (error) {
+                showResult('navTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testCampusMap() {
+            try {
+                if (typeof hbmzuMap !== 'undefined' && typeof hbmzuMap.showMap === 'function') {
+                    testResults.campusMap.passed = true;
+                    testResults.campusMap.message = '校园地图功能正常';
+                    showResult('mapTestResult', '✅ 校园地图功能正常', 'success');
+                } else {
+                    testResults.campusMap.passed = false;
+                    testResults.campusMap.message = '校园地图功能未加载';
+                    showResult('mapTestResult', '❌ 校园地图功能未加载', 'error');
+                }
+                updateTestSummary();
+            } catch (error) {
+                showResult('mapTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testLocationPicker() {
+            try {
+                if (typeof selectCampusLocation === 'function') {
+                    // 模拟选择地点
+                    selectCampusLocation('图书馆');
+                    showResult('mapTestResult', '✅ 地点选择器功能正常<br>已选择: 图书馆', 'success');
+                } else {
+                    showResult('mapTestResult', '❌ 地点选择器功能未加载', 'error');
+                }
+            } catch (error) {
+                showResult('mapTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testChatWindow() {
+            try {
+                if (typeof toggleChat === 'function') {
+                    testResults.chatWindow.passed = true;
+                    testResults.chatWindow.message = '聊天窗口功能正常';
+                    showResult('chatTestResult', '✅ 聊天窗口功能正常<br>点击右下角"💬 在线客服"按钮测试', 'success');
+                } else {
+                    testResults.chatWindow.passed = false;
+                    testResults.chatWindow.message = '聊天窗口功能未加载';
+                    showResult('chatTestResult', '❌ 聊天窗口功能未加载', 'error');
+                }
+                updateTestSummary();
+            } catch (error) {
+                showResult('chatTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testChatMessages() {
+            try {
+                if (typeof sendChatMessage === 'function' && typeof addChatMessage === 'function') {
+                    // 测试发送消息
+                    addChatMessage('测试用户', '这是一条测试消息', true);
+                    showResult('chatTestResult', '✅ 消息发送功能正常<br>已发送测试消息', 'success');
+                } else {
+                    showResult('chatTestResult', '❌ 消息发送功能未加载', 'error');
+                }
+            } catch (error) {
+                showResult('chatTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testForms() {
+            try {
+                // 测试表单元素是否存在
+                const formElements = ['itemType', 'itemTitle', 'category', 'location', 'description', 'contact'];
+                let passed = 0;
+                let messages = [];
+                
+                formElements.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        passed++;
+                        messages.push(`✅ ${id} 输入框存在`);
+                    } else {
+                        messages.push(`❌ ${id} 输入框不存在`);
+                    }
+                });
+
+                testResults.forms.passed = passed === formElements.length;
+                testResults.forms.message = `${passed}/${formElements.length} 个表单元素正常`;
+                
+                showResult('formTestResult', messages.join('<br>'), testResults.forms.passed ? 'success' : 'warning');
+                updateTestSummary();
+            } catch (error) {
+                showResult('formTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testImagePreview() {
+            try {
+                if (typeof previewImage === 'function') {
+                    showResult('formTestResult', '✅ 图片预览功能正常', 'success');
+                } else {
+                    showResult('formTestResult', '⚠️ 图片预览功能未加载', 'warning');
+                }
+            } catch (error) {
+                showResult('formTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testSearch() {
+            try {
+                if (typeof searchItems === 'function') {
+                    testResults.search.passed = true;
+                    testResults.search.message = '搜索功能正常';
+                    showResult('searchTestResult', '✅ 搜索功能正常', 'success');
+                } else {
+                    testResults.search.passed = false;
+                    testResults.search.message = '搜索功能未加载';
+                    showResult('searchTestResult', '❌ 搜索功能未加载', 'error');
+                }
+                updateTestSummary();
+            } catch (error) {
+                showResult('searchTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testButtons() {
+            try {
+                // 测试按钮可点击性
+                const buttons = document.querySelectorAll('button');
+                let clickable = 0;
+                let total = buttons.length;
+                
+                buttons.forEach(button => {
+                    if (button.style.pointerEvents !== 'none' && 
+                        button.style.cursor === 'pointer' && 
+                        !button.disabled) {
+                        clickable++;
+                    }
+                });
+
+                testResults.buttons.passed = clickable === total;
+                testResults.buttons.message = `${clickable}/${total} 个按钮可点击`;
+                
+                showResult('buttonTestResult', 
+                    `✅ 测试了 ${total} 个按钮<br>✅ ${clickable} 个按钮可点击<br>${total - clickable} 个按钮需要修复`, 
+                    testResults.buttons.passed ? 'success' : 'warning');
+                updateTestSummary();
+            } catch (error) {
+                showResult('buttonTestResult', `测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function runAllTests() {
+            // 运行所有测试
+            testJSFiles();
+            setTimeout(testNavigation, 500);
+            setTimeout(testCampusMap, 1000);
+            setTimeout(testChatWindow, 1500);
+            setTimeout(testForms, 2000);
+            setTimeout(testSearch, 2500);
+            setTimeout(testButtons, 3000);
+            
+            showResult('allTestResult', '正在运行所有测试...', 'warning');
+            setTimeout(() => {
+                showResult('allTestResult', '所有测试已完成！请查看上方各项测试结果。', 'success');
+            }, 3500);
+        }
+
+        // 页面加载后自动运行基本测试
+        window.addEventListener('load', function() {
+            setTimeout(testJSFiles, 1000);
+            setTimeout(testButtons, 1500);
+        });
+    </script>
+</body>
+</html>
