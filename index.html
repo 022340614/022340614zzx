@@ -285,7 +285,7 @@
     <!-- 高级功能区域 -->
     <div class="advanced-features">
         <!-- 实时聊天窗口 -->
-        <div id="chatWidget" class="chat-widget">
+        <div id="chatWidget" class="chat-widget" style="display: none;">
             <div class="chat-header" onclick="toggleChat()">
                 <span>💬 在线客服</span>
                 <span class="chat-toggle">−</span>
@@ -294,7 +294,7 @@
                 <div id="chatMessages" class="chat-messages"></div>
                 <div class="chat-input">
                     <input type="text" id="chatInput" placeholder="输入消息...">
-                    <button onclick="sendMessage()">发送</button>
+                    <button onclick="sendChatMessage()">发送</button>
                 </div>
             </div>
         </div>
@@ -575,6 +575,110 @@
             }
         }
 
+        // 聊天窗口控制函数
+        function toggleChat() {
+            const chatWidget = document.getElementById('chatWidget');
+            const chatBody = document.querySelector('.chat-body');
+            const chatToggle = document.querySelector('.chat-toggle');
+            
+            if (chatWidget && chatBody && chatToggle) {
+                if (chatWidget.style.display === 'none' || chatWidget.style.display === '') {
+                    // 显示聊天窗口
+                    chatWidget.style.display = 'block';
+                    chatBody.style.display = 'block';
+                    chatToggle.textContent = '−';
+                    
+                    // 聚焦到输入框
+                    const chatInput = document.getElementById('chatInput');
+                    if (chatInput) {
+                        setTimeout(() => chatInput.focus(), 100);
+                    }
+                } else {
+                    // 隐藏聊天窗口
+                    chatWidget.style.display = 'none';
+                    chatToggle.textContent = '+';
+                }
+            }
+        }
+
+        function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput ? chatInput.value.trim() : '';
+            
+            if (!message) {
+                alert('请输入消息内容');
+                return;
+            }
+            
+            // 添加到消息列表
+            addChatMessage('我', message, true);
+            
+            // 清空输入框
+            if (chatInput) {
+                chatInput.value = '';
+            }
+            
+            // 模拟回复
+            setTimeout(() => {
+                const responses = [
+                    '您好！我是校园失物招领助手，有什么可以帮您的吗？',
+                    '请描述您丢失或捡到的物品，我会尽力帮助您。',
+                    '您可以在发布页面填写详细信息，方便其他同学看到。',
+                    '建议您检查一下校园地图，看看物品可能丢失的位置。',
+                    '感谢您的使用！祝您早日找到失物。'
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addChatMessage('客服', randomResponse, false);
+            }, 1000);
+        }
+
+        function addChatMessage(sender, message, isSelf = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            if (!messagesDiv) return;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isSelf ? 'self' : 'other'}`;
+            messageDiv.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div class="message-content">${message}</div>
+                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // 确保聊天窗口按钮可点击
+        function ensureChatButtonsClickable() {
+            const chatToggle = document.querySelector('.chat-toggle');
+            const chatSendBtn = document.querySelector('#chatWidget .chat-input button');
+            
+            if (chatToggle) {
+                chatToggle.style.pointerEvents = 'auto';
+                chatToggle.style.cursor = 'pointer';
+                chatToggle.style.userSelect = 'none';
+                chatToggle.style.webkitTapHighlightColor = 'transparent';
+            }
+            
+            if (chatSendBtn) {
+                chatSendBtn.style.pointerEvents = 'auto';
+                chatSendBtn.style.cursor = 'pointer';
+                chatSendBtn.style.userSelect = 'none';
+                chatSendBtn.style.webkitTapHighlightColor = 'transparent';
+            }
+        }
+
+        // 页面加载后初始化聊天窗口
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保聊天窗口初始为隐藏状态
+            const chatWidget = document.getElementById('chatWidget');
+            if (chatWidget) {
+                chatWidget.style.display = 'none';
+            }
+            
+            // 确保聊天按钮可点击
+            setTimeout(ensureChatButtonsClickable, 1000);
+        });
+
         // 定期检查按钮状态
         setInterval(() => {
             const brokenButtons = document.querySelectorAll('button[disabled], button[style*="pointer-events: none"], button[style*="opacity: 0"]');
@@ -582,6 +686,9 @@
                 console.log('发现', brokenButtons.length, '个可能无法点击的按钮，正在修复...');
                 brokenButtons.forEach(ensureButtonClickable);
             }
+            
+            // 定期检查聊天按钮
+            ensureChatButtonsClickable();
         }, 10000);
     </script>
 </body>

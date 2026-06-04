@@ -30,64 +30,108 @@ class AdvancedFeatures {
                 setTimeout(() => {
                     this.onMessageReceived({
                         type: 'chat',
-                        from: 'system',
-                        message: '消息已送达',
+                        from: '客服',
+                        message: '消息已收到，我们会尽快处理您的咨询。',
                         timestamp: new Date().toISOString()
                     });
-                }, 100);
+                }, 1000);
             },
             onmessage: null
         };
 
-        // 聊天UI组件
-        this.createChatUI();
-    }
-
-    createChatUI() {
-        const chatHTML = `
-            <div id="chatWidget" class="chat-widget">
-                <div class="chat-header">
-                    <span>💬 实时聊天</span>
-                    <button class="chat-toggle">−</button>
-                </div>
-                <div class="chat-body">
-                    <div class="chat-messages" id="chatMessages"></div>
-                    <div class="chat-input">
-                        <input type="text" id="chatInput" placeholder="输入消息...">
-                        <button id="sendMessage">发送</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // 添加到页面
-        if (!document.getElementById('chatWidget')) {
-            document.body.insertAdjacentHTML('beforeend', chatHTML);
-            this.setupChatEvents();
-        }
+        // 不创建重复的聊天UI，使用index.html中已有的聊天窗口
+        // 只设置事件监听器
+        this.setupChatEvents();
     }
 
     setupChatEvents() {
+        // 确保聊天窗口按钮可点击
+        this.ensureChatButtonsClickable();
+        
+        // 监听发送按钮
+        const sendBtn = document.querySelector('#chatWidget .chat-input button');
+        if (sendBtn) {
+            sendBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.sendChatMessage();
+            });
+        }
+        
+        // 监听输入框回车键
         const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendMessage');
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.sendChatMessage();
+                }
+            });
+        }
+        
+        // 监听聊天窗口切换按钮
+        const chatToggle = document.querySelector('#chatWidget .chat-toggle');
+        if (chatToggle) {
+            chatToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleChat();
+            });
+        }
+    }
+    
+    ensureChatButtonsClickable() {
         const chatToggle = document.querySelector('.chat-toggle');
-
-        sendBtn.addEventListener('click', () => this.sendChatMessage());
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.sendChatMessage();
-        });
-
-        chatToggle.addEventListener('click', () => {
-            const chatBody = document.querySelector('.chat-body');
-            chatBody.style.display = chatBody.style.display === 'none' ? 'block' : 'none';
-        });
+        const chatSendBtn = document.querySelector('#chatWidget .chat-input button');
+        
+        if (chatToggle) {
+            chatToggle.style.pointerEvents = 'auto';
+            chatToggle.style.cursor = 'pointer';
+            chatToggle.style.userSelect = 'none';
+            chatToggle.style.webkitTapHighlightColor = 'transparent';
+        }
+        
+        if (chatSendBtn) {
+            chatSendBtn.style.pointerEvents = 'auto';
+            chatSendBtn.style.cursor = 'pointer';
+            chatSendBtn.style.userSelect = 'none';
+            chatSendBtn.style.webkitTapHighlightColor = 'transparent';
+        }
+    }
+    
+    toggleChat() {
+        const chatWidget = document.getElementById('chatWidget');
+        const chatBody = document.querySelector('.chat-body');
+        const chatToggle = document.querySelector('.chat-toggle');
+        
+        if (chatWidget && chatBody && chatToggle) {
+            if (chatWidget.style.display === 'none' || chatWidget.style.display === '') {
+                // 显示聊天窗口
+                chatWidget.style.display = 'block';
+                chatBody.style.display = 'block';
+                chatToggle.textContent = '−';
+                
+                // 聚焦到输入框
+                const chatInput = document.getElementById('chatInput');
+                if (chatInput) {
+                    setTimeout(() => chatInput.focus(), 100);
+                }
+            } else {
+                // 隐藏聊天窗口
+                chatWidget.style.display = 'none';
+                chatToggle.textContent = '+';
+            }
+        }
     }
 
     sendChatMessage() {
         const input = document.getElementById('chatInput');
-        const message = input.value.trim();
+        const message = input ? input.value.trim() : '';
         
-        if (!message) return;
+        if (!message) {
+            alert('请输入消息内容');
+            return;
+        }
 
         // 添加到消息列表
         this.addChatMessage('我', message, true);
@@ -101,11 +145,15 @@ class AdvancedFeatures {
             });
         }
 
-        input.value = '';
+        if (input) {
+            input.value = '';
+        }
     }
 
     addChatMessage(sender, message, isSelf = false) {
         const messagesDiv = document.getElementById('chatMessages');
+        if (!messagesDiv) return;
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isSelf ? 'self' : 'other'}`;
         messageDiv.innerHTML = `
