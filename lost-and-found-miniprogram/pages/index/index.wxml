@@ -1,0 +1,90 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input">
+      <input 
+        placeholder="搜索物品名称或地点" 
+        bindinput="onSearchInput" 
+        value="{{searchText}}"
+      />
+      <text class="search-icon">🔍</text>
+    </view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view 
+      class="tab {{currentTab === 'all' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="all"
+    >
+      全部
+    </view>
+    <view 
+      class="tab {{currentTab === 'found' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="found"
+    >
+      招领
+    </view>
+    <view 
+      class="tab {{currentTab === 'lost' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="lost"
+    >
+      寻物
+    </view>
+  </view>
+
+  <!-- 物品列表 -->
+  <scroll-view class="item-list" scroll-y>
+    <view wx:if="{{loading}}" class="loading">
+      <text>加载中...</text>
+    </view>
+
+    <view wx:elif="{{items.length === 0}}" class="empty-state">
+      <image src="/images/empty.png" mode="aspectFit"></image>
+      <text>暂无{{currentTab === 'all' ? '' : currentTab === 'found' ? '招领' : '寻物'}}信息</text>
+    </view>
+
+    <view wx:else>
+      <view 
+        wx:for="{{items}}" 
+        wx:key="_id" 
+        class="item-card"
+        bindtap="viewDetail"
+        data-item="{{item}}"
+      >
+        <view class="item-header">
+          <view class="item-type {{item.type}}">
+            {{item.type === 'found' ? '招领' : '寻物'}}
+          </view>
+          <view class="item-time">{{item.createTime}}</view>
+        </view>
+        
+        <view class="item-content">
+          <view class="item-title">{{item.name}}</view>
+          <view class="item-location">📍 {{item.location}}</view>
+          <view class="item-desc">{{item.description}}</view>
+        </view>
+
+        <view class="item-images" wx:if="{{item.images && item.images.length > 0}}">
+          <image 
+            wx:for="{{item.images.slice(0, 3)}}" 
+            wx:key="*this" 
+            src="{{item}}" 
+            mode="aspectFill"
+          ></image>
+        </view>
+
+        <view class="item-footer">
+          <view class="item-category">{{item.category}}</view>
+          <view class="item-status {{item.status}}">
+            {{item.status === 'active' ? '进行中' : '已结束'}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

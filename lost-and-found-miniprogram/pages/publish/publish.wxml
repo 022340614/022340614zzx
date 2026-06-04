@@ -1,0 +1,153 @@
+<!--pages/publish/publish.wxml-->
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <!-- 类型选择 -->
+    <view class="form-group">
+      <view class="form-label">类型</view>
+      <view class="type-selector">
+        <view 
+          class="type-option {{formData.type === 'found' ? 'active' : ''}}"
+          bindtap="selectType"
+          data-type="found"
+        >
+          <text class="type-icon">🔍</text>
+          <text>招领（捡到物品）</text>
+        </view>
+        <view 
+          class="type-option {{formData.type === 'lost' ? 'active' : ''}}"
+          bindtap="selectType"
+          data-type="lost"
+        >
+          <text class="type-icon">🔎</text>
+          <text>寻物（丢失物品）</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 物品名称 -->
+    <view class="form-group">
+      <view class="form-label">物品名称</view>
+      <input 
+        class="form-input" 
+        placeholder="请输入物品名称" 
+        name="name"
+        value="{{formData.name}}"
+        bindinput="onInput"
+      />
+    </view>
+
+    <!-- 物品分类 -->
+    <view class="form-group">
+      <view class="form-label">物品分类</view>
+      <picker 
+        range="{{categories}}" 
+        value="{{categoryIndex}}"
+        bindchange="onCategoryChange"
+      >
+        <view class="picker {{formData.category ? '' : 'placeholder'}}">
+          {{formData.category || '请选择物品分类'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 时间 -->
+    <view class="form-group">
+      <view class="form-label">时间</view>
+      <picker 
+        mode="date" 
+        value="{{formData.time}}"
+        bindchange="onTimeChange"
+      >
+        <view class="picker {{formData.time ? '' : 'placeholder'}}">
+          {{formData.time || '请选择时间'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 地点 -->
+    <view class="form-group">
+      <view class="form-label">地点</view>
+      <picker 
+        range="{{locations}}" 
+        value="{{locationIndex}}"
+        bindchange="onLocationChange"
+      >
+        <view class="picker {{formData.location ? '' : 'placeholder'}}">
+          {{formData.location || '请选择地点'}}
+        </view>
+      </picker>
+      <view class="custom-location" wx:if="{{showCustomLocation}}">
+        <input 
+          class="form-input" 
+          placeholder="请输入具体地点" 
+          name="customLocation"
+          value="{{formData.customLocation}}"
+          bindinput="onInput"
+        />
+      </view>
+      <view class="custom-location-toggle" bindtap="toggleCustomLocation">
+        {{showCustomLocation ? '选择预设地点' : '自定义地点'}}
+      </view>
+    </view>
+
+    <!-- 描述 -->
+    <view class="form-group">
+      <view class="form-label">物品描述</view>
+      <textarea 
+        class="form-textarea" 
+        placeholder="请详细描述物品特征、颜色、品牌等信息"
+        name="description"
+        value="{{formData.description}}"
+        bindinput="onInput"
+        maxlength="200"
+      ></textarea>
+      <view class="char-count">{{formData.description ? formData.description.length : 0}}/200</view>
+    </view>
+
+    <!-- 图片上传 -->
+    <view class="form-group">
+      <view class="form-label">上传图片（最多3张）</view>
+      <view class="upload-area">
+        <view 
+          class="upload-item" 
+          wx:for="{{formData.images}}" 
+          wx:key="*this"
+        >
+          <image src="{{item}}" mode="aspectFill"></image>
+          <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">×</view>
+        </view>
+        <view 
+          class="upload-btn {{formData.images.length >= 3 ? 'disabled' : ''}}" 
+          bindtap="chooseImage"
+          wx:if="{{formData.images.length < 3}}"
+        >
+          <text class="upload-icon">+</text>
+          <text>添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="form-group">
+      <view class="form-label">联系方式</view>
+      <input 
+        class="form-input" 
+        placeholder="请输入手机号或微信号" 
+        name="contact"
+        value="{{formData.contact}}"
+        bindinput="onInput"
+      />
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="form-actions">
+      <button 
+        class="submit-btn" 
+        form-type="submit" 
+        disabled="{{!canSubmit}}"
+      >
+        {{submitting ? '发布中...' : '发布信息'}}
+      </button>
+    </view>
+  </form>
+</view>
