@@ -313,79 +313,118 @@
     <script src="js/hbmzu-map.js"></script>
     <script src="js/app-integration.js"></script>
     <script src="js/sw-register.js"></script>
+    
+    <!-- 简单初始化脚本（确保基本功能） -->
+    <script src="js/simple-init.js"></script>
 
-    <!-- 初始化应用 -->
+    <!-- 备用初始化 -->
     <script>
-        // 应用初始化
+        // 备用初始化 - 如果完整应用加载失败，使用简单版本
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM加载完成，开始初始化应用...');
+            console.log('DOM加载完成，开始备用初始化...');
             
-            // 初始化所有功能
-            initializeApplication();
-            
-            // 定期检查并修复按钮状态
-            setInterval(checkAndFixButtons, 5000);
-        });
-
-        function initializeApplication() {
-            try {
-                // 1. 初始化基础应用
-                if (typeof app !== 'undefined') {
-                    console.log('初始化主应用...');
-                    app.init();
+            // 等待1秒，让其他脚本加载
+            setTimeout(function() {
+                // 检查完整应用是否加载成功
+                if (typeof app === 'undefined' || typeof app.init !== 'function') {
+                    console.warn('完整应用未加载，使用简单版本');
+                    
+                    // 确保简单应用已初始化
+                    if (typeof simpleApp !== 'undefined' && typeof simpleApp.init === 'function') {
+                        console.log('使用简单应用');
+                        simpleApp.init();
+                    } else {
+                        console.error('简单应用也未加载，使用最基础功能');
+                        initBasicFunctions();
+                    }
                 } else {
-                    console.error('主应用未定义');
-                    // 创建备用app对象
-                    window.app = {
-                        init: function() {
-                            console.log('备用app初始化');
-                            ensureAllButtonsClickable();
-                        },
-                        showPage: function(pageName) {
-                            showSection(pageName);
-                        },
-                        searchItems: function(keyword) {
-                            alert('搜索: ' + keyword);
+                    console.log('完整应用已加载，尝试初始化...');
+                    try {
+                        app.init();
+                    } catch (error) {
+                        console.error('完整应用初始化失败:', error);
+                        if (typeof simpleApp !== 'undefined' && typeof simpleApp.init === 'function') {
+                            console.log('回退到简单应用');
+                            simpleApp.init();
+                        } else {
+                            initBasicFunctions();
                         }
-                    };
-                    app.init();
+                    }
                 }
-                
-                // 2. 初始化高级功能
-                if (typeof advancedFeatures !== 'undefined') {
-                    console.log('初始化高级功能...');
-                    advancedFeatures.init();
+            }, 1000);
+        });
+        
+        // 最基础的功能初始化
+        function initBasicFunctions() {
+            console.log('初始化最基础功能...');
+            
+            // 1. 确保按钮可点击
+            document.querySelectorAll('button, .hotspot-card, .suggestion-item').forEach(element => {
+                element.style.pointerEvents = 'auto';
+                element.style.cursor = 'pointer';
+                element.style.opacity = '1';
+                element.style.visibility = 'visible';
+            });
+            
+            // 2. 基本的页面切换
+            window.showSection = function(sectionId) {
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                const target = document.getElementById(sectionId);
+                if (target) target.classList.add('active');
+            };
+            
+            // 3. 显示首页
+            showSection('home');
+            
+            // 4. 基本的聊天功能
+            window.toggleChat = function() {
+                const chatWidget = document.getElementById('chatWidget');
+                if (chatWidget) {
+                    chatWidget.style.display = chatWidget.style.display === 'none' ? 'block' : 'none';
                 }
-                
-                // 3. 初始化湖北民族大学地图
-                if (typeof hbmzuMap !== 'undefined') {
-                    console.log('湖北民族大学地图已加载');
-                }
-                
-                // 4. 初始化Service Worker
-                if (typeof serviceWorkerManager !== 'undefined') {
-                    console.log('Service Worker管理器已加载');
-                }
-                
-                // 5. 显示首页
-                showSection('home');
-                
-                // 6. 更新统计数据
-                updateStatistics();
-                
-                // 7. 确保所有按钮可点击
-                ensureAllButtonsClickable();
-                
-                // 8. 绑定所有事件
-                bindAllEvents();
-                
-                console.log('应用初始化完成');
-            } catch (error) {
-                console.error('应用初始化错误:', error);
-                // 尝试恢复基本功能
-                restoreBasicFunctionality();
+            };
+            
+            // 5. 基本的发布功能
+            const publishForm = document.getElementById('publishForm');
+            if (publishForm) {
+                publishForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    alert('发布功能加载中...
+请稍后重试或刷新页面。');
+                };
             }
+            
+            // 6. 基本的搜索功能
+            window.searchItems = function() {
+                const input = document.getElementById('searchInput');
+                if (input && input.value.trim()) {
+                    alert('搜索: ' + input.value.trim() + '
+搜索功能加载中...');
+                } else {
+                    alert('请输入搜索关键词');
+                }
+            };
+            
+            // 7. 基本的校园地图
+            window.showCampusMap = function() {
+                alert('校园地图功能加载中...');
+            };
+            
+            console.log('最基础功能初始化完成');
         }
+        
+        // 全局错误处理
+        window.addEventListener('error', function(event) {
+            console.error('全局错误捕获:', event.error);
+            return true;
+        });
+        
+        // 未处理的Promise拒绝
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('未处理的Promise拒绝:', event.reason);
+        });
 
         function ensureAllButtonsClickable() {
             console.log('确保所有按钮可点击...');
