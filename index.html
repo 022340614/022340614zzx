@@ -30,12 +30,12 @@
             <span class="nav-subtitle">湖北民族大学智能平台</span>
         </div>
         <div class="nav-actions">
-            <button class="nav-campus-map" onclick="hbmzuMap.showMap()">🗺️ 校园地图</button>
-            <button onclick="showSection('home')">🏠 首页</button>
-            <button onclick="showSection('publish')">📝 发布</button>
-            <button onclick="showSection('search')">🔍 搜索</button>
-            <button onclick="showSection('profile')">👤 我的</button>
-            <button onclick="showSection('admin')">⚙️ 管理</button>
+            <button class="nav-campus-map" id="campusMapBtn" data-section="map">🗺️ 校园地图</button>
+            <button class="nav-btn" id="homeBtn" data-section="home">🏠 首页</button>
+            <button class="nav-btn" id="publishBtn" data-section="publish">📝 发布</button>
+            <button class="nav-btn" id="searchBtn" data-section="search">🔍 搜索</button>
+            <button class="nav-btn" id="profileBtn" data-section="profile">👤 我的</button>
+            <button class="nav-btn" id="adminBtn" data-section="admin">⚙️ 管理</button>
         </div>
     </nav>
 
@@ -312,7 +312,6 @@
     <script src="js/hbmzu-map.js"></script>
     <script src="js/app-integration.js"></script>
     <script src="js/sw-register.js"></script>
-    <script src="js/button-diagnostic.js"></script>
 
     <!-- 初始化应用 -->
     <script>
@@ -333,116 +332,175 @@
                 console.log('湖北民族大学地图已加载');
             }
             
+            // 初始化Service Worker
+            if (typeof serviceWorkerManager !== 'undefined') {
+                console.log('Service Worker管理器已加载');
+            }
+            
+            // 设置导航按钮事件
+            setupNavigationButtons();
+            
             // 显示首页
             showSection('home');
             
             // 更新统计数据
             updateStatistics();
+            
+            // 确保所有按钮可点击
+            ensureAllButtonsClickable();
         });
+
+        // 设置导航按钮事件
+        function setupNavigationButtons() {
+            // 导航按钮点击事件
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const sectionId = this.getAttribute('data-section');
+                    console.log('导航按钮点击:', sectionId);
+                    
+                    if (sectionId === 'map') {
+                        // 校园地图
+                        if (typeof hbmzuMap !== 'undefined') {
+                            hbmzuMap.showMap();
+                        } else {
+                            alert('校园地图功能加载中...');
+                        }
+                    } else {
+                        // 其他页面
+                        showSection(sectionId);
+                    }
+                    
+                    // 更新按钮状态
+                    updateNavButtonState(this);
+                });
+                
+                // 确保按钮样式正确
+                ensureButtonClickable(this);
+            });
+            
+            // 校园地图按钮
+            const campusMapBtn = document.getElementById('campusMapBtn');
+            if (campusMapBtn) {
+                campusMapBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('校园地图按钮点击');
+                    if (typeof hbmzuMap !== 'undefined') {
+                        hbmzuMap.showMap();
+                    } else {
+                        alert('校园地图功能加载中...');
+                    }
+                });
+                ensureButtonClickable(campusMapBtn);
+            }
+        }
+
+        // 确保按钮可点击
+        function ensureButtonClickable(button) {
+            if (!button) return;
+            
+            button.style.pointerEvents = 'auto';
+            button.style.cursor = 'pointer';
+            button.style.userSelect = 'none';
+            button.style.webkitTapHighlightColor = 'transparent';
+            button.disabled = false;
+            
+            // 移除可能阻止点击的样式
+            button.style.opacity = '1';
+            button.style.visibility = 'visible';
+            button.style.display = '';
+            
+            // 确保有点击反馈
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            button.addEventListener('mouseup', function() {
+                this.style.transform = '';
+            });
+            
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        }
+
+        // 确保所有按钮可点击
+        function ensureAllButtonsClickable() {
+            // 导航按钮
+            document.querySelectorAll('.nav-actions button').forEach(ensureButtonClickable);
+            
+            // 个人中心按钮
+            document.querySelectorAll('.profile-actions button').forEach(ensureButtonClickable);
+            
+            // 管理员按钮
+            document.querySelectorAll('.admin-actions button').forEach(ensureButtonClickable);
+            
+            // 表单按钮
+            document.querySelectorAll('.btn-primary, .btn-secondary, .search-input-group button').forEach(ensureButtonClickable);
+            
+            // 热点区域卡片
+            document.querySelectorAll('.hotspot-card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.style.pointerEvents = 'auto';
+            });
+            
+            // 建议项
+            document.querySelectorAll('.suggestion-item').forEach(ensureButtonClickable);
+            
+            console.log('所有按钮已确保可点击');
+        }
 
         // 全局函数
         function showSection(sectionId) {
+            console.log('显示页面:', sectionId);
+            
             // 隐藏所有section
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
             
             // 显示目标section
-            document.getElementById(sectionId).classList.add('active');
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // 确保该section内的按钮可点击
+                setTimeout(() => {
+                    targetSection.querySelectorAll('button').forEach(ensureButtonClickable);
+                }, 50);
+            }
             
             // 更新导航状态
             updateNavState(sectionId);
-            
-            // 修复当前section的按钮
-            setTimeout(() => fixCurrentSectionButtons(), 100);
         }
-        
-        // 修复按钮点击问题的全局函数
-        function fixAllButtons() {
-            console.log('开始修复所有按钮...');
-            
-            // 修复导航按钮
-            document.querySelectorAll('.nav-actions button').forEach(btn => {
-                fixButton(btn);
-            });
-            
-            // 修复个人中心按钮
-            document.querySelectorAll('.profile-actions button').forEach(btn => {
-                fixButton(btn);
-            });
-            
-            // 修复管理员按钮
-            document.querySelectorAll('.admin-actions button').forEach(btn => {
-                fixButton(btn);
-            });
-            
-            // 修复表单按钮
-            document.querySelectorAll('.btn-primary, .btn-secondary, .search-input-group button').forEach(btn => {
-                fixButton(btn);
-            });
-            
-            console.log('按钮修复完成');
-        }
-        
-        function fixButton(button) {
-            if (!button) return;
-            
-            // 确保按钮可点击
-            button.style.pointerEvents = 'auto';
-            button.style.cursor = 'pointer';
-            button.style.zIndex = '100';
-            button.disabled = false;
-            
-            // 移除可能阻止点击的类
-            button.classList.remove('disabled', 'inactive', 'hidden');
-            
-            // 确保按钮可见
-            button.style.opacity = '1';
-            button.style.visibility = 'visible';
-            button.style.display = 'flex';
-            
-            // 添加点击反馈
-            if (!button.hasAttribute('data-click-fixed')) {
-                button.addEventListener('click', function(e) {
-                    console.log('按钮被点击:', this.textContent.trim());
-                });
-                button.setAttribute('data-click-fixed', 'true');
-            }
-        }
-        
-        function fixCurrentSectionButtons() {
-            const activeSection = document.querySelector('.section.active');
-            if (!activeSection) return;
-            
-            // 修复当前活动section中的所有按钮
-            activeSection.querySelectorAll('button').forEach(btn => {
-                fixButton(btn);
-            });
-        }
-        
-        // 页面加载后自动修复按钮
-        setTimeout(() => {
-            fixAllButtons();
-            
-            // 每5秒检查一次按钮状态
-            setInterval(() => {
-                const brokenButtons = document.querySelectorAll('button[disabled], button[style*="pointer-events: none"], button[style*="opacity: 0"]');
-                if (brokenButtons.length > 0) {
-                    console.log('发现', brokenButtons.length, '个可能无法点击的按钮，正在修复...');
-                    brokenButtons.forEach(fixButton);
-                }
-            }, 5000);
-        }, 2000);
 
         function updateNavState(sectionId) {
             // 更新导航按钮状态
-            document.querySelectorAll('.nav-actions button').forEach(btn => {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-section') === sectionId) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function updateNavButtonState(activeButton) {
+            // 移除所有按钮的active类
+            document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            const activeBtn = document.querySelector(`.nav-actions button[onclick="showSection('${sectionId}')"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
+            // 添加active类到当前按钮
+            if (activeButton && activeButton.classList.contains('nav-btn')) {
+                activeButton.classList.add('active');
             }
         }
 
@@ -479,6 +537,7 @@
             const locationInput = document.getElementById('location');
             if (locationInput) {
                 locationInput.value = `湖北民族大学 ${location}`;
+                console.log('已选择校园地点:', location);
             }
         }
 
@@ -487,9 +546,13 @@
             const searchInput = document.getElementById('searchInput');
             const keyword = searchInput.value.trim();
             
+            console.log('搜索关键词:', keyword);
+            
             if (keyword) {
                 if (typeof app !== 'undefined' && app.searchItems) {
                     app.searchItems(keyword);
+                } else {
+                    alert('搜索功能加载中...');
                 }
             } else {
                 alert('请输入搜索关键词');
@@ -504,13 +567,22 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    preview.innerHTML = `<img src="${e.target.result}" alt="预览图片">`;
+                    preview.innerHTML = `<img src="${e.target.result}" alt="预览图片" style="max-width: 200px; border-radius: 5px;">`;
                 };
                 reader.readAsDataURL(file);
             } else {
                 preview.innerHTML = '';
             }
         }
+
+        // 定期检查按钮状态
+        setInterval(() => {
+            const brokenButtons = document.querySelectorAll('button[disabled], button[style*="pointer-events: none"], button[style*="opacity: 0"]');
+            if (brokenButtons.length > 0) {
+                console.log('发现', brokenButtons.length, '个可能无法点击的按钮，正在修复...');
+                brokenButtons.forEach(ensureButtonClickable);
+            }
+        }, 10000);
     </script>
 </body>
 </html>

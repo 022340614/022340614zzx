@@ -1,20 +1,19 @@
 // Service Worker for Lost and Found PWA
-const CACHE_NAME = 'lost-found-v1.0.0';
+const CACHE_NAME = 'lost-found-v1.0.1';
 const URLS_TO_CACHE = [
     '/',
     '/index.html',
+    '/admin.html',
     '/styles/main.css',
+    '/styles/responsive.css',
+    '/styles/advanced.css',
+    '/styles/hbmzu-map.css',
     '/js/app.js',
-    '/js/pwa.js',
-    '/manifest.json',
-    '/assets/icon-72x72.png',
-    '/assets/icon-96x96.png',
-    '/assets/icon-128x128.png',
-    '/assets/icon-144x144.png',
-    '/assets/icon-152x152.png',
-    '/assets/icon-192x192.png',
-    '/assets/icon-384x384.png',
-    '/assets/icon-512x512.png'
+    '/js/advanced-features.js',
+    '/js/hbmzu-map.js',
+    '/js/app-integration.js',
+    '/js/sw-register.js',
+    '/manifest.json'
 ];
 
 // 安装事件
@@ -83,8 +82,12 @@ self.addEventListener('fetch', (event) => {
                         return fetchResponse;
                     })
                     .catch(() => {
-                        // 网络失败时，对于HTML页面返回缓存的首页
+                        // 网络失败时，对于HTML页面返回缓存的页面
                         if (event.request.headers.get('accept').includes('text/html')) {
+                            const url = new URL(event.request.url);
+                            if (url.pathname.includes('admin')) {
+                                return caches.match('/admin.html');
+                            }
                             return caches.match('/index.html');
                         }
                     });

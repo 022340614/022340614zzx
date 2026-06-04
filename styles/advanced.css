@@ -1,0 +1,562 @@
+/* 高级功能样式 - 校园失物招领PWA应用 */
+
+/* 高级功能容器 */
+.advanced-features {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+}
+
+/* 聊天窗口样式 */
+.chat-widget {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.chat-header:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+}
+
+.chat-toggle {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+}
+
+.chat-body {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    background: #f8f9fa;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+.chat-message.self {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border-bottom-right-radius: 5px;
+}
+
+.chat-message.other {
+    align-self: flex-start;
+    background: white;
+    color: #333;
+    border-bottom-left-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.message-sender {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    opacity: 0.8;
+}
+
+.message-content {
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+.message-time {
+    font-size: 0.7rem;
+    text-align: right;
+    margin-top: 5px;
+    opacity: 0.7;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.chat-input input:focus {
+    border-color: #4CAF50;
+}
+
+.chat-input button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.chat-input button:hover {
+    background: #45a049;
+}
+
+/* 通知区域样式 */
+.notification-area {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 350px;
+}
+
+.notification {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: slideInRight 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
+    border-left: 4px solid #4CAF50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification.success {
+    border-left-color: #4CAF50;
+}
+
+.notification.warning {
+    border-left-color: #ff9800;
+}
+
+.notification.error {
+    border-left-color: #f44336;
+}
+
+.notification.info {
+    border-left-color: #2196F3;
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.notification-message {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.notification-close:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* AI识别样式 */
+.ai-recognition {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.ai-recognition h4 {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+}
+
+.ai-upload {
+    text-align: center;
+}
+
+.ai-upload-btn {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.ai-upload-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.ai-upload input[type="file"] {
+    display: none;
+}
+
+.ai-results {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.ai-loading {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.ai-result .ai-category {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffeb3b;
+}
+
+.ai-result .ai-confidence {
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.ai-result .ai-suggestions ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+}
+
+.ai-result .ai-suggestions li {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+.ai-result .ai-suggestions li:last-child {
+    border-bottom: none;
+}
+
+/* 数据分析仪表板样式 */
+.analytics-panel {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.analytics-panel h3 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4CAF50;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* 高级认证样式 */
+.advanced-auth {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.advanced-auth h4 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    color: white;
+}
+
+.auth-btn.wechat {
+    background: linear-gradient(135deg, #07c160 0%, #05a049 100%);
+}
+
+.auth-btn.qq {
+    background: linear-gradient(135deg, #12b7f5 0%, #0a8fc4 100%);
+}
+
+.auth-btn.phone {
+    background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-profile {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.username {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.user-score {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.score-label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.score-value {
+    font-weight: bold;
+    color: #ff9800;
+    font-size: 1.1rem;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* 按钮修复增强样式 */
+button[disabled] {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* 确保所有按钮可点击 */
+.nav-actions button,
+.btn-primary,
+.btn-secondary,
+.profile-actions button,
+.admin-actions button,
+.search-input-group button,
+.chat-input button,
+.auth-btn,
+.btn-campus-map,
+.btn-view-on-map,
+.btn-select-campus,
+.suggestion-item,
+.map-marker,
+.location-item {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .nav-actions button,
+    .btn-primary,
+    .btn-secondary,
+    .profile-actions button,
+    .admin-actions button,
+    .search-input-group button,
+    .chat-input button,
+    .auth-btn,
+    .btn-campus-map,
+    .btn-view-on-map,
+    .btn-select-campus {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 12px 20px !important;
+    }
+    
+    .suggestion-item,
+    .map-marker,
+    .location-item {
+        min-height: 44px;
+        padding: 12px 15px !important;
+    }
+}
+
+/* 性能优化 */
+@media (prefers-reduced-motion: reduce) {
+    .chat-widget,
+    .notification,
+    .metric-card,
+    .auth-btn,
+    .nav-actions button,
+    .btn-primary,
+    .btn-secondary {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* 打印样式优化 */
+@media print {
+    .advanced-features,
+    .chat-widget,
+    .notification-area,
+    .ai-recognition,
+    .analytics-panel,
+    .advanced-auth {
+        display: none !important;
+    }
+}

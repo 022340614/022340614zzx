@@ -17,28 +17,71 @@ class LostFoundApp {
         this.integrateAdvancedFeatures();
         
         // 确保按钮可点击
-        this.fixAllButtons();
+        this.ensureAllButtonsClickable();
         
         console.log('校园失物招领PWA应用初始化完成');
     }
     
-    fixAllButtons() {
-        // 修复所有按钮的点击问题
-        setTimeout(() => {
-            this.ensureNavButtonsClickable();
-            this.fixProfileButtons();
-            this.fixAdminButtons();
-            this.fixFormButtons();
-        }, 1000);
+    ensureAllButtonsClickable() {
+        // 确保所有按钮可点击
+        this.ensureNavButtonsClickable();
+        this.ensureProfileButtonsClickable();
+        this.ensureAdminButtonsClickable();
+        this.ensureFormButtonsClickable();
+        this.ensureHotspotCardsClickable();
+        this.ensureSuggestionItemsClickable();
+        
+        console.log('所有按钮已确保可点击');
     }
     
-    fixProfileButtons() {
-        // 修复个人中心按钮
+    ensureButtonClickable(button) {
+        if (!button) return;
+        
+        button.style.pointerEvents = 'auto';
+        button.style.cursor = 'pointer';
+        button.style.userSelect = 'none';
+        button.style.webkitTapHighlightColor = 'transparent';
+        button.disabled = false;
+        
+        // 移除可能阻止点击的样式
+        button.style.opacity = '1';
+        button.style.visibility = 'visible';
+        button.style.display = '';
+        
+        // 确保有点击反馈
+        if (!button.hasAttribute('data-click-fixed')) {
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            button.addEventListener('mouseup', function() {
+                this.style.transform = '';
+            });
+            
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+            
+            button.setAttribute('data-click-fixed', 'true');
+        }
+    }
+    
+    ensureNavButtonsClickable() {
+        // 确保导航按钮可点击
+        document.querySelectorAll('.nav-actions button').forEach(button => {
+            this.ensureButtonClickable(button);
+        });
+    }
+    
+    ensureProfileButtonsClickable() {
+        // 确保个人中心按钮可点击
         const profileButtons = document.querySelectorAll('.profile-actions button');
         profileButtons.forEach(button => {
-            button.style.pointerEvents = 'auto';
-            button.style.cursor = 'pointer';
-            button.disabled = false;
+            this.ensureButtonClickable(button);
             
             // 确保有点击事件
             if (!button.onclick) {
@@ -54,13 +97,11 @@ class LostFoundApp {
         });
     }
     
-    fixAdminButtons() {
-        // 修复管理员按钮
+    ensureAdminButtonsClickable() {
+        // 确保管理员按钮可点击
         const adminButtons = document.querySelectorAll('.admin-actions button');
         adminButtons.forEach(button => {
-            button.style.pointerEvents = 'auto';
-            button.style.cursor = 'pointer';
-            button.disabled = false;
+            this.ensureButtonClickable(button);
             
             // 确保有点击事件
             if (!button.onclick) {
@@ -78,15 +119,41 @@ class LostFoundApp {
         });
     }
     
-    fixFormButtons() {
-        // 修复表单按钮
+    ensureFormButtonsClickable() {
+        // 确保表单按钮可点击
         const formButtons = document.querySelectorAll('.btn-primary, .btn-secondary, .search-input-group button');
         formButtons.forEach(button => {
-            button.style.pointerEvents = 'auto';
-            button.style.cursor = 'pointer';
-            button.disabled = false;
+            this.ensureButtonClickable(button);
         });
     }
+    
+    ensureHotspotCardsClickable() {
+        // 确保热点区域卡片可点击
+        document.querySelectorAll('.hotspot-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.style.pointerEvents = 'auto';
+            card.style.userSelect = 'none';
+            card.style.webkitTapHighlightColor = 'transparent';
+        });
+    }
+    
+    ensureSuggestionItemsClickable() {
+        // 确保建议项可点击
+        document.querySelectorAll('.suggestion-item').forEach(item => {
+            this.ensureButtonClickable(item);
+        });
+    }
+    
+    // 个人中心按钮功能
+    showMyPosts() {
+        alert('我的发布功能');
+    }
+    
+    editProfile() {
+        alert('编辑资料功能');
+    }
+    
+    showHelp() {
     
     // 个人中心按钮功能
     showMyPosts() {
