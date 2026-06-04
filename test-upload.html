@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Pages上传测试 - 022340614</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        h1 { color: #4f46e5; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ GitHub Pages上传测试</h1>
+        <p><strong>学号：022340614</strong></p>
+        <p class="success">如果看到此页面，说明HTML文件上传成功！</p>
+        <p>当前时间: <span id="current-time"></span></p>
+        <p>页面路径: <code id="page-path"></code></p>
+    </div>
+
+    <script>
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+        document.getElementById('page-path').textContent = window.location.pathname;
+        
+        // 检查是否在GitHub Pages环境
+        if (window.location.hostname.includes('github.io')) {
+            document.querySelector('h1').innerHTML = '🎉 GitHub Pages部署成功！';
+        }
+    </script>
+</body>
+</html>

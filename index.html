@@ -3,1385 +3,1008 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>校园失物招领 - 智能PWA平台</title>
+    <title>第五章数据可视化平台 - 022340614</title>
+    <meta name="author" content="022340614">
+    <meta name="description" content="基于第五章精确数据的子图绘制与布局管理 - 安全稳定版本">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4CAF50">
+    <!-- 安全头 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.plot.ly 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000">
     
-    <!-- 图标 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <!-- 预加载优化 -->
+    <link rel="preload" href="https://cdn.plot.ly/plotly-2.16.1.min.js" as="script" crossorigin="anonymous">
+    <link rel="preconnect" href="https://cdn.plot.ly">
     
-    <!-- 样式文件 -->
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/responsive.css">
-    <link rel="stylesheet" href="styles/advanced.css">
-    <link rel="stylesheet" href="styles/hbmzu-map.css">
-    
-    <!-- 字体图标 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --text: #111827;
+            --bg: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* 头部导航 */
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::after {
+            content: "022340614";
+            color: #6b7280;
+            font-size: 0.875em;
+            font-weight: 400;
+        }
+
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            color: #6b7280;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-height: 48px;
+            min-width: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* 主要内容 */
+        .main {
+            padding: 2rem 0;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            padding: 3rem 0;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 章节区域 */
+        .section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: "📊";
+            font-size: 1.5em;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.875rem 1.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            min-height: 48px;
+            min-width: 48px;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #0e7490;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(255,255,255,0.95);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            color: #6b7280;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            
+            .nav {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .section {
+                padding: 1.5rem;
+                margin: 0 -1rem 1.5rem;
+                border-radius: 0;
+            }
+            
+            .hero {
+                padding: 2rem 0;
+            }
+            
+            .data-table {
+                font-size: 0.875rem;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chart-container {
+                height: 250px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 0.25rem 0;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 错误状态 */
+        .error {
+            background: var(--error);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="nav-container">
-        <div class="nav-brand">
-            <h1>🏫 校园失物招领</h1>
-            <span class="nav-subtitle">湖北民族大学智能平台</span>
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo">
+                <span>📊</span>
+                <span>第五章数据可视化</span>
+            </a>
+            <nav class="nav">
+                <a href="#section5-1" class="nav-btn active">5.1 固定区域子图</a>
+                <a href="#section5-2" class="nav-btn">5.2 自定义区域子图</a>
+                <a href="#section5-3" class="nav-btn">5.3 共享坐标轴</a>
+                <a href="#section5-4" class="nav-btn">5.4 子图布局</a>
+            </nav>
         </div>
-        <div class="nav-actions">
-            <button class="nav-campus-map" onclick="showCampusMap()">🗺️ 校园地图</button>
-            <button onclick="showSection('home')">🏠 首页</button>
-            <button onclick="showSection('publish')">📝 发布</button>
-            <button onclick="showSection('search')">🔍 搜索</button>
-            <button onclick="showSection('profile')">👤 我的</button>
-            <button onclick="showSection('admin')">⚙️ 管理</button>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h1>第五章数据可视化平台</h1>
+                <p>基于第五章精确教学数据的子图绘制与布局管理</p>
+                <p><strong>学号：022340614 | 仓库：022340614/022340614 | 安全稳定版本</strong></p>
+                <div class="success" id="status-message">
+                    ✅ 平台已安全部署 - HTTPS加密传输
+                </div>
+            </section>
+
+            <!-- 5.1 绘制固定区域的子图 -->
+            <section id="section5-1" class="section">
+                <h2 class="section-title">5.1 绘制固定区域的子图</h2>
+                
+                <h3>5.1.2 实例1：某工厂产品A与产品B去年的销售额分析</h3>
+                <div class="chart-container" id="chart5-1-2">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <div class="loading"></div>
+                        <span style="margin-left: 1rem;">加载图表数据...</span>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>月份</th><th>产品A销售额(亿元)</th><th>产品B销售额(亿元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1月</td><td>20</td><td>17</td></tr>
+                        <tr><td>2月</td><td>28</td><td>22</td></tr>
+                        <tr><td>3月</td><td>23</td><td>39</td></tr>
+                        <tr><td>4月</td><td>16</td><td>26</td></tr>
+                        <tr><td>5月</td><td>29</td><td>35</td></tr>
+                        <tr><td>6月</td><td>36</td><td>23</td></tr>
+                        <tr><td>7月</td><td>39</td><td>25</td></tr>
+                        <tr><td>8月</td><td>33</td><td>27</td></tr>
+                        <tr><td>9月</td><td>31</td><td>29</td></tr>
+                        <tr><td>10月</td><td>19</td><td>38</td></tr>
+                        <tr><td>11月</td><td>21</td><td>28</td></tr>
+                        <tr><td>12月</td><td>25</td><td>20</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>5.1.4 实例2：部分国家养猫与养狗人群比例分析</h3>
+                <div class="chart-container" id="chart5-1-4">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <div class="loading"></div>
+                        <span style="margin-left: 1rem;">加载图表数据...</span>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="toggleChartOrientation()">
+                    <span>🔄</span>切换图表方向
+                </button>
+                <button class="btn btn-secondary" onclick="exportChartData('5.1')">
+                    <span>📥</span>导出数据
+                </button>
+            </section>
+
+            <!-- 5.2 绘制自定义区域的子图 -->
+            <section id="section5-2" class="section">
+                <h2 class="section-title">5.2 绘制自定义区域的子图</h2>
+                
+                <h3>5.2.2 实例3：2017年与2018年抖音用户分析</h3>
+                <div class="chart-container" id="chart5-2-2">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <div class="loading"></div>
+                        <span style="margin-left: 1rem;">加载图表数据...</span>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>地区</th><th>2017年用户比例(%)</th><th>2018年用户比例(%)</th><th>增长倍数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>一线城市</td><td>21</td><td>13</td><td>51</td></tr>
+                        <tr><td>二线城市</td><td>35</td><td>32</td><td>73</td></tr>
+                        <tr><td>三线城市</td><td>22</td><td>27</td><td>99</td></tr>
+                        <tr><td>四线及以外</td><td>19</td><td>27</td><td>132</td></tr>
+                        <tr><td>其他国家及地区</td><td>3</td><td>1</td><td>45</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 5.3 共享子图的坐标轴 -->
+            <section id="section5-3" class="section">
+                <h2 class="section-title">5.3 共享子图的坐标轴</h2>
+                
+                <h3>5.3.3 实例4：某地区全年平均气温与降水量、蒸发量的关系</h3>
+                <div class="chart-container" id="chart5-3-3">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <div class="loading"></div>
+                        <span style="margin-left: 1rem;">加载图表数据...</span>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>月份</th><th>平均气温(°C)</th><th>降水量(ml)</th><th>蒸发量(ml)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1月</td><td>2.0</td><td>2.6</td><td>2.0</td></tr>
+                        <tr><td>2月</td><td>2.2</td><td>5.9</td><td>4.9</td></tr>
+                        <tr><td>3月</td><td>3.3</td><td>9.0</td><td>7.0</td></tr>
+                        <tr><td>4月</td><td>4.5</td><td>26.4</td><td>23.2</td></tr>
+                        <tr><td>5月</td><td>6.3</td><td>28.7</td><td>25.6</td></tr>
+                        <tr><td>6月</td><td>10.2</td><td>70.7</td><td>76.7</td></tr>
+                        <tr><td>7月</td><td>20.3</td><td>175.6</td><td>135.6</td></tr>
+                        <tr><td>8月</td><td>33.4</td><td>182.2</td><td>162.2</td></tr>
+                        <tr><td>9月</td><td>23.0</td><td>48.7</td><td>32.6</td></tr>
+                        <tr><td>10月</td><td>16.5</td><td>18.8</td><td>20.0</td></tr>
+                        <tr><td>11月</td><td>12.0</td><td>6.0</td><td>6.4</td></tr>
+                        <tr><td>12月</td><td>6.2</td><td>2.3</td><td>3.3</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 5.4 子图的布局 -->
+            <section id="section5-4" class="section">
+                <h2 class="section-title">5.4 子图的布局</h2>
+                
+                <h3>5.4.4 实例5：2018年上半年某品牌汽车销售情况</h3>
+                <div class="chart-container" id="chart5-4-4">
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <div class="loading"></div>
+                        <span style="margin-left: 1rem;">加载图表数据...</span>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>月份</th><th>销售额(亿元)</th><th>城市</th><th>销量(辆)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1月</td><td>2150</td><td>北京</td><td>83775</td></tr>
+                        <tr><td>2月</td><td>1050</td><td>上海</td><td>62860</td></tr>
+                        <tr><td>3月</td><td>1560</td><td>广州</td><td>59176</td></tr>
+                        <tr><td>4月</td><td>1480</td><td>深圳</td><td>64205</td></tr>
+                        <tr><td>5月</td><td>1530</td><td>浙江</td><td>48671</td></tr>
+                        <tr><td>6月</td><td>1490</td><td>山东</td><td>39968</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 性能监控 -->
+            <section class="section">
+                <h2 class="section-title">🔧 平台性能监控</h2>
+                <div id="performance-metrics">
+                    <p>加载时间: <span id="load-time">计算中...</span></p>
+                    <p>图表数量: <span id="chart-count">5</span> 个</p>
+                    <p>数据点总数: <span id="data-points">56</span> 个</p>
+                    <p>安全状态: <span class="success">✅ 已启用HTTPS加密</span></p>
+                </div>
+            </section>
         </div>
-    </nav>
-
-    <!-- 主要内容区域 -->
-    <main class="main-container">
-        <!-- 首页 -->
-        <section id="home" class="section active">
-            <div class="hero-section">
-                <h2>欢迎使用湖北民族大学失物招领平台</h2>
-                <p>智能PWA应用，让失物更快回家！</p>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="totalItems">0</span>
-                        <span class="stat-label">总物品数</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="foundItems">0</span>
-                        <span class="stat-label">已找回</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="activeUsers">0</span>
-                        <span class="stat-label">活跃用户</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="recent-items">
-                <h3>📢 最新发布</h3>
-                <div id="recentItemsList" class="items-grid">
-                    <!-- 动态加载最新物品 -->
-                </div>
-            </div>
-
-            <div class="campus-highlights">
-                <h3>🏫 校园热点区域</h3>
-                <div class="hotspots-grid">
-                    <div class="hotspot-card" onclick="showCampusMapWithLocation('图书馆')">
-                        <div class="hotspot-icon">📚</div>
-                        <div class="hotspot-info">
-                            <h4>图书馆</h4>
-                            <p>学习用品丢失高发区</p>
-                            <span class="hotspot-count">12件待认领</span>
-                        </div>
-                    </div>
-                    <div class="hotspot-card" onclick="showCampusMapWithLocation('学生食堂')">
-                        <div class="hotspot-icon">-️</div>
-                        <div class="hotspot-info">
-                            <h4>学生食堂</h4>
-                            <p>个人物品遗忘区</p>
-                            <span class="hotspot-count">8件待认领</span>
-                        </div>
-                    </div>
-                    <div class="hotspot-card" onclick="showCampusMapWithLocation('操场')">
-                        <div class="hotspot-icon">⚽</div>
-                        <div class="hotspot-info">
-                            <h4>运动场</h4>
-                            <p>运动装备丢失区</p>
-                            <span class="hotspot-count">5件待认领</span>
-                        </div>
-                    </div>
-                    <div class="hotspot-card" onclick="showCampusMapWithLocation('学生宿舍1栋')">
-                        <div class="hotspot-icon">🏠</div>
-                        <div class="hotspot-info">
-                            <h4>学生宿舍</h4>
-                            <p>生活用品遗失区</p>
-                            <span class="hotspot-count">15件待认领</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 发布页面 -->
-        <section id="publish" class="section">
-            <div class="publish-form-container">
-                <h2>📝 发布信息</h2>
-                <form id="publishForm" class="publish-form">
-                    <div class="form-group">
-                        <label for="itemType">信息类型</label>
-                        <select id="itemType" required>
-                            <option value="">请选择</option>
-                            <option value="lost">寻物启事</option>
-                            <option value="found">失物招领</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="itemTitle">物品名称</label>
-                        <input type="text" id="itemTitle" placeholder="例如：黑色钱包、学生证等" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="category">物品分类</label>
-                        <select id="category" required>
-                            <option value="">请选择</option>
-                            <option value="证件">证件类</option>
-                            <option value="电子">电子设备</option>
-                            <option value="书籍">书籍文具</option>
-                            <option value="衣物">衣物配饰</option>
-                            <option value="其他">其他物品</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="location">丢失/发现地点</label>
-                        <input type="text" id="location" placeholder="例如：图书馆三楼、食堂门口" required>
-                        <div class="campus-location-selector">
-                            <div class="selector-header">
-                                <span>选择校园地点:</span>
-                                <button type="button" class="btn-select-campus" onclick="showCampusLocationPicker()">
-                                    🗺️ 从地图选择
-                                </button>
-                            </div>
-                            <div class="campus-location-suggestions">
-                                <div class="suggestion-item" onclick="selectCampusLocation('图书馆')">图书馆</div>
-                                <div class="suggestion-item" onclick="selectCampusLocation('主教学楼')">主教学楼</div>
-                                <div class="suggestion-item" onclick="selectCampusLocation('学生食堂')">学生食堂</div>
-                                <div class="suggestion-item" onclick="selectCampusLocation('操场')">操场</div>
-                                <div class="suggestion-item" onclick="selectCampusLocation('学生宿舍1栋')">学生宿舍1栋</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="description">详细描述</label>
-                        <textarea id="description" placeholder="请详细描述物品特征、颜色、品牌等信息" rows="4" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="contact">联系方式</label>
-                        <input type="text" id="contact" placeholder="手机号或微信号" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="itemImage">物品图片（可选）</label>
-                        <input type="file" id="itemImage" accept="image/*" onchange="previewImage(event)">
-                        <div id="imagePreview" class="image-preview"></div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">发布信息</button>
-                        <button type="reset" class="btn-secondary">重置</button>
-                        <button type="button" class="btn-test" onclick="testPublishForm()" style="background: #ff9800; margin-left: 10px;">测试发布</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- 搜索页面 -->
-        <section id="search" class="section">
-            <div class="search-container">
-                <h2>🔍 搜索物品</h2>
-                <div class="search-controls">
-                    <div class="search-input-group">
-                        <input type="text" id="searchInput" placeholder="搜索物品或校园地点...">
-                        <button onclick="searchItems()">搜索</button>
-                    </div>
-                    <div class="search-filters">
-                        <select id="searchType">
-                            <option value="all">全部类型</option>
-                            <option value="lost">寻物启事</option>
-                            <option value="found">失物招领</option>
-                        </select>
-                        <select id="searchCategory">
-                            <option value="all">全部分类</option>
-                            <option value="证件">证件类</option>
-                            <option value="电子">电子设备</option>
-                            <option value="书籍">书籍文具</option>
-                            <option value="衣物">衣物配饰</option>
-                            <option value="其他">其他物品</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="searchResults" class="search-results">
-                    <!-- 搜索结果将在这里显示 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 个人中心 -->
-        <section id="profile" class="section">
-            <div class="profile-container">
-                <h2>👤 个人中心</h2>
-                <div class="profile-info">
-                    <div class="user-avatar">
-                        <div id="userAvatarDisplay" class="avatar-placeholder">👤</div>
-                    </div>
-                    <div class="user-details">
-                        <h3 id="userName">游客</h3>
-                        <p id="userContact">未设置联系方式</p>
-                        <div class="user-stats">
-                            <span>发布: <strong id="myItems">0</strong></span>
-                            <span>成功: <strong id="myResolved">0</strong></span>
-                            <span>消息: <strong id="myMessages">0</strong></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-actions">
-                    <button onclick="showMyPosts()">我的发布</button>
-                    <button onclick="editProfile()">编辑资料</button>
-                    <button onclick="showHelp()">使用帮助</button>
-                    <button onclick="clearCache()">清除缓存</button>
-                </div>
-
-                <div id="myPosts" class="my-posts">
-                    <!-- 我的发布内容 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 管理员后台 -->
-        <section id="admin" class="section">
-            <div class="admin-container">
-                <h2>⚙️ 管理员后台</h2>
-                <div class="admin-stats">
-                    <div class="stat-card">
-                        <h3>平台数据</h3>
-                        <div class="stat-content">
-                            <p>总物品数: <span id="adminTotalItems">0</span></p>
-                            <p>待审核: <span id="adminPendingItems">0</span></p>
-                            <p>已找回: <span id="adminFoundItems">0</span></p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>用户统计</h3>
-                        <div class="stat-content">
-                            <p>注册用户: <span id="adminTotalUsers">0</span></p>
-                            <p>今日活跃: <span id="adminActiveUsers">0</span></p>
-                            <p>发布次数: <span id="adminTotalPosts">0</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="admin-actions">
-                    <button onclick="manageItems()">物品管理</button>
-                    <button onclick="manageUsers()">用户管理</button>
-                    <button onclick="viewAnalytics()">数据分析</button>
-                    <button onclick="systemSettings()">系统设置</button>
-                </div>
-
-                <div id="adminContent" class="admin-content">
-                    <!-- 管理内容区域 -->
-                </div>
-            </div>
-        </section>
     </main>
 
-    <!-- 高级功能区域 -->
-    <div class="advanced-features">
-        <!-- 实时聊天窗口 -->
-        <div id="chatWidget" class="chat-widget" style="display: none;">
-            <div class="chat-header" onclick="toggleChat()">
-                <span>💬 在线客服</span>
-                <span class="chat-toggle">−</span>
-            </div>
-            <div class="chat-body">
-                <div id="chatMessages" class="chat-messages"></div>
-                <div class="chat-input">
-                    <input type="text" id="chatInput" placeholder="输入消息...">
-                    <button onclick="sendChatMessage()">发送</button>
-                </div>
-            </div>
+    <footer class="footer">
+        <div class="container">
+            <p>第五章数据可视化平台 - 基于精确教学数据开发</p>
+            <p>学号：<strong>022340614</strong> | 仓库：<strong>022340614/022340614</strong> | 安全稳定版本</p>
+            <p style="font-size: 0.875rem; opacity: 0.7; margin-top: 1rem;">
+                包含5.1固定区域子图、5.2自定义区域子图、5.3共享坐标轴、5.4子图布局 | 永久公网访问
+            </p>
         </div>
+    </footer>
 
-        <!-- 通知提示 -->
-        <div id="notificationArea" class="notification-area"></div>
-    </div>
-
-    <!-- 模态框容器 -->
-    <div id="modalContainer"></div>
-
-    <!-- JavaScript 文件 -->
-    <script src="js/app.js"></script>
-    <script src="js/advanced-features.js"></script>
-    <script src="js/hbmzu-map.js"></script>
-    <script src="js/app-integration.js"></script>
-    <script src="js/sw-register.js"></script>
+    <!-- Plotly.js CDN -->
+    <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
     
-    <!-- 简单初始化脚本（确保基本功能） -->
-    <script src="js/simple-init.js"></script>
-
-    <!-- 备用初始化 -->
+    <!-- 修复脚本 -->
+    <script src="fix.js"></script>
+    
     <script>
-        // 备用初始化 - 如果完整应用加载失败，使用简单版本
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM加载完成，开始备用初始化...');
-            
-            // 等待1秒，让其他脚本加载
-            setTimeout(function() {
-                // 检查完整应用是否加载成功
-                if (typeof app === 'undefined' || typeof app.init !== 'function') {
-                    console.warn('完整应用未加载，使用简单版本');
-                    
-                    // 确保简单应用已初始化
-                    if (typeof simpleApp !== 'undefined' && typeof simpleApp.init === 'function') {
-                        console.log('使用简单应用');
-                        simpleApp.init();
-                    } else {
-                        console.error('简单应用也未加载，使用最基础功能');
-                        initBasicFunctions();
+        // 第五章数据 - 初始化为空，将从GitHub加载
+        let chapter5ExactData = {
+            productSales: { months: [], productA: [], productB: [] },
+            population: { countries: [], catOwners: [], dogOwners: [] },
+            douyin: { cities: [], data2017: [], data2018: [], growth: [] },
+            temperature: { months: [], temperature: [], precipitation: [], evaporation: [] },
+            carSales: { months: [], sales: [], cities: [], salesCount: [] }
+        };
+
+        let currentOrientation = 'horizontal';
+        let performanceStartTime = Date.now();
+
+        // 加载数据 - 优先使用本地文件，然后尝试GitHub
+        async function loadData() {
+            try {
+                const statusElement = document.getElementById('status-message');
+                statusElement.className = 'success';
+                statusElement.innerHTML = '🔄 正在加载数据...';
+                
+                let dataLoaded = false;
+                
+                // 首先尝试加载本地数据文件
+                try {
+                    const localResponse = await fetch('chapter5_data.json');
+                    if (localResponse.ok) {
+                        const data = await localResponse.json();
+                        console.log('成功从本地文件加载数据', data);
+                        
+                        // 更新数据
+                        if (data.productSales) chapter5ExactData.productSales = data.productSales;
+                        if (data.population) chapter5ExactData.population = data.population;
+                        if (data.douyin) chapter5ExactData.douyin = data.douyin;
+                        if (data.temperature) chapter5ExactData.temperature = data.temperature;
+                        if (data.carSales) chapter5ExactData.carSales = data.carSales;
+                        
+                        dataLoaded = true;
+                        statusElement.innerHTML = '✅ 数据加载成功 - 来自本地文件';
                     }
-                } else {
-                    console.log('完整应用已加载，尝试初始化...');
+                } catch (localError) {
+                    console.log('本地数据文件加载失败:', localError.message);
+                }
+                
+                // 如果本地文件失败，尝试GitHub
+                if (!dataLoaded) {
                     try {
-                        app.init();
-                    } catch (error) {
-                        console.error('完整应用初始化失败:', error);
-                        if (typeof simpleApp !== 'undefined' && typeof simpleApp.init === 'function') {
-                            console.log('回退到简单应用');
-                            simpleApp.init();
-                        } else {
-                            initBasicFunctions();
+                        const githubResponse = await fetch('https://raw.githubusercontent.com/022340614/022340614zzx/main/chapter5_data.json');
+                        if (githubResponse.ok) {
+                            const data = await githubResponse.json();
+                            console.log('成功从GitHub加载数据', data);
+                            
+                            // 更新数据
+                            if (data.productSales) chapter5ExactData.productSales = data.productSales;
+                            if (data.population) chapter5ExactData.population = data.population;
+                            if (data.douyin) chapter5ExactData.douyin = data.douyin;
+                            if (data.temperature) chapter5ExactData.temperature = data.temperature;
+                            if (data.carSales) chapter5ExactData.carSales = data.carSales;
+                            
+                            dataLoaded = true;
+                            statusElement.innerHTML = '✅ 数据加载成功 - 来自GitHub仓库';
                         }
+                    } catch (githubError) {
+                        console.log('GitHub数据加载失败:', githubError.message);
                     }
                 }
-            }, 1000);
-        });
-        
-        // 最基础的功能初始化
-        function initBasicFunctions() {
-            console.log('初始化最基础功能...');
-            
-            // 1. 确保按钮可点击
-            document.querySelectorAll('button, .hotspot-card, .suggestion-item').forEach(element => {
-                element.style.pointerEvents = 'auto';
-                element.style.cursor = 'pointer';
-                element.style.opacity = '1';
-                element.style.visibility = 'visible';
-            });
-            
-            // 2. 基本的页面切换
-            window.showSection = function(sectionId) {
-                document.querySelectorAll('.section').forEach(section => {
-                    section.classList.remove('active');
-                });
-                const target = document.getElementById(sectionId);
-                if (target) target.classList.add('active');
-            };
-            
-            // 3. 显示首页
-            showSection('home');
-            
-            // 4. 基本的聊天功能
-            window.toggleChat = function() {
-                const chatWidget = document.getElementById('chatWidget');
-                if (chatWidget) {
-                    chatWidget.style.display = chatWidget.style.display === 'none' ? 'block' : 'none';
+                
+                // 如果都失败，使用默认数据
+                if (!dataLoaded) {
+                    console.log('使用默认数据');
+                    chapter5ExactData = {
+                        productSales: {
+                            months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                            productA: [20, 28, 23, 16, 29, 36, 39, 33, 31, 19, 21, 25],
+                            productB: [17, 22, 39, 26, 35, 23, 25, 27, 29, 38, 28, 20]
+                        },
+                        population: {
+                            countries: ['中国', '加拿大', '巴西', '澳大利亚', '日本', '墨西哥', '俄罗斯', '韩国', '瑞士', '土耳其', '英国', '美国'],
+                            catOwners: [19, 33, 28, 29, 14, 24, 57, 6, 26, 15, 27, 39],
+                            dogOwners: [25, 33, 58, 39, 15, 64, 29, 23, 22, 11, 27, 50]
+                        },
+                        douyin: {
+                            cities: ['一线城市', '二线城市', '三线城市', '四线及以外', '其他国家及地区'],
+                            data2017: [21, 35, 22, 19, 3],
+                            data2018: [13, 32, 27, 27, 1],
+                            growth: [51, 73, 99, 132, 45]
+                        },
+                        temperature: {
+                            months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                            temperature: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 33.4, 23.0, 16.5, 12.0, 6.2],
+                            precipitation: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+                            evaporation: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                        },
+                        carSales: {
+                            months: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                            sales: [2150, 1050, 1560, 1480, 1530, 1490],
+                            cities: ['北京', '上海', '广州', '深圳', '浙江', '山东'],
+                            salesCount: [83775, 62860, 59176, 64205, 48671, 39968]
+                        }
+                    };
+                    
+                    statusElement.innerHTML = '⚠️ 使用默认数据（数据文件未找到）';
                 }
-            };
-            
-            // 5. 基本的发布功能
-            const publishForm = document.getElementById('publishForm');
-            if (publishForm) {
-                publishForm.onsubmit = function(e) {
-                    e.preventDefault();
-                    alert('发布功能加载中...
-请稍后重试或刷新页面。');
+                
+                // 更新表格数据
+                updateTableData();
+                // 初始化图表
+                initCharts();
+                
+            } catch (error) {
+                console.error('数据加载错误:', error);
+                document.getElementById('status-message').className = 'error';
+                document.getElementById('status-message').innerHTML = '❌ 数据加载失败: ' + error.message;
+                
+                // 使用默认数据
+                chapter5ExactData = {
+                    productSales: {
+                        months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                        productA: [20, 28, 23, 16, 29, 36, 39, 33, 31, 19, 21, 25],
+                        productB: [17, 22, 39, 26, 35, 23, 25, 27, 29, 38, 28, 20]
+                    },
+                    population: {
+                        countries: ['中国', '加拿大', '巴西', '澳大利亚', '日本', '墨西哥', '俄罗斯', '韩国', '瑞士', '土耳其', '英国', '美国'],
+                        catOwners: [19, 33, 28, 29, 14, 24, 57, 6, 26, 15, 27, 39],
+                        dogOwners: [25, 33, 58, 39, 15, 64, 29, 23, 22, 11, 27, 50]
+                    },
+                    douyin: {
+                        cities: ['一线城市', '二线城市', '三线城市', '四线及以外', '其他国家及地区'],
+                        data2017: [21, 35, 22, 19, 3],
+                        data2018: [13, 32, 27, 27, 1],
+                        growth: [51, 73, 99, 132, 45]
+                    },
+                    temperature: {
+                        months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                        temperature: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 33.4, 23.0, 16.5, 12.0, 6.2],
+                        precipitation: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+                        evaporation: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    },
+                    carSales: {
+                        months: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                        sales: [2150, 1050, 1560, 1480, 1530, 1490],
+                        cities: ['北京', '上海', '广州', '深圳', '浙江', '山东'],
+                        salesCount: [83775, 62860, 59176, 64205, 48671, 39968]
+                    }
                 };
-            }
-            
-            // 6. 基本的搜索功能
-            window.searchItems = function() {
-                const input = document.getElementById('searchInput');
-                if (input && input.value.trim()) {
-                    alert('搜索: ' + input.value.trim() + '
-搜索功能加载中...');
-                } else {
-                    alert('请输入搜索关键词');
-                }
-            };
-            
-            // 7. 基本的校园地图
-            window.showCampusMap = function() {
-                alert('校园地图功能加载中...');
-            };
-            
-            console.log('最基础功能初始化完成');
-        }
-        
-        // 全局错误处理
-        window.addEventListener('error', function(event) {
-            console.error('全局错误捕获:', event.error);
-            return true;
-        });
-        
-        // 未处理的Promise拒绝
-        window.addEventListener('unhandledrejection', function(event) {
-            console.error('未处理的Promise拒绝:', event.reason);
-        });
-
-        function ensureAllButtonsClickable() {
-            console.log('确保所有按钮可点击...');
-            
-            // 修复所有按钮
-            document.querySelectorAll('button').forEach(button => {
-                fixButton(button);
-            });
-            
-            // 修复所有可点击元素
-            document.querySelectorAll('.hotspot-card, .suggestion-item, .chat-toggle, [onclick]').forEach(element => {
-                fixClickableElement(element);
-            });
-            
-            console.log('所有按钮已修复');
-        }
-
-        function fixButton(button) {
-            if (!button) return;
-            
-            // 确保按钮可点击
-            button.style.pointerEvents = 'auto';
-            button.style.cursor = 'pointer';
-            button.disabled = false;
-            button.style.opacity = '1';
-            
-            // 移除可能阻止点击的样式
-            button.style.visibility = 'visible';
-            button.style.display = '';
-            
-            // 根据按钮文本设置onclick事件
-            const buttonText = button.textContent.trim();
-            
-            if (!button.onclick && !button.hasAttribute('data-click-fixed')) {
-                if (buttonText.includes('校园地图') || buttonText.includes('🗺️')) {
-                    button.onclick = showCampusMap;
-                } else if (buttonText.includes('首页') || buttonText.includes('🏠')) {
-                    button.onclick = function() { showSection('home'); };
-                } else if (buttonText.includes('发布') || buttonText.includes('📝')) {
-                    button.onclick = function() { showSection('publish'); };
-                } else if (buttonText.includes('搜索') || buttonText.includes('🔍')) {
-                    button.onclick = function() { showSection('search'); };
-                } else if (buttonText.includes('我的') || buttonText.includes('👤')) {
-                    button.onclick = function() { showSection('profile'); };
-                } else if (buttonText.includes('管理') || buttonText.includes('⚙️')) {
-                    button.onclick = function() { showSection('admin'); };
-                } else if (buttonText.includes('发送')) {
-                    button.onclick = sendChatMessage;
-                }
                 
-                button.setAttribute('data-click-fixed', 'true');
+                updateTableData();
+                initCharts();
             }
         }
 
-        function fixClickableElement(element) {
-            if (!element) return;
-            
-            element.style.pointerEvents = 'auto';
-            element.style.cursor = 'pointer';
-            
-            // 热点区域卡片
-            if (element.classList.contains('hotspot-card')) {
-                const location = element.querySelector('h4')?.textContent;
-                if (location && !element.onclick) {
-                    element.onclick = function() { showCampusMapWithLocation(location); };
-                }
-            }
-            
-            // 建议项
-            if (element.classList.contains('suggestion-item')) {
-                const location = element.textContent.trim();
-                if (location && !element.onclick) {
-                    element.onclick = function() { selectCampusLocation(location); };
-                }
-            }
-        }
-
-        function bindAllEvents() {
-            console.log('绑定所有事件...');
-            
-            // 绑定表单提交事件 - 直接绑定，不等待页面切换
-            bindPublishForm();
-            
-            // 绑定搜索事件
-            const searchButton = document.querySelector('.search-input-group button');
-            if (searchButton && !searchButton.hasAttribute('data-bound')) {
-                searchButton.addEventListener('click', function() {
-                    searchItems();
+        // 更新表格数据
+        function updateTableData() {
+            // 更新产品销售额表格
+            const productTable = document.querySelector('#section5-1 .data-table tbody');
+            if (productTable) {
+                productTable.innerHTML = '';
+                chapter5ExactData.productSales.months.forEach((month, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${month}</td>
+                        <td>${chapter5ExactData.productSales.productA[index]}</td>
+                        <td>${chapter5ExactData.productSales.productB[index]}</td>
+                    `;
+                    productTable.appendChild(row);
                 });
-                searchButton.setAttribute('data-bound', 'true');
             }
             
-            // 绑定聊天输入框回车键
-            const chatInput = document.getElementById('chatInput');
-            if (chatInput && !chatInput.hasAttribute('data-bound')) {
-                chatInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        sendChatMessage();
-                    }
+            // 更新抖音用户表格
+            const douyinTable = document.querySelector('#section5-2 .data-table tbody');
+            if (douyinTable) {
+                douyinTable.innerHTML = '';
+                chapter5ExactData.douyin.cities.forEach((city, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${city}</td>
+                        <td>${chapter5ExactData.douyin.data2017[index]}</td>
+                        <td>${chapter5ExactData.douyin.data2018[index]}</td>
+                        <td>${chapter5ExactData.douyin.growth[index]}</td>
+                    `;
+                    douyinTable.appendChild(row);
                 });
-                chatInput.setAttribute('data-bound', 'true');
             }
             
-            // 绑定图片预览事件
-            const imageInput = document.getElementById('itemImage');
-            if (imageInput && !imageInput.hasAttribute('data-bound')) {
-                imageInput.addEventListener('change', previewImage);
-                imageInput.setAttribute('data-bound', 'true');
-            }
-            
-            console.log('所有事件已绑定');
-        }
-        
-        function bindPublishForm() {
-            const publishForm = document.getElementById('publishForm');
-            if (publishForm && !publishForm.hasAttribute('data-bound')) {
-                console.log('绑定发布表单提交事件...');
-                publishForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    console.log('发布表单提交事件触发');
-                    
-                    // 验证表单
-                    if (!validatePublishForm()) {
-                        return;
-                    }
-                    
-                    if (typeof app !== 'undefined' && app.publishItem) {
-                        console.log('调用app.publishItem()');
-                        app.publishItem();
-                    } else {
-                        console.error('app.publishItem未定义');
-                        // 备用发布功能
-                        backupPublishItem();
-                    }
+            // 更新气温表格
+            const tempTable = document.querySelector('#section5-3 .data-table tbody');
+            if (tempTable) {
+                tempTable.innerHTML = '';
+                chapter5ExactData.temperature.months.forEach((month, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${month}</td>
+                        <td>${chapter5ExactData.temperature.temperature[index]}</td>
+                        <td>${chapter5ExactData.temperature.precipitation[index]}</td>
+                        <td>${chapter5ExactData.temperature.evaporation[index]}</td>
+                    `;
+                    tempTable.appendChild(row);
                 });
-                publishForm.setAttribute('data-bound', 'true');
-                console.log('发布表单事件绑定完成');
-            } else if (!publishForm) {
-                console.error('找不到发布表单元素');
-            }
-        }
-        
-        function validatePublishForm() {
-            const requiredFields = ['itemType', 'itemTitle', 'category', 'location', 'description', 'contact'];
-            let isValid = true;
-            let errorMessage = '';
-            
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field && !field.value.trim()) {
-                    isValid = false;
-                    errorMessage += `${field.previousElementSibling?.textContent || fieldId} 不能为空
-`;
-                }
-            });
-            
-            if (!isValid) {
-                alert('请填写所有必填字段：
-' + errorMessage);
             }
             
-            return isValid;
-        }
-        
-        function backupPublishItem() {
-            console.log('使用备用发布功能');
-            
-            // 获取表单数据
-            const itemType = document.getElementById('itemType').value;
-            const itemTitle = document.getElementById('itemTitle').value;
-            const category = document.getElementById('category').value;
-            const location = document.getElementById('location').value;
-            const description = document.getElementById('description').value;
-            const contact = document.getElementById('contact').value;
-            
-            // 验证数据
-            if (!itemType || !itemTitle || !category || !location || !description || !contact) {
-                alert('请填写所有必填字段');
-                return;
-            }
-            
-            // 创建物品对象
-            const item = {
-                id: Date.now().toString(),
-                type: itemType,
-                title: itemTitle,
-                category: category,
-                description: description,
-                location: location,
-                contact: contact,
-                timestamp: new Date().toISOString(),
-                status: 'pending',
-                createdBy: '匿名用户'
-            };
-            
-            // 保存到localStorage
-            let items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
-            items.push(item);
-            localStorage.setItem('lostFoundItems', JSON.stringify(items));
-            
-            // 显示成功消息
-            alert('发布成功！物品已保存到本地存储。');
-            
-            // 重置表单
-            document.getElementById('publishForm').reset();
-            document.getElementById('imagePreview').innerHTML = '';
-            
-            // 更新统计
-            updateStatistics();
-            
-            // 显示成功提示
-            showSuccessMessage('发布成功！');
-        }
-        
-        function showSuccessMessage(message) {
-            // 创建成功消息提示
-            const successDiv = document.createElement('div');
-            successDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #4CAF50;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 5px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                z-index: 1000;
-                animation: slideIn 0.3s ease-out;
-            `;
-            successDiv.textContent = message;
-            
-            document.body.appendChild(successDiv);
-            
-            // 3秒后自动移除
-            setTimeout(() => {
-                successDiv.style.animation = 'slideOut 0.3s ease-in';
-                setTimeout(() => successDiv.remove(), 300);
-            }, 3000);
-            
-            // 添加CSS动画
-            if (!document.querySelector('#success-animation')) {
-                const style = document.createElement('style');
-                style.id = 'success-animation';
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                    @keyframes slideOut {
-                        from { transform: translateX(0); opacity: 1; }
-                        to { transform: translateX(100%); opacity: 0; }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        }
-
-        function checkAndFixButtons() {
-            // 定期检查按钮状态
-            const brokenButtons = document.querySelectorAll('button[disabled], button[style*="pointer-events: none"], button[style*="opacity: 0"]');
-            if (brokenButtons.length > 0) {
-                console.log('发现', brokenButtons.length, '个可能无法点击的按钮，正在修复...');
-                brokenButtons.forEach(fixButton);
-            }
-            
-            // 检查聊天按钮
-            const chatToggle = document.querySelector('.chat-toggle');
-            const chatSendBtn = document.querySelector('#chatWidget .chat-input button');
-            if (chatToggle) fixButton(chatToggle);
-            if (chatSendBtn) fixButton(chatSendBtn);
-        }
-
-        function restoreBasicFunctionality() {
-            console.log('恢复基本功能...');
-            
-            // 确保页面切换功能
-            window.showSection = showSection;
-            window.showCampusMap = showCampusMap;
-            window.searchItems = searchItems;
-            window.toggleChat = toggleChat;
-            window.sendChatMessage = sendChatMessage;
-            
-            // 确保按钮可点击
-            ensureAllButtonsClickable();
-            
-            // 显示首页
-            showSection('home');
-            
-            alert('应用部分功能加载失败，已恢复基本功能。请刷新页面重试。');
-        }
-
-        // 全局函数 - 显示页面
-        function showSection(sectionId) {
-            console.log('显示页面:', sectionId);
-            
-            try {
-                // 隐藏所有section
-                document.querySelectorAll('.section').forEach(section => {
-                    section.classList.remove('active');
+            // 更新汽车销售表格
+            const carTable = document.querySelector('#section5-4 .data-table tbody');
+            if (carTable) {
+                carTable.innerHTML = '';
+                chapter5ExactData.carSales.months.forEach((month, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${month}</td>
+                        <td>${chapter5ExactData.carSales.sales[index]}</td>
+                        <td>${chapter5ExactData.carSales.cities[index]}</td>
+                        <td>${chapter5ExactData.carSales.salesCount[index]}</td>
+                    `;
+                    carTable.appendChild(row);
                 });
-                
-                // 显示目标section
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                } else {
-                    console.error('找不到section:', sectionId);
-                }
-                
-                // 更新导航按钮active状态
-                updateNavActiveState(sectionId);
-            } catch (error) {
-                console.error('显示页面错误:', error);
             }
         }
 
-        // 更新导航按钮active状态
-        function updateNavActiveState(activeSectionId) {
-            // 移除所有按钮的active类
-            document.querySelectorAll('.nav-actions button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // 为当前活动的按钮添加active类
-            const activeButton = document.querySelector(`.nav-actions button[onclick*="${activeSectionId}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-        }
-
-        // 校园地图显示函数
-        function showCampusMap() {
-            console.log('显示校园地图');
+        // 初始化所有图表
+        function initCharts() {
             try {
-                if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
-                    hbmzuMap.showMap();
-                } else {
-                    alert('校园地图功能加载中...');
-                }
-            } catch (error) {
-                console.error('显示校园地图错误:', error);
-                alert('校园地图功能暂时不可用');
-            }
-        }
-
-        function updateStatistics() {
-            try {
-                // 更新首页统计数据
-                const items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
-                const users = JSON.parse(localStorage.getItem('lostFoundUsers') || '[]');
-                
-                document.getElementById('totalItems').textContent = items.length;
-                document.getElementById('foundItems').textContent = items.filter(item => item.status === 'found').length;
-                document.getElementById('activeUsers').textContent = users.length;
-                
-                // 更新管理员统计数据
-                if (document.getElementById('adminTotalItems')) {
-                    document.getElementById('adminTotalItems').textContent = items.length;
-                    document.getElementById('adminPendingItems').textContent = items.filter(item => item.status === 'pending').length;
-                    document.getElementById('adminFoundItems').textContent = items.filter(item => item.status === 'found').length;
-                    document.getElementById('adminTotalUsers').textContent = users.length;
-                    document.getElementById('adminActiveUsers').textContent = users.filter(user => user.lastActive > Date.now() - 24*60*60*1000).length;
-                    document.getElementById('adminTotalPosts').textContent = items.length;
-                }
-            } catch (error) {
-                console.error('更新统计错误:', error);
-            }
-        }
-
-        // 校园地图相关全局函数
-        function showCampusLocationPicker() {
-            try {
-                if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
-                    hbmzuMap.showMap();
-                } else {
-                    alert('校园地图功能加载中...');
-                }
-            } catch (error) {
-                console.error('显示校园地点选择器错误:', error);
-                alert('校园地图功能暂时不可用');
-            }
-        }
-
-        function showCampusMapWithLocation(location) {
-            console.log('显示校园地图位置:', location);
-            try {
-                if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
-                    hbmzuMap.showMap(location);
-                } else {
-                    alert('校园地图功能加载中...');
-                    // 如果地图不可用，至少设置位置输入框
-                    selectCampusLocation(location);
-                }
-            } catch (error) {
-                console.error('显示校园地图位置错误:', error);
-                selectCampusLocation(location);
-            }
-        }
-
-        function selectCampusLocation(location) {
-            try {
-                const locationInput = document.getElementById('location');
-                if (locationInput) {
-                    locationInput.value = `湖北民族大学 ${location}`;
-                    console.log('已选择校园地点:', location);
-                }
-            } catch (error) {
-                console.error('选择校园地点错误:', error);
-            }
-        }
-
-        // 搜索功能
-        function searchItems() {
-            const searchInput = document.getElementById('searchInput');
-            const keyword = searchInput.value.trim();
-            
-            console.log('搜索关键词:', keyword);
-            
-            if (keyword) {
-                try {
-                    if (typeof app !== 'undefined' && app.searchItems) {
-                        app.searchItems(keyword);
-                    } else {
-                        alert('搜索功能加载中...');
+                // 5.1.2 产品销售额图表
+                Plotly.newPlot('chart5-1-2', [
+                    {
+                        x: chapter5ExactData.productSales.months,
+                        y: chapter5ExactData.productSales.productA,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: '产品A',
+                        line: {color: '#FF6B6B', width: 3},
+                        marker: {size: 6}
+                    },
+                    {
+                        x: chapter5ExactData.productSales.months,
+                        y: chapter5ExactData.productSales.productB,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: '产品B',
+                        line: {color: '#4ECDC4', width: 3},
+                        marker: {size: 6}
                     }
-                } catch (error) {
-                    console.error('搜索错误:', error);
-                    alert('搜索功能暂时不可用');
-                }
-            } else {
-                alert('请输入搜索关键词');
-            }
-        }
-
-        // 图片预览
-        function previewImage(event) {
-            try {
-                const preview = document.getElementById('imagePreview');
-                const file = event.target.files[0];
-                
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.innerHTML = `<img src="${e.target.result}" alt="预览图片" style="max-width: 200px; border-radius: 5px;">`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    preview.innerHTML = '';
-                }
-            } catch (error) {
-                console.error('图片预览错误:', error);
-            }
-        }
-
-        // 聊天窗口控制函数
-        function toggleChat() {
-            try {
-                const chatWidget = document.getElementById('chatWidget');
-                const chatBody = document.querySelector('.chat-body');
-                const chatToggle = document.querySelector('.chat-toggle');
-                
-                if (chatWidget && chatBody && chatToggle) {
-                    if (chatWidget.style.display === 'none' || chatWidget.style.display === '') {
-                        // 显示聊天窗口
-                        chatWidget.style.display = 'block';
-                        chatBody.style.display = 'block';
-                        chatToggle.textContent = '−';
-                        
-                        // 聚焦到输入框
-                        const chatInput = document.getElementById('chatInput');
-                        if (chatInput) {
-                            setTimeout(() => chatInput.focus(), 100);
-                        }
-                    } else {
-                        // 隐藏聊天窗口
-                        chatWidget.style.display = 'none';
-                        chatToggle.textContent = '+';
-                    }
-                }
-            } catch (error) {
-                console.error('切换聊天窗口错误:', error);
-            }
-        }
-
-        function sendChatMessage() {
-            try {
-                const chatInput = document.getElementById('chatInput');
-                const message = chatInput ? chatInput.value.trim() : '';
-                
-                if (!message) {
-                    alert('请输入消息内容');
-                    return;
-                }
-                
-                // 添加到消息列表
-                addChatMessage('我', message, true);
-                
-                // 清空输入框
-                if (chatInput) {
-                    chatInput.value = '';
-                }
-                
-                // 模拟回复
-                setTimeout(() => {
-                    const responses = [
-                        '您好！我是校园失物招领助手，有什么可以帮您的吗？',
-                        '请描述您丢失或捡到的物品，我会尽力帮助您。',
-                        '您可以在发布页面填写详细信息，方便其他同学看到。',
-                        '建议您检查一下校园地图，看看物品可能丢失的位置。',
-                        '感谢您的使用！祝您早日找到失物。'
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    addChatMessage('客服', randomResponse, false);
-                }, 1000);
-            } catch (error) {
-                console.error('发送聊天消息错误:', error);
-                alert('发送消息失败，请重试');
-            }
-        }
-
-        function addChatMessage(sender, message, isSelf = false) {
-            try {
-                const messagesDiv = document.getElementById('chatMessages');
-                if (!messagesDiv) return;
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `chat-message ${isSelf ? 'self' : 'other'}`;
-                messageDiv.innerHTML = `
-                    <div class="message-sender">${sender}</div>
-                    <div class="message-content">${message}</div>
-                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                `;
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            } catch (error) {
-                console.error('添加聊天消息错误:', error);
-            }
-        }
-    </script>
-
-        // 确保按钮可点击的简单函数
-        function ensureButtonsClickable() {
-            console.log('确保按钮可点击...');
-            
-            // 导航按钮
-            document.querySelectorAll('.nav-actions button').forEach(button => {
-                button.style.pointerEvents = 'auto';
-                button.style.cursor = 'pointer';
-                button.disabled = false;
-                button.style.opacity = '1';
-                
-                // 确保onclick事件存在
-                if (!button.onclick) {
-                    const buttonText = button.textContent.trim();
-                    if (buttonText.includes('校园地图')) {
-                        button.onclick = showCampusMap;
-                    } else if (buttonText.includes('首页')) {
-                        button.onclick = function() { showSection('home'); };
-                    } else if (buttonText.includes('发布')) {
-                        button.onclick = function() { showSection('publish'); };
-                    } else if (buttonText.includes('搜索')) {
-                        button.onclick = function() { showSection('search'); };
-                    } else if (buttonText.includes('我的')) {
-                        button.onclick = function() { showSection('profile'); };
-                    } else if (buttonText.includes('管理')) {
-                        button.onclick = function() { showSection('admin'); };
-                    }
-                }
-            });
-            
-            // 热点区域卡片
-            document.querySelectorAll('.hotspot-card').forEach(card => {
-                card.style.cursor = 'pointer';
-                card.style.pointerEvents = 'auto';
-                
-                // 确保onclick事件存在
-                if (!card.onclick) {
-                    const location = card.querySelector('h4')?.textContent;
-                    if (location) {
-                        card.onclick = function() { showCampusMapWithLocation(location); };
-                    }
-                }
-            });
-            
-            // 建议项
-            document.querySelectorAll('.suggestion-item').forEach(item => {
-                item.style.cursor = 'pointer';
-                item.style.pointerEvents = 'auto';
-                
-                // 确保onclick事件存在
-                if (!item.onclick) {
-                    const location = item.textContent.trim();
-                    item.onclick = function() { selectCampusLocation(location); };
-                }
-            });
-            
-            // 表单按钮
-            document.querySelectorAll('.btn-primary, .btn-secondary, .search-input-group button').forEach(button => {
-                button.style.pointerEvents = 'auto';
-                button.style.cursor = 'pointer';
-                button.disabled = false;
-            });
-            
-            console.log('按钮可点击性已确保');
-        }
-
-        // 全局函数 - 显示页面
-        function showSection(sectionId) {
-            console.log('显示页面:', sectionId);
-            
-            try {
-                // 隐藏所有section
-                document.querySelectorAll('.section').forEach(section => {
-                    section.classList.remove('active');
+                ], {
+                    title: '5.1.2 产品A与产品B销售额分析 - 022340614',
+                    xaxis: {title: '月份'},
+                    yaxis: {title: '销售额(亿元)'},
+                    showlegend: true,
+                    legend: {x: 0, y: 1}
                 });
+
+                // 5.1.4 人群比例图表
+                updatePopulationChart();
+
+                // 5.2.2 抖音用户分析图表
+                Plotly.newPlot('chart5-2-2', [
+                    {
+                        x: chapter5ExactData.douyin.cities,
+                        y: chapter5ExactData.douyin.data2017,
+                        type: 'bar',
+                        name: '2017年',
+                        marker: {color: '#667eea'}
+                    },
+                    {
+                        x: chapter5ExactData.douyin.cities,
+                        y: chapter5ExactData.douyin.data2018,
+                        type: 'bar',
+                        name: '2018年',
+                        marker: {color: '#764ba2'}
+                    },
+                    {
+                        x: chapter5ExactData.douyin.cities,
+                        y: chapter5ExactData.douyin.growth,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: '增长倍数',
+                        yaxis: 'y2',
+                        line: {color: '#FF6B6B', width: 3},
+                        marker: {size: 6}
+                    }
+                ], {
+                    title: '5.2.2 2017年与2018年抖音用户分析 - 022340614',
+                    xaxis: {title: '地区'},
+                    yaxis: {title: '用户比例(%)'},
+                    yaxis2: {
+                        title: '增长倍数',
+                        side: 'right',
+                        overlaying: 'y'
+                    },
+                    showlegend: true
+                });
+
+                // 5.3.3 气温与水量关系图表
+                Plotly.newPlot('chart5-3-3', [
+                    {
+                        x: chapter5ExactData.temperature.months,
+                        y: chapter5ExactData.temperature.temperature,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: '平均气温(°C)',
+                        yaxis: 'y1',
+                        line: {color: '#FF6B6B', width: 3}
+                    },
+                    {
+                        x: chapter5ExactData.temperature.months,
+                        y: chapter5ExactData.temperature.precipitation,
+                        type: 'bar',
+                        name: '降水量(ml)',
+                        yaxis: 'y2',
+                        marker: {color: '#4ECDC4', opacity: 0.7}
+                    },
+                    {
+                        x: chapter5ExactData.temperature.months,
+                        y: chapter5ExactData.temperature.evaporation,
+                        type: 'bar',
+                        name: '蒸发量(ml)',
+                        yaxis: 'y2',
+                        marker: {color: '#FFA500', opacity: 0.7}
+                    }
+                ], {
+                    title: '5.3.3 平均气温与降水量、蒸发量的关系 - 022340614',
+                    xaxis: {title: '月份'},
+                    yaxis: {title: '气温(°C)', side: 'left'},
+                    yaxis2: {
+                        title: '水量(ml)',
+                        side: 'right',
+                        overlaying: 'y'
+                    },
+                    showlegend: true
+                });
+
+                // 5.4.4 汽车销售分析图表
+                Plotly.newPlot('chart5-4-4', [
+                    {
+                        x: chapter5ExactData.carSales.months,
+                        y: chapter5ExactData.carSales.sales,
+                        type: 'bar',
+                        name: '月销售额(亿元)',
+                        marker: {color: '#3299CC'}
+                    },
+                    {
+                        x: chapter5ExactData.carSales.cities,
+                        y: chapter5ExactData.carSales.salesCount,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: '城市销量(辆)',
+                        yaxis: 'y2',
+                        line: {color: '#FF6B6B', width: 3},
+                        marker: {size: 6}
+                    }
+                ], {
+                    title: '5.4.4 2018年上半年某品牌汽车销售情况 - 022340614',
+                    xaxis: {title: '月份/城市'},
+                    yaxis: {title: '销售额(亿元)', side: 'left'},
+                    yaxis2: {
+                        title: '销量(辆)',
+                        side: 'right',
+                        overlaying: 'y'
+                    },
+                    showlegend: true
+                });
+
+                updatePerformanceMetrics();
                 
-                // 显示目标section
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                } else {
-                    console.error('找不到section:', sectionId);
-                }
-                
-                // 更新导航按钮active状态
-                updateNavActiveState(sectionId);
             } catch (error) {
-                console.error('显示页面错误:', error);
+                console.error('图表初始化错误:', error);
+                document.getElementById('status-message').className = 'error';
+                document.getElementById('status-message').innerHTML = '❌ 图表加载失败: ' + error.message;
             }
         }
 
-        // 更新导航按钮active状态
-        function updateNavActiveState(activeSectionId) {
-            // 移除所有按钮的active类
-            document.querySelectorAll('.nav-actions button').forEach(btn => {
-                btn.classList.remove('active');
+        // 更新人群比例图表
+        function updatePopulationChart() {
+            Plotly.newPlot('chart5-1-4', [
+                {
+                    y: chapter5ExactData.population.countries,
+                    x: chapter5ExactData.population.catOwners,
+                    type: 'bar',
+                    name: '养猫人群',
+                    orientation: currentOrientation,
+                    marker: {color: '#FFA500'}
+                },
+                {
+                    y: chapter5ExactData.population.countries,
+                    x: chapter5ExactData.population.dogOwners,
+                    type: 'bar',
+                    name: '养狗人群',
+                    orientation: currentOrientation,
+                    marker: {color: '#20B2AA'}
+                }
+            ], {
+                title: `5.1.4 部分国家养猫与养狗人群比例分析 - 022340614`,
+                xaxis: {title: currentOrientation === 'horizontal' ? '人群比例(%)' : '国家'},
+                yaxis: {title: currentOrientation === 'horizontal' ? '国家' : '人群比例(%)'}
             });
+        }
+
+        // 切换图表方向
+        function toggleChartOrientation() {
+            currentOrientation = currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
+            updatePopulationChart();
+        }
+
+        // 导出数据
+        function exportChartData(section) {
+            const data = chapter5ExactData;
+            let csvContent = "data:text/csv;charset=utf-8,";
             
-            // 为当前活动的按钮添加active类
-            const activeButton = document.querySelector(`.nav-actions button[onclick*="${activeSectionId}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-        }
-
-        // 校园地图显示函数
-        function showCampusMap() {
-            console.log('显示校园地图');
-            try {
-                if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
-                    hbmzuMap.showMap();
-                } else {
-                    alert('校园地图功能加载中...');
-                }
-            } catch (error) {
-                console.error('显示校园地图错误:', error);
-                alert('校园地图功能暂时不可用');
-            }
-        }
-
-        function updateStatistics() {
-            try {
-                // 更新首页统计数据
-                const items = JSON.parse(localStorage.getItem('lostFoundItems') || '[]');
-                const users = JSON.parse(localStorage.getItem('lostFoundUsers') || '[]');
-                
-                document.getElementById('totalItems').textContent = items.length;
-                document.getElementById('foundItems').textContent = items.filter(item => item.status === 'found').length;
-                document.getElementById('activeUsers').textContent = users.length;
-                
-                // 更新管理员统计数据
-                if (document.getElementById('adminTotalItems')) {
-                    document.getElementById('adminTotalItems').textContent = items.length;
-                    document.getElementById('adminPendingItems').textContent = items.filter(item => item.status === 'pending').length;
-                    document.getElementById('adminFoundItems').textContent = items.filter(item => item.status === 'found').length;
-                    document.getElementById('adminTotalUsers').textContent = users.length;
-                    document.getElementById('adminActiveUsers').textContent = users.filter(user => user.lastActive > Date.now() - 24*60*60*1000).length;
-                    document.getElementById('adminTotalPosts').textContent = items.length;
-                }
-            } catch (error) {
-                console.error('更新统计错误:', error);
-            }
-        }
-
-        // 校园地图相关全局函数
-        function showCampusLocationPicker() {
-            try {
-                if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
-                    hbmzuMap.showMap();
-                } else {
-                    alert('校园地图功能加载中...');
-                }
-            } catch (error) {
-                console.error('显示校园地点选择器错误:', error);
-                alert('校园地图功能暂时不可用');
-            }
-        }
-
-        function showCampusMapWithLocation(location) {
-            console.log('显示校园地图位置:', location);
-            try {
-                if (typeof hbmzuMap !== 'undefined' && hbmzuMap.showMap) {
-                    hbmzuMap.showMap(location);
-                } else {
-                    alert('校园地图功能加载中...');
-                    // 如果地图不可用，至少设置位置输入框
-                    selectCampusLocation(location);
-                }
-            } catch (error) {
-                console.error('显示校园地图位置错误:', error);
-                selectCampusLocation(location);
-            }
-        }
-
-        function selectCampusLocation(location) {
-            try {
-                const locationInput = document.getElementById('location');
-                if (locationInput) {
-                    locationInput.value = `湖北民族大学 ${location}`;
-                    console.log('已选择校园地点:', location);
-                }
-            } catch (error) {
-                console.error('选择校园地点错误:', error);
-            }
-        }
-
-        // 搜索功能
-        function searchItems() {
-            const searchInput = document.getElementById('searchInput');
-            const keyword = searchInput.value.trim();
-            
-            console.log('搜索关键词:', keyword);
-            
-            if (keyword) {
-                try {
-                    if (typeof app !== 'undefined' && app.searchItems) {
-                        app.searchItems(keyword);
-                    } else {
-                        alert('搜索功能加载中...');
-                    }
-                } catch (error) {
-                    console.error('搜索错误:', error);
-                    alert('搜索功能暂时不可用');
-                }
-            } else {
-                alert('请输入搜索关键词');
-            }
-        }
-
-        // 图片预览
-        function previewImage(event) {
-            try {
-                const preview = document.getElementById('imagePreview');
-                const file = event.target.files[0];
-                
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.innerHTML = `<img src="${e.target.result}" alt="预览图片" style="max-width: 200px; border-radius: 5px;">`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    preview.innerHTML = '';
-                }
-            } catch (error) {
-                console.error('图片预览错误:', error);
-            }
-        }
-
-        // 聊天窗口控制函数
-        function toggleChat() {
-            try {
-                const chatWidget = document.getElementById('chatWidget');
-                const chatBody = document.querySelector('.chat-body');
-                const chatToggle = document.querySelector('.chat-toggle');
-                
-                if (chatWidget && chatBody && chatToggle) {
-                    if (chatWidget.style.display === 'none' || chatWidget.style.display === '') {
-                        // 显示聊天窗口
-                        chatWidget.style.display = 'block';
-                        chatBody.style.display = 'block';
-                        chatToggle.textContent = '−';
-                        
-                        // 聚焦到输入框
-                        const chatInput = document.getElementById('chatInput');
-                        if (chatInput) {
-                            setTimeout(() => chatInput.focus(), 100);
-                        }
-                    } else {
-                        // 隐藏聊天窗口
-                        chatWidget.style.display = 'none';
-                        chatToggle.textContent = '+';
-                    }
-                }
-            } catch (error) {
-                console.error('切换聊天窗口错误:', error);
-            }
-        }
-
-        function sendChatMessage() {
-            try {
-                const chatInput = document.getElementById('chatInput');
-                const message = chatInput ? chatInput.value.trim() : '';
-                
-                if (!message) {
-                    alert('请输入消息内容');
-                    return;
-                }
-                
-                // 添加到消息列表
-                addChatMessage('我', message, true);
-                
-                // 清空输入框
-                if (chatInput) {
-                    chatInput.value = '';
-                }
-                
-                // 模拟回复
-                setTimeout(() => {
-                    const responses = [
-                        '您好！我是校园失物招领助手，有什么可以帮您的吗？',
-                        '请描述您丢失或捡到的物品，我会尽力帮助您。',
-                        '您可以在发布页面填写详细信息，方便其他同学看到。',
-                        '建议您检查一下校园地图，看看物品可能丢失的位置。',
-                        '感谢您的使用！祝您早日找到失物。'
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    addChatMessage('客服', randomResponse, false);
-                }, 1000);
-            } catch (error) {
-                console.error('发送聊天消息错误:', error);
-                alert('发送消息失败，请重试');
-            }
-        }
-
-        function addChatMessage(sender, message, isSelf = false) {
-            try {
-                const messagesDiv = document.getElementById('chatMessages');
-                if (!messagesDiv) return;
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `chat-message ${isSelf ? 'self' : 'other'}`;
-                messageDiv.innerHTML = `
-                    <div class="message-sender">${sender}</div>
-                    <div class="message-content">${message}</div>
-                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                `;
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            } catch (error) {
-                console.error('添加聊天消息错误:', error);
-            }
-        }
-
-        // 确保聊天窗口按钮可点击
-        function ensureChatButtonsClickable() {
-            try {
-                const chatToggle = document.querySelector('.chat-toggle');
-                const chatSendBtn = document.querySelector('#chatWidget .chat-input button');
-                
-                if (chatToggle) {
-                    chatToggle.style.pointerEvents = 'auto';
-                    chatToggle.style.cursor = 'pointer';
-                    chatToggle.style.userSelect = 'none';
-                    chatToggle.style.webkitTapHighlightColor = 'transparent';
-                    
-                    // 确保onclick事件存在
-                    if (!chatToggle.onclick) {
-                        chatToggle.onclick = toggleChat;
-                    }
-                }
-                
-                if (chatSendBtn) {
-                    chatSendBtn.style.pointerEvents = 'auto';
-                    chatSendBtn.style.cursor = 'pointer';
-                    chatSendBtn.style.userSelect = 'none';
-                    chatSendBtn.style.webkitTapHighlightColor = 'transparent';
-                    
-                    // 确保onclick事件存在
-                    if (!chatSendBtn.onclick) {
-                        chatSendBtn.onclick = sendChatMessage;
-                    }
-                }
-            } catch (error) {
-                console.error('确保聊天按钮可点击错误:', error);
-            }
-        }
-
-        // 页面加载后初始化聊天窗口
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                // 确保聊天窗口初始为隐藏状态
-                const chatWidget = document.getElementById('chatWidget');
-                if (chatWidget) {
-                    chatWidget.style.display = 'none';
-                }
-                
-                // 确保聊天按钮可点击
-                setTimeout(ensureChatButtonsClickable, 1000);
-            } catch (error) {
-                console.error('初始化聊天窗口错误:', error);
-            }
-        });
-
-        // 定期检查按钮状态
-        setInterval(() => {
-            try {
-                const brokenButtons = document.querySelectorAll('button[disabled], button[style*="pointer-events: none"], button[style*="opacity: 0"]');
-                if (brokenButtons.length > 0) {
-                    console.log('发现', brokenButtons.length, '个可能无法点击的按钮，正在修复...');
-                    brokenButtons.forEach(button => {
-                        button.style.pointerEvents = 'auto';
-                        button.style.cursor = 'pointer';
-                        button.disabled = false;
-                        button.style.opacity = '1';
+            switch(section) {
+                case '5.1':
+                    csvContent += "月份,产品A销售额,产品B销售额\n";
+                    data.productSales.months.forEach((month, i) => {
+                        csvContent += `${month},${data.productSales.productA[i]},${data.productSales.productB[i]}\n`;
                     });
-                }
-                
-                // 定期检查聊天按钮
-                ensureChatButtonsClickable();
-            } catch (error) {
-                console.error('定期检查按钮状态错误:', error);
+                    break;
+                case '5.2':
+                    csvContent += "地区,2017年用户比例,2018年用户比例,增长倍数\n";
+                    data.douyin.cities.forEach((city, i) => {
+                        csvContent += `${city},${data.douyin.data2017[i]},${data.douyin.data2018[i]},${data.douyin.growth[i]}\n`;
+                    });
+                    break;
             }
-        }, 10000);
-        
-        // 测试发布表单的函数
-        function testPublishForm() {
-            console.log('测试发布表单...');
             
-            // 填充测试数据
-            document.getElementById('itemType').value = 'lost';
-            document.getElementById('itemTitle').value = '测试物品 - 学生证';
-            document.getElementById('category').value = '证件';
-            document.getElementById('location').value = '图书馆三楼';
-            document.getElementById('description').value = '这是一个测试物品，用于验证发布功能是否正常工作。';
-            document.getElementById('contact').value = '13800138000';
-            
-            console.log('测试数据已填充');
-            
-            // 检查app.publishItem是否存在
-            if (typeof app !== 'undefined' && app.publishItem) {
-                console.log('调用app.publishItem()...');
-                try {
-                    app.publishItem();
-                    alert('测试发布成功！请检查控制台输出。');
-                } catch (error) {
-                    console.error('发布失败:', error);
-                    alert('发布失败：' + error.message);
-                }
-            } else {
-                console.error('app.publishItem未定义');
-                alert('发布功能未加载，请刷新页面重试。');
-            }
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `第五章数据_${section}_022340614.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
+
+        // 更新性能指标
+        function updatePerformanceMetrics() {
+            const loadTime = Date.now() - performanceStartTime;
+            document.getElementById('load-time').textContent = `${loadTime}ms`;
+            
+            // 计算数据点总数
+            const totalDataPoints = 
+                chapter5ExactData.productSales.productA.length * 2 +
+                chapter5ExactData.population.catOwners.length * 2 +
+                chapter5ExactData.douyin.data2017.length * 3 +
+                chapter5ExactData.temperature.temperature.length * 3 +
+                chapter5ExactData.carSales.sales.length * 2;
+                
+            document.getElementById('data-points').textContent = totalDataPoints;
+        }
+
+        // 页面加载初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('第五章数据可视化平台加载 - 022340614');
+            
+            // 检查HTTPS
+            if (location.protocol !== 'https:') {
+                document.getElementById('status-message').className = 'error';
+                document.getElementById('status-message').innerHTML = '⚠️ 建议使用HTTPS访问以确保安全';
+            }
+            
+            // 加载数据并初始化图表
+            if (typeof Plotly !== 'undefined') {
+                loadData();
+            } else {
+                document.getElementById('status-message').className = 'error';
+                document.getElementById('status-message').innerHTML = '❌ Plotly.js加载失败，请检查网络连接';
+            }
+            
+            // 性能监控
+            window.addEventListener('load', () => {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                console.log('页面完整加载时间: ' + loadTime + 'ms');
+            });
+        });
+
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            console.error('全局错误:', e.error);
+        });
     </script>
 </body>
 </html>
